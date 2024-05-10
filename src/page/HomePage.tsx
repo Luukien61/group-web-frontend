@@ -1,7 +1,6 @@
 import React from 'react';
-import ProductCard, {chip, productionProp, ram, rom, screen} from "../component/ProductCard.tsx";
+import {chip, productionProp, ram, rom, screen} from "../component/ProductCard.tsx";
 import CategoryCard from "../component/CategoryCard.tsx";
-import {homeBackgroundimg} from '../url/Urls.ts'
 import CarouselBanner, {Banner} from "@/component/CarouselBanner.tsx";
 
 export const iphone15: productionProp = {
@@ -46,7 +45,7 @@ const imgSource: Banner[] = [
     }
 ]
 
-const Content = () => {
+const HomePage = () => {
     const numbers = Array.from({length: 100}, (_, i) => i + 1);
     return (
         <main className="flex-auto bg-opacity-50 pt-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">
@@ -64,4 +63,4 @@ const Content = () => {
     );
 };
 
-export default Content;
+export default HomePage;
