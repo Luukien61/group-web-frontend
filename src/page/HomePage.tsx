@@ -53,9 +53,9 @@ const HomePage = () => {
             <CategoryCard name={"Smartphone"}/>
 
             <div className="flex-auto max-w-4xl min-w-0 pt-6 lg:px-8 lg:pt-6 pb:12 xl:pb-24 lg:pb-16">
-                {numbers.map(item => {
+                {numbers.map((item, index) => {
                     return (
-                        <p className="font-semibold ">This is a line</p>
+                        <p key={index} className="font-semibold ">This is a line</p>
                     )
                 })}
             </div>

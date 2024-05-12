@@ -22,15 +22,16 @@ const Footer = () => {
                         </p>
                     </div>
                     {
-                        footerContent.map(item => (
-                            <div>
+                        footerContent.map((item, index) => (
+                            <div key={index}>
                                 <h3 className="mb-6 text-sm font-semibold text-black uppercase dark:text-white">
                                     {item.title}
                                 </h3>
                                 <ul>
                                     {
                                         item.child.map(child=> (
-                                            <li className="mb-4">
+                                            <li key={child.name}
+                                                className="mb-4">
                                                 <a
                                                     href={child.link}
                                                     className="font-medium text-gray-600 dark:text-gray-400 dark:hover:text-white hover:underline"

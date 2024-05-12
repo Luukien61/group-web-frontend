@@ -54,8 +54,9 @@ const ProductCard: React.FC<ProductCardProps> = ({item}) => {
             </div>
             <div className="bg-gray-300 rounded text-[16px] text-gray-800 flex flex-wrap ">
                 {
-                    item.features.map(feature => (
-                        <div className="w-1/2 gap-2 flex items-center">
+                    item.features.map((feature,index) => (
+                        <div key={index}
+                            className="w-1/2 gap-2 flex items-center">
                             {feature.icon}
                             {feature.property}
                         </div>
