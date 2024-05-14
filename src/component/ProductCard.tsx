@@ -3,6 +3,7 @@ import {IoHardwareChipOutline} from "react-icons/io5";
 import {BiMemoryCard} from "react-icons/bi";
 import {PiMemoryThin} from "react-icons/pi";
 import {MdScreenshotMonitor} from "react-icons/md";
+import {Link} from "react-router-dom";
 
 type feature = {
     name: string,
@@ -64,9 +65,12 @@ const ProductCard: React.FC<ProductCardProps> = ({item}) => {
                 }
             </div>
             <div className=" gap-1 p-1 rounded border-none ring-0 hidden group-hover:block">
-                <button type={'button'} className="bg-red_default rounded text-white py-1 px-2 font-semibold w-full">
-                    Purchase
-                </button>
+                <Link to={`/${item.category}/samsung`}>
+                    <button type={'button'}
+                            className="bg-red_default rounded text-white py-1 px-2 font-semibold w-full">
+                        Purchase
+                    </button>
+                </Link>
             </div>
         </div>
     );

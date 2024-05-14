@@ -14,7 +14,13 @@ const CategoryCard : React.FC<CategoryProp> = (category) => {
                     <a className="text-blue-500 hover:underline cursor-grab">View more</a>
                 </div>
             </div>
-            <div className="h-fit flex flex-wrap gap-x-1">
+            <div className="h-fit flex flex-wrap gap-x-1 justify-start gap-y-2">
+                <ProductCard item={iphone15}/>
+                <ProductCard item={iphone15}/>
+                <ProductCard item={iphone15}/>
+                <ProductCard item={iphone15}/>
+                <ProductCard item={iphone15}/>
+                <ProductCard item={iphone15}/>
                 <ProductCard item={iphone15}/>
             </div>
         </div>

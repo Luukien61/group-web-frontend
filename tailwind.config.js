@@ -20,9 +20,11 @@ module.exports = {
       colors: {
         primary: "#099309",
         secondary: "#A8CD9F",
-        default_red: "#CE1B1A",
+        default_red: "#cb1c22",
         red_default: "#AE1427",
         default_background: "#F8F9FA",
+        default_gray: "#99a2aa",
+        secondary_gray: "#EDEEEF",
         default_green: "#099309",
         default_blue: "#316FF6",
         border: "hsl(var(--border))",
