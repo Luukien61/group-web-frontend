@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/shadcn/ui/carousel.tsx"
+import {Carousel, CarouselContent, CarouselItem,} from "@/shadcn/ui/carousel.tsx"
 import Autoplay from "embla-carousel-autoplay"
 import {Card, CardContent} from "@/shadcn/ui/card.tsx";
 import {Link} from "react-router-dom";
+
 export type Banner ={
-    img: string,
-    url: string,
+    id?: number|string,
+    imageUrl: string,
+    targetUrl: string,
     title?: string,
 }
 
@@ -27,20 +23,20 @@ const CarouselBanner : React.FC<CarouselProps> = ({imgSource}) => {
     return (
         <Carousel
             plugins={[plugin.current]}
-            className="w-full  flex-1 "
+            className="w-full  flex-1 bg-transparent"
             // onMouseEnter={plugin.current.stop}
             // onMouseLeave={plugin.current.reset}
         >
             <CarouselContent >
                 {imgSource.map((item, index) => (
-                    <CarouselItem key={index}>
-                        <div className="p-1 ">
+                    <CarouselItem key={index} >
+                        <div className="w-full">
                             <Card>
-                                <CardContent className="flex bg-red_default rounded-[10px] h-[300px] items-center justify-center p-6">
-                                    <Link to={item.url} className={`w-full`}>
+                                <CardContent className="!p-0  rounded-2xl h-[300px] items-center justify-center">
+                                    <Link to={item.targetUrl} className={`w-full`}>
                                         <img
-                                            className={`h-[250px] w-full object-top rounded`}
-                                            src={item.img} alt={item.title}/>
+                                            className={`h-full w-full object-fill rounded`}
+                                            src={item.imageUrl} alt={item.title}/>
                                     </Link>
                                 </CardContent>
                             </Card>
