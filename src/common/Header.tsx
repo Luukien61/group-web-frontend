@@ -84,6 +84,7 @@ const Header = () => {
                         <div className=''>
                             <Input placeholder={'Search productions here...'}/>
                         </div>
+                        {/*account field*/}
                         <div className="flex flex-row flex-1 items-center justify-end">
                             <nav className="text-sm leading-6">
                                 <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
