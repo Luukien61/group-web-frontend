@@ -3,7 +3,7 @@ import {IoPhonePortraitOutline} from "react-icons/io5";
 import React from "react";
 
 
-type MenuLink = {
+export type MenuLink = {
     name: string;
     link: string;
     key?: string[] | number[]
@@ -21,7 +21,7 @@ type MenuLinkProps = {
     url: string
 }
 
-export const PhoneProducer:MenuLink[]=[
+export const PhoneProducer: MenuLink[] = [
     {name: "Iphone", link: "/"},
     {name: "Samsung", link: "/"},
     {name: "Xiaomi", link: "/"},
@@ -33,7 +33,7 @@ export const PhoneProducer:MenuLink[]=[
     {name: "Vivo", link: "/"},
 ]
 
-export const laptopProducer:MenuLink[]=[
+export const laptopProducer: MenuLink[] = [
     {name: "Dell", link: "/"},
     {name: "Hp", link: "/"},
     {name: "Asus", link: "/"},
@@ -43,7 +43,7 @@ export const laptopProducer:MenuLink[]=[
     {name: "MSI", link: "/"},
 ]
 
-export const phonePrice:MenuLink[] =[
+export const phonePrice: MenuLink[] = [
     {name: "Below 2tr", link: "/", key: [0, 2]},
     {name: "From 2tr to 4tr", link: "/", key: [2, 4]},
     {name: "From 4tr to 10tr", link: "/", key: [4, 10]},
@@ -51,7 +51,7 @@ export const phonePrice:MenuLink[] =[
     {name: "Above 15tr", link: "/", key: [15]},
 ]
 
-export const laptopPrice:MenuLink[] =[
+export const laptopPrice: MenuLink[] = [
     {name: "Below 6tr", link: "/", key: [0, 6]},
     {name: "From 6tr to 10tr", link: "/", key: [6, 10]},
     {name: "From 10tr to 15tr", link: "/", key: [10, 15]},
@@ -143,3 +143,14 @@ export const links: MenuLinkProps[] = [
         url: "laptop"
     },
 ];
+
+export const price = {
+    Head: "Price",
+    sublink: [
+        {name: "Below 2tr", link: "/", key: [0, 2]},
+        {name: "From 2tr to 4tr", link: "/", key: [2, 4]},
+        {name: "From 4tr to 10tr", link: "/", key: [4, 10]},
+        {name: "From 10tr to 15tr", link: "/", key: [10, 15]},
+        {name: "Above 15tr", link: "/", key: [15]},
+    ]
+}

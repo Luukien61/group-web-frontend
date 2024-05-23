@@ -1,14 +1,14 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import SideBarFilter from "@/component/SideBarFilter.tsx";
 import {useLocation} from "react-router-dom";
 import {useLocationStore} from "@/zustand/AppState.ts";
 import DeviceList from "@/component/DeviceList.tsx";
 
 const ProductCategoryPage = () => {
+    //const [currentLocation, setCurrentLocation] = useState<string>("");
     const location : string = useLocation().pathname.slice(1);
-    const {pathname, setPathname} = useLocationStore();
+    const {setPathname} = useLocationStore();
     useEffect(() => {
-        console.log(location);
         setPathname(location);
     }, [location]);
     return (

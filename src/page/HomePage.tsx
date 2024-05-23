@@ -50,7 +50,7 @@ const HomePage = () => {
         fetchProductByCategory()
     }, []);
     return (
-        <main className="flex-auto bg-opacity-50 pt-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">
+        <main className="flex-auto bg-opacity-50 py-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">
             <CarouselBanner imgSource={imageSource}/>
             <CategoryCard name={"Smartphone"} product={phone}/>
             <CategoryCard name={"Laptop"} product={phone}/>
