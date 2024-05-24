@@ -1,7 +1,9 @@
 import React from 'react';
 import ProductCard from "./ProductCard.tsx";
+import {Link} from 'react-router-dom';
+import {Pagination} from "@/shadcn/ui/pagination.tsx";
 
-type Producer ={
+type Producer = {
     id: number,
     name: string
 }
@@ -10,19 +12,19 @@ type Category = {
     name: string,
     producers: Producer[]
 }
-type Price ={
+type Price = {
     "id": number,
     "ram": number,
     "rom": number,
     "currentPrice": number,
     "previousPrice": number
 }
-type Color ={
+type Color = {
     id: number,
     color: string,
     link: string
 }
-type Feature ={
+type Feature = {
     id: number,
     screen: string,
     rearCamera: number[],
@@ -33,7 +35,7 @@ type Feature ={
     memory: Price[],
     madeTime: Date,
 }
-type Description ={
+type Description = {
     id: number,
     title: string,
     content: string
@@ -49,25 +51,38 @@ export type Product = {
     "description": Description,
     "producer": Producer
 }
-type CategoryProp ={
+type CategoryProp = {
     name: string,
-    product: Product[]
+    url?: string,
+    product: Product[],
+    pageable?: boolean
 }
 
-const CategoryCard : React.FC<CategoryProp> = ({name,product}) => {
+const CategoryCard: React.FC<CategoryProp> = ({name, url, product}) => {
     return (
-        <div className="rounded drop-shadow h-fit bg-white p-2">
+        <div className="rounded drop-shadow h-fit bg-white p-2 ">
             <div className="flex items-center px-2 py-1">
                 <p className={`text-default_red font-medium text-[24px]`}>{name}</p>
                 <div className="flex items-center justify-end flex-1">
-                    <a className="text-blue-500 hover:underline cursor-pointer pr-2">View more</a>
+                    {/*<a className="text-blue-500 hover:underline cursor-pointer pr-2">View more</a>*/}
+                    {url &&
+                        <Link className={`text-blue-500 hover:underline cursor-pointer pr-2`} to={url}>View more</Link>}
                 </div>
             </div>
             <div className="h-fit max-w-[1316px] flex flex-wrap gap-x-2 justify-start gap-y-2 px-2">
                 {
-                   product.map((product, index) => (
-                       <ProductCard key={index} product={product}/>
-                   ))
+                    product.length === 0
+                        ? <p>No device found</p>
+                        : (
+                            <>
+                                {
+                                    product.map((product, index) => (
+                                        <ProductCard key={index} product={product}/>
+                                    ))
+                                }
+
+                            </>
+                        )
                 }
             </div>
         </div>

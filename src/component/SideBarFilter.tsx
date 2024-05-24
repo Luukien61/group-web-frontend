@@ -1,11 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
-import {useCategory, useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
+import {useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
 import {laptopPrice, MenuLink, phonePrice} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
-import {validators} from "tailwind-merge";
 
 
 const SideBarFilter = () => {
@@ -102,11 +101,9 @@ const SideBarFilter = () => {
                                          className={`flex w-1/2 py-2  `}
                                     >
                                         <Checkbox
-                                            id="terms2"
                                             onCheckedChange={(checked) => handleItemCheck(checked, value)}
                                             className={' data-[state=checked]:bg-red_default data-[state=checked]:text-white data-[state=checked]:border-none'}/>
                                         <label
-                                            htmlFor="terms2"
                                             className="px-2 font-[14px] text-[14px] peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                         >
                                             {value}

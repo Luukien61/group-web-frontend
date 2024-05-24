@@ -44,19 +44,19 @@ export const laptopProducer: MenuLink[] = [
 ]
 
 export const phonePrice: MenuLink[] = [
-    {name: "Below 2tr", link: "/", key: [0, 2]},
-    {name: "From 2tr to 4tr", link: "/", key: [2, 4]},
-    {name: "From 4tr to 10tr", link: "/", key: [4, 10]},
-    {name: "From 10tr to 15tr", link: "/", key: [10, 15]},
-    {name: "Above 15tr", link: "/", key: [15]},
+    {name: "Below 2tr", link: "/", key: [0, 2000000]},
+    {name: "From 2tr to 4tr", link: "/", key: [2000000, 4000000]},
+    {name: "From 4tr to 10tr", link: "/", key: [4000000, 10000000]},
+    {name: "From 10tr to 15tr", link: "/", key: [10000000, 15000000]},
+    {name: "Above 15tr", link: "/", key: [15000000]},
 ]
 
 export const laptopPrice: MenuLink[] = [
-    {name: "Below 6tr", link: "/", key: [0, 6]},
-    {name: "From 6tr to 10tr", link: "/", key: [6, 10]},
-    {name: "From 10tr to 15tr", link: "/", key: [10, 15]},
-    {name: "From 15tr to 20tr", link: "/", key: [15, 20]},
-    {name: "Above 20tr", link: "/", key: [15]},
+    {name: "Below 6tr", link: "/", key: [0, 6000000]},
+    {name: "From 6tr to 10tr", link: "/", key: [6000000, 10000000]},
+    {name: "From 10tr to 15tr", link: "/", key: [10000000, 15000000]},
+    {name: "From 15tr to 20tr", link: "/", key: [15000000, 20000000]},
+    {name: "Above 20tr", link: "/", key: [20000000]},
 ]
 
 export const links: MenuLinkProps[] = [
