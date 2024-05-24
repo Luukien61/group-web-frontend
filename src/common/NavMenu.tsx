@@ -1,15 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {links, price} from "../description/MenuLink.tsx";
+import {price} from "../description/MenuLink.tsx";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {Link} from "react-router-dom";
-import {instance} from "@/axios/Config.ts";
-import {categoryPath} from "@/url/Urls.ts";
 import {useCategory, useCategoryItem} from "@/zustand/AppState.ts";
+import {linksCategory} from "@/axios/Request.ts";
 
-export const linksCategory = async () => {
-    const result = await instance.get(categoryPath)
-    return result.data
-}
 type Producer = {
     id: number,
     name: string

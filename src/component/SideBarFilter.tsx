@@ -11,7 +11,6 @@ const SideBarFilter = () => {
         const {categoriesItem} = useCategoryItem()
         const {pathname} = useLocationStore()
         const [checkAllProducer, setCheckAllProducer] = useState<boolean>(true)
-        const [checkAllPrice, setCheckAllPrice] = useState<boolean>(true)
         const [producerSort, setProducerSort] = useState<string[]>([]);
         const [producers, setProducers] = useState<string[]>([]);
         const [priceSort, setPriceSort] = useState<number[]>([]);
@@ -57,11 +56,9 @@ const SideBarFilter = () => {
         const handlePriceFilter = ( index: string) => {
             if(index==="all"){
                 setPriceSort([])
-                setCheckAllPrice(true)
             }else {
                 const price= priceItems[parseInt(index)].key
                 setPriceSort(price)
-                setCheckAllPrice(false)
             }
         }
         useEffect(() => {

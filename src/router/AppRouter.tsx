@@ -2,18 +2,17 @@ import {Route, Routes} from "react-router-dom";
 import App from "../common/App.tsx";
 import HomePage from "@/page/HomePage.tsx";
 import ProductCategoryPage from "@/page/ProductCategoryPage.tsx";
-import {categoryPath, productCategory} from "@/url/Urls.ts";
 import ProductPage from "@/page/ProductPage.tsx";
 import LoginPage from "@/page/LoginPage.tsx";
 import AdminHome from "@/page/admin/AdminHome.tsx";
 import {useEffect, useState} from "react";
-import {instance} from "@/axios/Config.ts";
-import {Category, linksCategory} from "@/common/NavMenu.tsx";
+import {Category} from "@/common/NavMenu.tsx";
 import {useCategory} from "@/zustand/AppState.ts";
+import {linksCategory} from "@/axios/Request.ts";
 
 
 const AppRouter = () => {
-    const {categories,setCategories} = useCategory()
+    const {categories, setCategories} = useCategory()
     const [category, setCategory] = useState<string[]>([])
     useEffect(() => {
         const fetchCategory = async () => {
