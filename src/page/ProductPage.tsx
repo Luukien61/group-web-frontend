@@ -170,6 +170,7 @@ const ProductPage = () => {
                                         {
                                             samsung_S23.price.map((price, index) => (
                                                 <div
+                                                    key={index}
                                                     onClick={() => handleSelectedIndex(index, price.ram, price.rom)}
                                                     className={`flex flex-col  flex-1 gap-y-1 bg-secondary_gray rounded p-1 cursor-pointer group`}>
                                                     <div className={`flex justify-center gap-x-1 w-auto`}>
@@ -195,7 +196,7 @@ const ProductPage = () => {
                                     className={`flex flex-wrap gap-x-1 pt-3 `}>
                                     {
                                         samsung_S23.color.map((color, index) => (
-                                            <div className={`flex flex-col`}>
+                                            <div key={index} className={`flex flex-col`}>
                                                 <img className={`aspect-square w-[50px]`} src={color.link}
                                                      alt={index.toString()}/>
                                                 <h3 className={`text-[15px] self-center`}>

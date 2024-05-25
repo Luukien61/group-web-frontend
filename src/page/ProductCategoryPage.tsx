@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import SideBarFilter from "@/component/SideBarFilter.tsx";
 import {useLocation} from "react-router-dom";
 import {useLocationStore} from "@/zustand/AppState.ts";

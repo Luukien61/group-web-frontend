@@ -4,15 +4,16 @@ import {BiMemoryCard} from "react-icons/bi";
 import {PiMemoryThin} from "react-icons/pi";
 import {MdScreenshotMonitor} from "react-icons/md";
 import {Product} from "@/component/CategoryCard.tsx";
-import {Link} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 
 type ProductCardProps = {
     product: Product;
 };
 const ProductCard: React.FC<ProductCardProps> = ({product}) => {
+    const location = useLocation().pathname;
     return (
-        <Link to={`${product.id}`}>
+        <a href={`${location}/${product.id}`}>
             <div
                 className="rounded bg-gray-100 h-fit flex flex-col gap-y-1 py-1 px-2 group cursor-pointer max-w-[250px] ">
                 <img
@@ -55,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
                     </button>
                 </div>
             </div>
-        </Link>
+        </a>
     );
 };
 

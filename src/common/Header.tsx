@@ -1,13 +1,12 @@
 import {homePage} from "../url/Urls.ts";
 import {CgProfile} from "react-icons/cg";
-import React, {useCallback, useState} from "react";
+import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
 import Input from "../component/Input.tsx";
 import {FiShoppingCart} from "react-icons/fi";
-import {IoCameraOutline, IoPhonePortraitOutline} from "react-icons/io5";
-import {IoIosLaptop, IoIosTabletPortrait} from "react-icons/io";
-import {productionProps, productionType} from "../description/AppInfo.ts";
-import {links} from "../description/MenuLink.tsx";
 import NavMenu from "./NavMenu.tsx";
+import {searchProdutsByName} from "@/axios/Request.ts";
+import {Product} from "@/component/CategoryCard.tsx";
+import {debounce} from "lodash";
 
 
 export type MenuItem = {
@@ -41,27 +40,26 @@ const headerItems: MenuItem[] = [
 
 const Header = () => {
     const [activeHeaderItem, setActiveHeaderItem] = useState<string>("cart");
-    const [categoryHover, setCategoryHover] = useState<string | null>()
-
+    const [products, setProducts] = useState<Product[]>([]);
     const handleHeaderItemClick = useCallback((key: string) => {
         setActiveHeaderItem(key);
     }, []);
-    const [itemHover, setItemHover] = useState<productionProps | undefined>()
+    const debouncedHandleSearching = useRef(debounce(
+        async (value: string) => {
+            const response = await searchProdutsByName(value)
+            setProducts(response)
+        }, 500)).current;
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        debouncedHandleSearching(event.target.value);
+    };
+    // const handleInputChange =async (event: ChangeEvent<HTMLInputElement>) => {
+    //     const response = await searchProdutsByName(event.target.value);
+    //     setProducts(response)
+    // }
+    useEffect(() => {
+        console.log(products)
+    }, [products]);
 
-    const handleHoverItem = (key: string | null) => {
-        setCategoryHover(key)
-        if (key) {
-            const result = productionType.find(value => value.type === key)
-            setItemHover(result)
-        }
-    }
-
-    const category: MenuItem[] = [
-        getItem("Smartphone", homePage, "smartphone", <IoPhonePortraitOutline/>),
-        getItem("Laptop", homePage, "laptop", <IoIosLaptop/>),
-        getItem("Camera", homePage, "camera", <IoCameraOutline/>),
-        getItem("Tablet", homePage, "tablet", <IoIosTabletPortrait/>)
-    ]
     return (
         <>
             <header className="sticky top-0 z-40 flex-none w-full mx-auto bg-white border-b border-gray-200">
@@ -81,8 +79,15 @@ const Header = () => {
                                 <p className="text-black font-semibold">App</p>
                             </a>
                         </div>
-                        <div className=''>
-                            <Input placeholder={'Search productions here...'}/>
+                        <div className='relative'>
+                            <Input onChange={handleChange} placeholder={'Search productions here...'}/>
+                            <div className={`absolute inset-0 top-10 rounded bg-default_blue h-fit p-2 ${products.length>0 ? 'block':'hidden'}`}>
+                                {
+                                    products.map((item,index)=>(
+                                        <></>
+                                    ))
+                                }
+                            </div>
                         </div>
                         {/*account field*/}
                         <div className="flex flex-row flex-1 items-center justify-end">
@@ -106,14 +111,10 @@ const Header = () => {
                     </div>
                     <hr className="border-black "/>
                     <NavMenu/>
-
-                    {/*--> drop down menu*/}
-
                 </div>
             </header>
         </>
-    )
-        ;
+    );
 };
 
 export default Header;
