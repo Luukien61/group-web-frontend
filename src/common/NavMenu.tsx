@@ -38,13 +38,13 @@ const NavMenu = () => {
                 category.map((category, index) => (
                     <div key={index}
                          className=" flex flex-col gap-y-1 group cursor-pointer ">
-                        <Link to={category.name.toLowerCase()}>
+                        <a href={category.name.toLowerCase()}>
                             <h1 className="flex gap-1 items-center text-[16px] font-semibold text-white group-hover:text-default_green">
                                 {category.name}
                                 <RiArrowDropDownLine size={24}
                                                      className="group-hover:rotate-180 transform duration-300"/>
                             </h1>
-                        </Link>
+                        </a>
                         <div className="hidden group-hover:block absolute top-6 hover:block">
                             <div className="py-3">
                                 <div className="w-6 h-6 left-3 absolute mt-1 bg-default_background rotate-45"></div>

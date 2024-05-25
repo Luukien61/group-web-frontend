@@ -7,7 +7,7 @@ const DeviceList = () => {
     const category = pathname.charAt(0).toUpperCase() + pathname.slice(1)
     return (
         <div className={`col-span-10 pl-4 w-full`}>
-            <CategoryCard name={category} category={category} initialSize={20} pageable={true} />
+            <CategoryCard name={category} category={category} initialSize={12} pageable={true} />
         </div>
     );
 };

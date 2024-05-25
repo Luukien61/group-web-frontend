@@ -36,7 +36,7 @@ const AppRouter = () => {
                 }
                 {
                     categories.map((value, index) => (
-                        <Route path={`${value}/*`} element={<ProductPage/>}/>
+                        <Route key={index} path={`${value}/*`} element={<ProductPage/>}/>
                     ))
                 }
             </Route>

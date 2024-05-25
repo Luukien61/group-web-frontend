@@ -20,7 +20,6 @@ const SideBarFilter = () => {
                 const category = categoriesItem.find(value =>
                     value.name.toLowerCase() === pathname.toLowerCase())
                 const producer = category?.producers.map(value => value.name)
-                // @ts-ignore
                 setProducers(producer)
             }
             getAllProducer()
