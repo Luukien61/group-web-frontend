@@ -7,6 +7,7 @@ import NavMenu from "./NavMenu.tsx";
 import {searchProdutsByName} from "@/axios/Request.ts";
 import {Product} from "@/component/CategoryCard.tsx";
 import {debounce} from "lodash";
+import ProductSearch from "@/component/ProductSearch.tsx";
 
 
 export type MenuItem = {
@@ -79,15 +80,25 @@ const Header = () => {
                                 <p className="text-black font-semibold">App</p>
                             </a>
                         </div>
-                        <div className='relative'>
+                        <div className='relative flex flex-col'>
                             <Input onChange={handleChange} placeholder={'Search productions here...'}/>
-                            <div className={`absolute inset-0 top-10 rounded bg-default_blue h-fit p-2 ${products.length>0 ? 'block':'hidden'}`}>
-                                {
-                                    products.map((item,index)=>(
-                                        <></>
-                                    ))
-                                }
-                            </div>
+                            {
+                                products && (
+                                    <div className={`relative mt-1 z-[100]`}>
+                                        <div
+                                            className={`absolute inset-0 calc(100% + 4px) space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
+                                            {
+                                                products.map((item, index) => (
+                                                    <>
+                                                        <ProductSearch product={item}/>
+                                                        {index < products.length - 1 && <hr/>}
+                                                    </>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
                         </div>
                         {/*account field*/}
                         <div className="flex flex-row flex-1 items-center justify-end">

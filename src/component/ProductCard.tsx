@@ -27,7 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
                         {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}
                     </p>
                 </div>
-                <div className="bg-gray-300 rounded pl-1 text-[12px] text-gray-800 flex flex-wrap">
+                <div className="bg-default_gray rounded pl-1 text-[12px] text-gray-800 flex flex-wrap">
                     <div
                         className="w-1/2 gap-2 flex items-center">
                         <IoHardwareChipOutline/>
