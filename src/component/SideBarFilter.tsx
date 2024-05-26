@@ -18,19 +18,7 @@ const SideBarFilter = () => {
         const [producerSort, setProducerSort] = useState<string[]>([]);
         const [producers, setProducers] = useState<string[]>([]);
         const [priceSort, setPriceSort] = useState<number[]>([]);
-        const {setProductFilter, setPriceFilter} = useFilter()
-        useEffect(() => {
-            const getAllProducer = () => {
-                const category = categoriesItem.find(value =>
-                    value.name.toLowerCase() === pathname.toLowerCase())
-                const producer = category?.producers.map(value => value.name)
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                setProducers(producer)
-            }
-            getAllProducer()
-        }, [pathname]);
-        const priceItemsRef = useRef<MenuLink[]>([]);
+        const {producerFilter, priceFilter, setProductFilter, setPriceFilter} = useFilter()
         useEffect(() => {
             switch (pathname) {
                 case "phone" : {
@@ -42,11 +30,22 @@ const SideBarFilter = () => {
                     break;
                 }
             }
+            const getAllProducer = () => {
+                const category = categoriesItem.find(value =>
+                    value.name.toLowerCase() === pathname.toLowerCase())
+                const producer = category?.producers.map(value => value.name)
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                setProducers(producer)
+            }
+            getAllProducer()
         }, [pathname]);
+        const priceItemsRef = useRef<MenuLink[]>([]);
         const handleItemCheck = (checkedState: CheckedState, value: string) => {
             if (checkedState) {
                 if (value == "all") {
                     setProducerSort([])
+                    setProductFilter([])
                     setCheckAllProducer(true)
                 } else {
                     setProducerSort([...producerSort, value.toLowerCase()])
@@ -71,7 +70,8 @@ const SideBarFilter = () => {
             }
         }
         useEffect(() => {
-            setProductFilter(producerSort)
+            const newProductFilter = [...producerSort,...producerFilter]
+            setProductFilter(newProductFilter)
             setPriceFilter(priceSort)
             const params = handleParams()
             navigate(`${params}`)
@@ -94,12 +94,19 @@ const SideBarFilter = () => {
         }
         useEffect(() => {
             const params = search.slice(1).split("&")
-            const producers = params.filter((value) => value.includes("producer"))
-            if (producers.length > 0) {
-
+            const producersParam = params.filter((value) => value.includes("producer"))
+            if (producersParam.length > 0) {
+                const producerList = producersParam[0]
+                const equalIndex = producerList.indexOf("=")
+                const producers = producerList.slice(equalIndex + 1).split(",")
+                setProducerChecked(producers)
+                setCheckAllProducer(false)
             }
-            console.log(params)
         }, [search]);
+        useEffect(() => {
+            setProducerSort(producerFilter)
+            setPriceSort(priceFilter)
+        }, []);
         return (
             <aside className={`lg:static lg:h-auto lg:overflow-y-visible lg:pt-0 lg:block col-span-2`}>
                 <div
@@ -133,6 +140,7 @@ const SideBarFilter = () => {
                                          className={`flex w-1/2 py-2  `}
                                     >
                                         <Checkbox
+                                            checked={!checkAllProducer && producerChecked.includes(value.toLowerCase())}
                                             onCheckedChange={(checked) => handleItemCheck(checked, value)}
                                             className={' data-[state=checked]:bg-red_default data-[state=checked]:text-white data-[state=checked]:border-none'}/>
                                         <label

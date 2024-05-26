@@ -24,14 +24,14 @@ type Color = {
     color: string,
     link: string
 }
-type Feature = {
+export type Feature = {
     id: number,
     screen: string,
     rearCamera: number[],
     frontCamera: number[],
     chip: string,
     battery: number,
-    OS: string,
+    os: string,
     memory: Price[],
     madeTime: Date,
 }

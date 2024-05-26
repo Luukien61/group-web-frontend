@@ -1,6 +1,7 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {instance} from "@/axios/Config.ts";
-import {categoryPath, productPath, searchPath} from "@/url/Urls.ts";
+import {categoryPath, findById, productPath, searchPath} from "@/url/Urls.ts";
+import {Product} from "@/component/CategoryCard.tsx";
 
 type Props = {
     category: string,
@@ -32,7 +33,7 @@ export const fetchCarouselImages = async (): Promise<Banner[]> => {
 }
 
 export const fetchProductsCategory = async ({category, producer, price, page, size}: Props) => {
-    if(!category) return
+    if (!category) return
     try {
         const params: ParamsProps = {category: category, page: page ?? 0, size: size ?? 20};
         if (producer) {
@@ -66,12 +67,22 @@ export const fetchProductsCategory = async ({category, producer, price, page, si
     }
 }
 
-export const searchProdutsByName = async (name: string)=>{
-    try{
-        const respone= await instance.get(`${searchPath}/${name}`)
+export const searchProdutsByName = async (name: string) => {
+    try {
+        const respone = await instance.get(`${searchPath}/${name}`)
             .then(response => response)
         return respone.data
-    }catch (error){
+    } catch (error) {
+        console.error("Error fetching products:", error);
+    }
+}
+
+export const getProductById = async (id: string) => {
+    try {
+        const response = await instance.get(`${findById}/${id}`)
+            .then(response => response)
+        return response.data
+    } catch (error) {
         console.error("Error fetching products:", error);
     }
 }

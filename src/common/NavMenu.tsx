@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {price} from "../description/MenuLink.tsx";
 import {RiArrowDropDownLine} from "react-icons/ri";
-import {Link} from "react-router-dom";
-import {useCategory, useCategoryItem} from "@/zustand/AppState.ts";
+import {Link, useNavigate} from "react-router-dom";
+import {useCategory, useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
 import {linksCategory} from "@/axios/Request.ts";
 
 type Producer = {
@@ -14,11 +14,18 @@ export type Category = {
     "name": string,
     "producers": Producer[]
 }
+type ProducerFilterProps={
+    producer: string,
+    category: string
+}
 
 const NavMenu = () => {
     const [category, setCategory] = useState<Category[]>([])
     const {setCategories} = useCategory()
+    const {setPathname} = useLocationStore()
     const {setCategoriesItem} = useCategoryItem()
+    const {setProductFilter, setPriceFilter} = useFilter()
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchCategory = async () => {
             const category: Category[] = await linksCategory();
@@ -32,6 +39,13 @@ const NavMenu = () => {
         }
         fetchCategory()
     }, []);
+    const handleProducerFilter=({producer,category}:ProducerFilterProps)=>{
+        producer=producer.toLowerCase();
+        const listProducer = [producer]
+        setProductFilter(listProducer)
+        const path= `/${category.toLowerCase()}/filter`
+        navigate(path)
+    }
     return (
         <ul className="bg-secondary flex gap-x-5 px-7 h-10 items-center justify-start drop-shadow">
             {
@@ -56,11 +70,17 @@ const NavMenu = () => {
                                         </h1>
                                         {
                                             category.producers.map((producer, sublinkIndex) => (
-                                                <Link key={sublinkIndex}
-                                                      to={`/${category.name.toLowerCase()}/${producer.name.toLowerCase()}`}
+                                                <a key={sublinkIndex}
+                                                      href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
                                                       className="cursor-pointer hover:text-default_green">
                                                     {producer.name}
-                                                </Link>
+                                                </a>
+                                                // <div
+                                                //     onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
+                                                //     className="cursor-pointer hover:text-default_green bg-inherit outline-none ring-0"
+                                                //     key={sublinkIndex}>
+                                                //     <p>{producer.name}</p>
+                                                // </div>
                                             ))
                                         }
                                     </div>

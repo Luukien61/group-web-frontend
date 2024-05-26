@@ -12,6 +12,9 @@ import {
 } from "@/shadcn/ui/carousel"
 import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow,} from "@/shadcn/ui/table"
 import {useCurrentDeviceMem} from "@/zustand/AppState.ts";
+import {useLocation} from "react-router-dom";
+import {getProductById} from "@/axios/Request.ts";
+import {Feature, Product} from "@/component/CategoryCard.tsx";
 
 
 type memoryProps = {
@@ -127,108 +130,120 @@ type checkboxProps = {
 }
 const ProductPage = () => {
     const {ram, rom, setRam, setRom} = useCurrentDeviceMem()
+    const deviceId = useLocation().pathname.slice(1).split("/")[1]
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
     let price = samsung_S23.price.find(value => value.rom === rom && value.ram === ram)
+    const [product, setProduct] = useState<Product>()
 
     const handleSelectedIndex = (index: number, newRam: number, newRom: number) => {
         setSelectedIndex(index)
         setRam(newRam)
         setRom(newRom)
     }
+    useEffect(() => {
+        const fetchProduct = async ()=>{
+            const product = await getProductById(deviceId)
+            setProduct(product)
+            console.log(product)
+        }
+        fetchProduct()
+    }, [deviceId]);
 
     useEffect(() => {
         price = samsung_S23.price.find(value => value.rom === rom && value.ram === ram)
     }, [ram, rom]);
     return (
-        <div className={`grid w-full grid-cols-12 mt-4 mb-4`}>
-            {/*main content*/}
-            <div className={`col-span-10 w-full rounded bg-default_background p-5 h-fit mb-4`}>
-                <div className={`w-full border-b`}>
-                    <h1 className={`text-black pb-2 font-semibold`}>
-                        {samsung_S23.name}
-                    </h1>
-                </div>
-                <div className={`w-full flex flex-col`}>
-                    <div className={`w-full flex`}>
-                        <div className={`block w-1/2`}>
-                            <CarouselDApiDemo links={samsung_S23.imgs}/>
-                        </div>
-                        {/*right side*/}
-                        <div className={`w-1/2 flex`}>
-                            <div className={`flex flex-col py-3 pl-8 w-full`}>
-                                <div className={`flex gap-x-2 items-end justify-start`}>
-                                    <h1 className={`text-default_red text-[32px] leading-[40px] font-[500]`}>
-                                        {price?.current_price.toLocaleString('vi-VN') + 'đ'}
-                                    </h1>
-                                    <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
-                                        {price?.previous_price.toLocaleString('vi-VN') + 'đ'}
-                                    </h1>
-                                </div>
-                                {/*price options*/}
-                                <div className={`w-full flex flex-wrap`}>
-                                    <RadioGroup className={`flex w-full py-3 text-[14px]`}>
-                                        {
-                                            samsung_S23.price.map((price, index) => (
-                                                <div
-                                                    key={index}
-                                                    onClick={() => handleSelectedIndex(index, price.ram, price.rom)}
-                                                    className={`flex flex-col  flex-1 gap-y-1 bg-secondary_gray rounded p-1 cursor-pointer group`}>
-                                                    <div className={`flex justify-center gap-x-1 w-auto`}>
-                                                        <RadioGroupItem
-                                                            className={`text-default_red border-default_red`}
-                                                            value={`ram=${price.ram}&rom=${price.rom}`}
-                                                            id={index.toString()}
-                                                            checked={selectedIndex === index}
-                                                        />
-                                                        <Label className={`text-[14px]`}
-                                                               htmlFor={index.toString()}>{price.rom}GB</Label>
+        product && (
+            <div className={`grid w-full grid-cols-12 mt-4 mb-4`}>
+                {/*main content*/}
+                <div className={`col-span-10 w-full rounded bg-default_background p-5 h-fit mb-4`}>
+                    <div className={`w-full border-b`}>
+                        <h1 className={`text-black pb-2 font-semibold`}>
+                            {product.name}
+                        </h1>
+                    </div>
+                    <div className={`w-full flex flex-col`}>
+                        <div className={`w-full flex`}>
+                            <div className={`block w-1/2`}>
+                                <CarouselDApiDemo links={product.imgs}/>
+                            </div>
+                            {/*right side*/}
+                            <div className={`w-1/2 flex`}>
+                                <div className={`flex flex-col py-3 pl-8 w-full`}>
+                                    <div className={`flex gap-x-2 items-end justify-start`}>
+                                        <h1 className={`text-default_red text-[32px] leading-[40px] font-[500]`}>
+                                            {product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ'}
+                                        </h1>
+                                        <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
+                                            {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
+                                        </h1>
+                                    </div>
+                                    {/*price options*/}
+                                    <div className={`w-full flex flex-wrap`}>
+                                        <RadioGroup className={`flex w-full py-3 text-[14px]`}>
+                                            {
+                                                product.price.map((price, index) => (
+                                                    <div
+                                                        key={index}
+                                                        onClick={() => handleSelectedIndex(index, price.ram, price.rom)}
+                                                        className={`flex flex-col  flex-1 gap-y-1 bg-secondary_gray rounded p-1 cursor-pointer group`}>
+                                                        <div className={`flex justify-center gap-x-1 w-auto`}>
+                                                            <RadioGroupItem
+                                                                className={`text-default_red border-default_red`}
+                                                                value={`ram=${price.ram}&rom=${price.rom}`}
+                                                                id={index.toString()}
+                                                                checked={selectedIndex === index}
+                                                            />
+                                                            <Label className={`text-[14px]`}
+                                                                   htmlFor={index.toString()}>{price.rom}GB</Label>
+                                                        </div>
+                                                        <h1 className={`self-center`}>
+                                                            {product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ'}
+                                                        </h1>
                                                     </div>
-                                                    <h1 className={`self-center`}>
-                                                        {price?.current_price.toLocaleString('vi-VN') + 'đ'}
-                                                    </h1>
+                                                ))
+                                            }
+                                        </RadioGroup>
+                                    </div>
+                                    {/*color*/}
+                                    <div
+                                        className={`flex flex-wrap gap-x-1 pt-3 `}>
+                                        {
+                                            product.color.map((color, index) => (
+                                                <div key={index} className={`flex flex-col`}>
+                                                    <img className={`aspect-square w-[50px]`} src={color.link}
+                                                         alt={index.toString()}/>
+                                                    <h3 className={`text-[15px] self-center`}>
+                                                        {color.color}
+                                                    </h3>
                                                 </div>
                                             ))
                                         }
-                                    </RadioGroup>
-                                </div>
-                                {/*color*/}
-                                <div
-                                    className={`flex flex-wrap gap-x-1 pt-3 `}>
-                                    {
-                                        samsung_S23.color.map((color, index) => (
-                                            <div key={index} className={`flex flex-col`}>
-                                                <img className={`aspect-square w-[50px]`} src={color.link}
-                                                     alt={index.toString()}/>
-                                                <h3 className={`text-[15px] self-center`}>
-                                                    {color.color}
-                                                </h3>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                                <div className={`rounded bg-white drop-shadow p-3 my-3`}>
-                                    <h1 className={`text-black font-[500] border-b`}>
-                                        Device info
-                                    </h1>
-                                    <div className={`flex pt-3 `}>
-                                        <TableDemo feature={samsung_S23.features}/>
+                                    </div>
+                                    <div className={`rounded bg-white drop-shadow p-3 my-3`}>
+                                        <h1 className={`text-black font-[500] border-b`}>
+                                            Device info
+                                        </h1>
+                                        <div className={`flex pt-3 `}>
+                                            <TableDemo feature={product.features}/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <hr className={`w-full border`}/>
-                    {/*device description*/}
-                    <div className={`pt-4 flex flex-col`}>
-                        <h1 className={`self-center font-bold py-3`}>Detailed Review of the {samsung_S23.name}</h1>
-                        <h2 className={`font-medium pb-4 text-justify`}>{samsung_S23.description.title}</h2>
-                        <p className={`text-justify`}>{samsung_S23.description.content}</p>
+                        <hr className={`w-full border`}/>
+                        {/*device description*/}
+                        <div className={`pt-4 flex flex-col`}>
+                            <h1 className={`self-center font-bold py-3`}>Detailed Review of the {product.name}</h1>
+                            <h2 className={`font-medium pb-4 text-justify`}>{product.description.title}</h2>
+                            <p className={`text-justify`}>{product.description.content}</p>
+                        </div>
                     </div>
                 </div>
+                {/*side ads*/}
+                <SideBarADs/>
             </div>
-            {/*side ads*/}
-            <SideBarADs/>
-        </div>
+        )
     );
 };
 
@@ -237,7 +252,8 @@ export default ProductPage;
 const SideBarADs = () => {
     return (
         <div className={`col-span-2 w-full block static overflow-y-visible mb-4`}>
-            <div className={`mx-4 rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
+            <div
+                className={`mx-4 rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
                 <TrendingCard/>
                 <TrendingCard/>
                 <TrendingCard/>
@@ -294,10 +310,11 @@ const CarouselDApiDemo: React.FC<CarouselProps> = ({links}) => {
 }
 
 type TableProps = {
-    feature: FeatureProps
+    feature: Feature
 }
 const TableDemo: React.FC<TableProps> = ({feature}) => {
-
+    const date = feature.madeTime
+    feature.madeTime= new Date(date)
     const {ram, rom} = useCurrentDeviceMem()
     return (
         <Table>
@@ -310,14 +327,14 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 <TableRow>
                     {/*rear camera*/}
                     <TableCell className="font-medium border-r">Rear camera</TableCell>
-                    <TableCell>{feature.rear_camera.map(value => (
+                    <TableCell>{feature.rearCamera.map(value => (
                         `${value}MP`
                     )).join('+')}</TableCell>
                 </TableRow>
                 <TableRow>
                     {/*front camera*/}
                     <TableCell className="font-medium border-r">Front camera</TableCell>
-                    <TableCell>{feature.front_camera.map(value => (
+                    <TableCell>{feature.frontCamera.map(value => (
                         `${value}MP`
                     )).join('+')}</TableCell>
                 </TableRow>
@@ -344,23 +361,24 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 <TableRow>
                     {/*OS*/}
                     <TableCell className="font-medium border-r">OS</TableCell>
-                    <TableCell>{feature.OS}</TableCell>
+                    <TableCell>{feature.os}</TableCell>
                 </TableRow>
                 <TableRow>
                     {/*Time*/}
                     <TableCell className="font-medium border-r">Time</TableCell>
-                    <TableCell>{feature.made_time.getFullYear()}/{feature.made_time.getMonth()}</TableCell>
+                    <TableCell>T{feature.madeTime.getMonth()}/{feature.madeTime.getFullYear()}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>
     )
 }
 
-const TrendingCard=()=>{
-    return(
-        <div className={`flex flex-col gap-y-1 round bg-default_background w-full p-2 hover:scale-105 transform duration-300`}>
+const TrendingCard = () => {
+    return (
+        <div
+            className={`flex flex-col gap-y-1 round bg-default_background w-full p-2 hover:scale-105 transform duration-300`}>
             <img className={`aspect-[9/10]`}
-                 src={"https://i.pinimg.com/564x/b4/88/ed/b488ed2aebddbaa17cc2192153b9ebb9.jpg"} alt={"image"} />
+                 src={"https://i.pinimg.com/564x/b4/88/ed/b488ed2aebddbaa17cc2192153b9ebb9.jpg"} alt={"image"}/>
             <p>Xiaomi 14</p>
             <p className={`text-default_red font-medium`}>14.000.000d</p>
         </div>
