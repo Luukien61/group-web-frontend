@@ -57,10 +57,6 @@ const Header = () => {
     //     const response = await searchProdutsByName(event.target.value);
     //     setProducts(response)
     // }
-    useEffect(() => {
-        console.log(products)
-    }, [products]);
-
     return (
         <>
             <header className="sticky top-0 z-40 flex-none w-full mx-auto bg-white border-b border-gray-200">

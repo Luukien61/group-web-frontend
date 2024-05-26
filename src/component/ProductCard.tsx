@@ -11,9 +11,10 @@ type ProductCardProps = {
     product: Product;
 };
 const ProductCard: React.FC<ProductCardProps> = ({product}) => {
-    const location = useLocation().pathname;
+    let location = useLocation().pathname.slice(1);
+    location =location.split("/")[0]
     return (
-        <a href={`${location}/${product.id}`}>
+        <a href={`/${location}/${product.id}`}>
             <div
                 className="rounded bg-gray-100 h-fit flex flex-col gap-y-1 py-1 px-2 group cursor-pointer max-w-[250px] ">
                 <img
@@ -27,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
                         {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}
                     </p>
                 </div>
-                <div className="bg-default_gray rounded pl-1 text-[12px] text-gray-800 flex flex-wrap">
+                <div className="bg-[#FFEFEF] rounded pl-1 text-[12px] text-gray-800 flex flex-wrap">
                     <div
                         className="w-1/2 gap-2 flex items-center">
                         <IoHardwareChipOutline/>

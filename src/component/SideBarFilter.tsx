@@ -1,15 +1,19 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
 import {useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
 import {laptopPrice, MenuLink, phonePrice} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
+import {useLocation, useNavigate} from "react-router-dom";
 
 
 const SideBarFilter = () => {
         const {categoriesItem} = useCategoryItem()
         const {pathname} = useLocationStore()
+        const search = useLocation().search
+        const navigate = useNavigate()
+        const [producerChecked, setProducerChecked] = useState<string[]>([])
         const [checkAllProducer, setCheckAllProducer] = useState<boolean>(true)
         const [producerSort, setProducerSort] = useState<string[]>([]);
         const [producers, setProducers] = useState<string[]>([]);
@@ -20,21 +24,25 @@ const SideBarFilter = () => {
                 const category = categoriesItem.find(value =>
                     value.name.toLowerCase() === pathname.toLowerCase())
                 const producer = category?.producers.map(value => value.name)
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 setProducers(producer)
             }
             getAllProducer()
         }, [pathname]);
-        let priceItems : MenuLink[]
-        switch (pathname) {
-            case "phone" : {
-                priceItems = phonePrice
-                break
+        const priceItemsRef = useRef<MenuLink[]>([]);
+        useEffect(() => {
+            switch (pathname) {
+                case "phone" : {
+                    priceItemsRef.current = phonePrice;
+                    break;
+                }
+                case "laptop" : {
+                    priceItemsRef.current = laptopPrice;
+                    break;
+                }
             }
-            case "laptop" : {
-                priceItems = laptopPrice
-                break
-            }
-        }
+        }, [pathname]);
         const handleItemCheck = (checkedState: CheckedState, value: string) => {
             if (checkedState) {
                 if (value == "all") {
@@ -52,18 +60,46 @@ const SideBarFilter = () => {
                 }
             }
         }
-        const handlePriceFilter = ( index: string) => {
-            if(index==="all"){
+        const handlePriceFilter = (index: string) => {
+            if (index === "all") {
                 setPriceSort([])
-            }else {
-                const price= priceItems[parseInt(index)].key
+            } else {
+                const price = priceItemsRef.current[parseInt(index)].key
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 setPriceSort(price)
             }
         }
         useEffect(() => {
             setProductFilter(producerSort)
             setPriceFilter(priceSort)
+            const params = handleParams()
+            navigate(`${params}`)
         }, [producerSort, priceSort]);
+        const handleParams = () => {
+            const param: string[] = []
+            if (producerSort.length > 0) {
+                const producerParam = `producer=${producerSort.join(',')}`
+                param.push(producerParam)
+            }
+            if (priceSort.length > 0) {
+                const minPrice = `minPrice=${priceSort[0]}`
+                param.push(minPrice)
+                if (priceSort.length > 1) {
+                    const maxPrice = `maxPrice=${priceSort[1]}`
+                    param.push(maxPrice)
+                }
+            }
+            return `?${param.join("&")}`
+        }
+        useEffect(() => {
+            const params = search.slice(1).split("&")
+            const producers = params.filter((value) => value.includes("producer"))
+            if (producers.length > 0) {
+
+            }
+            console.log(params)
+        }, [search]);
         return (
             <aside className={`lg:static lg:h-auto lg:overflow-y-visible lg:pt-0 lg:block col-span-2`}>
                 <div
@@ -124,9 +160,11 @@ const SideBarFilter = () => {
                                     <Label className={`px-2 text-[14px] font-normal`}>All</Label>
                                 </div>
                                 {
-                                    priceItems?.map((value, index1) => (
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem className={`text-default_red rounded-sm`} value={index1.toString()} />
+
+                                    priceItemsRef.current.map((value, index1) => (
+                                        <div key={index1} className="flex items-center space-x-2">
+                                            <RadioGroupItem className={`text-default_red rounded-sm`}
+                                                            value={index1.toString()}/>
                                             <Label className={`px-2 font-normal text-[16px]`}>{value.name}</Label>
                                         </div>
                                     ))

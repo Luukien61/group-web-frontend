@@ -24,8 +24,9 @@ const HomePage = () => {
     return (
         <main className="flex-auto bg-opacity-50 py-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">
             <CarouselBanner imgSource={imageSource}/>
-            <CategoryCard name={"Smartphone"} url={'/phone'} category={"phone"} pageable={false} initialSize={10}/>
-            <CategoryCard name={"Laptop"} url={"/laptop"} category={"laptop"} pageable={false} initialSize={10}/>
+            <CategoryCard name={"Smartphone"} url={'/phone/filter'} category={"phone"} pageable={false}
+                          initialSize={10}/>
+            <CategoryCard name={"Laptop"} url={"/laptop/filter"} category={"laptop"} pageable={false} initialSize={10}/>
         </main>
     );
 };

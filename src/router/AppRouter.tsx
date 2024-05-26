@@ -31,7 +31,7 @@ const AppRouter = () => {
                 <Route index element={<HomePage/>}/>
                 {
                     category.map((value, index) => (
-                        <Route key={index} path={value} element={<ProductCategoryPage/>}/>
+                        <Route key={index} path={`${value}/filter`} element={<ProductCategoryPage/>}/>
                     ))
                 }
                 {

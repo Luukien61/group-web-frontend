@@ -27,6 +27,7 @@ module.exports = {
         secondary_gray: "#EDEEEF",
         default_green: "#099309",
         default_blue: "#316FF6",
+        secondary_blue: "#A0DEFF",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

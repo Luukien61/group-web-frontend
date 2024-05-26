@@ -38,7 +38,7 @@ const NavMenu = () => {
                 category.map((category, index) => (
                     <div key={index}
                          className=" flex flex-col gap-y-1 group cursor-pointer ">
-                        <a href={category.name.toLowerCase()}>
+                        <a href={`/${category.name.toLowerCase()}/filter`}>
                             <h1 className="flex gap-1 items-center text-[16px] font-semibold text-white group-hover:text-default_green">
                                 {category.name}
                                 <RiArrowDropDownLine size={24}

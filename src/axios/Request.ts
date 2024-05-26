@@ -32,6 +32,7 @@ export const fetchCarouselImages = async (): Promise<Banner[]> => {
 }
 
 export const fetchProductsCategory = async ({category, producer, price, page, size}: Props) => {
+    if(!category) return
     try {
         const params: ParamsProps = {category: category, page: page ?? 0, size: size ?? 20};
         if (producer) {

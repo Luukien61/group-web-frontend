@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ProductCard from "./ProductCard.tsx";
-import {Link} from 'react-router-dom';
 import {fetchProductsCategory} from "@/axios/Request.ts";
 import {useFilter} from "@/zustand/AppState.ts";
 
