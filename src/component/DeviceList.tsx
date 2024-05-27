@@ -8,7 +8,11 @@ const DeviceList = () => {
     const path =category.split("/")[0]
     return (
         <div className={`col-span-10 pl-4 w-full`}>
-            <CategoryCard name={path} category={path} initialSize={12} pageable={true} />
+            {
+                path && (
+                    <CategoryCard name={path} category={path} initialSize={12} pageable={true} />
+                )
+            }
         </div>
     );
 };

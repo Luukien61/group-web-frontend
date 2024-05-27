@@ -77,7 +77,7 @@ const Header = () => {
                             </a>
                         </div>
                         <div className='relative flex flex-col'>
-                            <Input onChange={handleChange} placeholder={'Search productions here...'}/>
+                            <Input className={`border-t border-b border-l rounded-l`} onChange={handleChange} placeholder={'Search productions here...'}/>
                             {
                                 products && (
                                     <div className={`relative mt-1 z-[100]`}>

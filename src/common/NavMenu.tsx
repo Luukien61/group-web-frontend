@@ -14,7 +14,7 @@ export type Category = {
     "name": string,
     "producers": Producer[]
 }
-type ProducerFilterProps={
+type ProducerFilterProps = {
     producer: string,
     category: string
 }
@@ -39,12 +39,10 @@ const NavMenu = () => {
         }
         fetchCategory()
     }, []);
-    const handleProducerFilter=({producer,category}:ProducerFilterProps)=>{
-        producer=producer.toLowerCase();
+    const handleProducerFilter = ({producer, category}: ProducerFilterProps) => {
+        producer = producer.toLowerCase();
         const listProducer = [producer]
         setProductFilter(listProducer)
-        const path= `/${category.toLowerCase()}/filter`
-        navigate(path)
     }
     return (
         <ul className="bg-secondary flex gap-x-5 px-7 h-10 items-center justify-start drop-shadow">
@@ -70,9 +68,10 @@ const NavMenu = () => {
                                         </h1>
                                         {
                                             category.producers.map((producer, sublinkIndex) => (
-                                                <a key={sublinkIndex}
-                                                      href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
-                                                      className="cursor-pointer hover:text-default_green">
+                                                <a onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
+                                                   key={sublinkIndex}
+                                                   href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
+                                                   className="cursor-pointer hover:text-default_green">
                                                     {producer.name}
                                                 </a>
                                                 // <div

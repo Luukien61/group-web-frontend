@@ -10,7 +10,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const SideBarFilter = () => {
         const {categoriesItem} = useCategoryItem()
-        const {pathname} = useLocationStore()
+        const path = useLocation().pathname.slice(1).split("/")[0]
         const search = useLocation().search
         const navigate = useNavigate()
         const [producerChecked, setProducerChecked] = useState<string[]>([])
@@ -20,7 +20,7 @@ const SideBarFilter = () => {
         const [priceSort, setPriceSort] = useState<number[]>([]);
         const {producerFilter, priceFilter, setProductFilter, setPriceFilter} = useFilter()
         useEffect(() => {
-            switch (pathname) {
+            switch (path) {
                 case "phone" : {
                     priceItemsRef.current = phonePrice;
                     break;
@@ -32,14 +32,14 @@ const SideBarFilter = () => {
             }
             const getAllProducer = () => {
                 const category = categoriesItem.find(value =>
-                    value.name.toLowerCase() === pathname.toLowerCase())
+                    value.name.toLowerCase() === path.toLowerCase())
                 const producer = category?.producers.map(value => value.name)
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-expect-error
                 setProducers(producer)
             }
             getAllProducer()
-        }, [pathname]);
+        }, [path]);
         const priceItemsRef = useRef<MenuLink[]>([]);
         const handleItemCheck = (checkedState: CheckedState, value: string) => {
             if (checkedState) {
@@ -70,7 +70,7 @@ const SideBarFilter = () => {
             }
         }
         useEffect(() => {
-            const newProductFilter = [...producerSort,...producerFilter]
+            const newProductFilter = [...producerSort, ...producerFilter]
             setProductFilter(newProductFilter)
             setPriceFilter(priceSort)
             const params = handleParams()
@@ -100,13 +100,11 @@ const SideBarFilter = () => {
                 const equalIndex = producerList.indexOf("=")
                 const producers = producerList.slice(equalIndex + 1).split(",")
                 setProducerChecked(producers)
+                setProductFilter(producers)
+                setProducerSort(producers)
                 setCheckAllProducer(false)
             }
         }, [search]);
-        useEffect(() => {
-            setProducerSort(producerFilter)
-            setPriceSort(priceFilter)
-        }, []);
         return (
             <aside className={`lg:static lg:h-auto lg:overflow-y-visible lg:pt-0 lg:block col-span-2`}>
                 <div
