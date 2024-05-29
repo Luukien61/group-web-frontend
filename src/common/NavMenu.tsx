@@ -22,10 +22,9 @@ type ProducerFilterProps = {
 const NavMenu = () => {
     const [category, setCategory] = useState<Category[]>([])
     const {setCategories} = useCategory()
-    const {setPathname} = useLocationStore()
     const {setCategoriesItem} = useCategoryItem()
-    const {setProductFilter, setPriceFilter} = useFilter()
-    const navigate = useNavigate()
+    const {setProductFilter} = useFilter()
+    useNavigate();
     useEffect(() => {
         const fetchCategory = async () => {
             const category: Category[] = await linksCategory();
@@ -39,7 +38,7 @@ const NavMenu = () => {
         }
         fetchCategory()
     }, []);
-    const handleProducerFilter = ({producer, category}: ProducerFilterProps) => {
+    const handleProducerFilter = ({producer}: ProducerFilterProps) => {
         producer = producer.toLowerCase();
         const listProducer = [producer]
         setProductFilter(listProducer)
@@ -67,7 +66,9 @@ const NavMenu = () => {
                                             Producer
                                         </h1>
                                         {
-                                            category.producers.map((producer, sublinkIndex) => (
+                                            category.producers
+                                                .sort((a, b) => a.name.localeCompare(b.name))
+                                                .map((producer, sublinkIndex) => (
                                                 <a onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
                                                    key={sublinkIndex}
                                                    href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}

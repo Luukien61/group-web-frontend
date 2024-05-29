@@ -8,3 +8,6 @@ export const categoryPath: string = "/category"
 export const productPath : string = "product"
 export const searchPath: string = `${productPath}/searching`
 export const findById : string= `${productPath}/product-id`
+
+export const mailServerBaseUrl : string = "http://localhost:8087/"
+export const mailPath : string = "/mail/code"

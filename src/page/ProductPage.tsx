@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Card, CardContent} from "@/shadcn/ui/card"
 import {Label} from "@/shadcn/ui/label"
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group"
@@ -13,9 +13,9 @@ import {
 import {Table, TableBody, TableCell, TableRow,} from "@/shadcn/ui/table"
 import {useCurrentDeviceMem} from "@/zustand/AppState.ts";
 import {useLocation} from "react-router-dom";
-import {getProductById} from "@/axios/Request.ts";
+import {getProductById, sendVerificationMail} from "@/axios/Request.ts";
 import {Feature, Product} from "@/component/CategoryCard.tsx";
-import Input, {DefaultInput} from "@/component/Input.tsx";
+import {DefaultInput} from "@/component/Input.tsx";
 
 type Price = {
     ram: number,
@@ -26,18 +26,31 @@ type Price = {
 type OrderProp = {
     title: string,
     value: string,
-    type: "text" | "number",
+    type: "text" | "number" | "email",
     action: (event: React.ChangeEvent<HTMLInputElement>) => void
 
+}
+
+const sendEmailCode = async (email: string, code: number) => {
+    const res = await sendVerificationMail(email, code)
+    if (!res || res.status !== 200) {
+        throw Error("An error occurred while sending")
+    }
 }
 
 const ProductPage = () => {
     const {ram, rom, setRam, setRom} = useCurrentDeviceMem()
     const [isDoneClicked, setIsDoneClicked] = useState<boolean>(false)
+    const [timer, setTimer] = useState<number>(60)
+    const [expired, setExpired] = useState<boolean>(false)
     const [fullName, setFullName] = useState<string>("")
     const [phone, setPhone] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
     const [address, setAddress] = useState<string>("")
+    const [userCode, setUserCode] = useState<string>("")
     const [openModal, setOpenModal] = useState<boolean>(false)
+    const [isSent, setIsSent] = useState<boolean>(false)
+    const [verificationCode, setVerificationCode] = useState<string>('')
     const deviceId = useLocation().pathname.slice(1).split("/")[1]
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
     const [product, setProduct] = useState<Product>()
@@ -59,6 +72,12 @@ const ProductPage = () => {
             type: "text",
             action: (event) => setPhone(event.target.value),
             value: phone
+        },
+        {
+            title: "Email",
+            type: "email",
+            action: (event) => setEmail(event.target.value),
+            value: email
         },
         {
             title: "Address",
@@ -86,12 +105,49 @@ const ProductPage = () => {
         event.stopPropagation()
     }, [])
 
+    const createVerificationCode = useCallback((): number => {
+        return Math.floor(Math.random() * 900000 + 100000)
+    }, [])
+    // eslint-disable-next-line no-undef
+    const intervalTimer = useRef<NodeJS.Timeout | null>(null);
     const handlePurchaseDoneClick = () => {
         setIsDoneClicked(true)
-        if (fullName !== "" && phone !== "" && address !== "") {
-            setIsDone(true)
+        if (fullName !== "" && phone !== "" && address !== "" && email !== "") {
+            const code = createVerificationCode()
+            sendEmailCode(email, code)
+                .then(() => {
+                    setIsSent(true)
+                    const codeText = code.toString().trim()
+                    setVerificationCode(codeText)
+                    intervalTimer.current = setInterval(() => {
+                        setTimer(prev => prev - 1)
+                    }, 1000)
+                })
+                .catch(error => alert(error))
         }
     }
+
+    const handleVerifyCode = useCallback(() => {
+        if (userCode.length === 6 && !expired) {
+            if (userCode === verificationCode && !expired) {
+                setTimeout(()=>setIsDone(true),2000)
+
+            } else {
+                alert("Error")
+            }
+        } else {
+            alert("Error")
+        }
+    }, [verificationCode, userCode]);
+
+    useEffect(() => {
+        if (timer === 0 && intervalTimer.current) {
+            setExpired(true)
+            clearInterval(intervalTimer.current)
+            intervalTimer.current=null
+        }
+    }, [timer]);
+
 
     useEffect(() => {
         if (openModal) {
@@ -101,8 +157,13 @@ const ProductPage = () => {
             setAddress("")
             setPhone("")
             setFullName("")
+            setEmail("")
             setIsDone(false)
             setIsDoneClicked(false)
+            setVerificationCode("")
+            setUserCode("")
+            setIsSent(false)
+            setTimer(60)
         }
     }, [openModal]);
 
@@ -189,7 +250,7 @@ const ProductPage = () => {
                                             <div
                                                 onClick={handleOpenModal}
                                                 className={`w-full h-[64px] bg-default_blue rounded flex justify-center items-center hover:bg-blue_other cursor-pointer`}>
-                                                <p className={`text-white font-medium`}>Purchase</p>
+                                                <p className={`text-white font-medium`}>Order</p>
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +272,7 @@ const ProductPage = () => {
                     <div
                         onClick={handleOpenModal}
                         className={`fixed cursor-pointer hover:scale-110 duration-300 rounded bg-default_red w-fit h-fit p-2 right-5 bottom-5`}>
-                        <p className={`text-white  font-medium`}>Purchase</p>
+                        <p className={`text-white  font-medium`}>Order</p>
                     </div>
                     {/*model*/}
                 </div>
@@ -243,50 +304,75 @@ const ProductPage = () => {
                             </div>
                             {/*main content*/}
                             <div className="p-4 md:p-5 space-y-4 flex flex-col">
-                                {
-                                    !isDone ?
-                                        orderInfor.map((value, index) => (
-                                            <div key={index}
-                                                 className={`flex flex-col px-2`}>
-                                                <div className={`w-full flex items-center space-x-4 justify-between`}>
-                                                    <div className={`w-1/4`}>
-                                                        <div className={`bg-default_background w-fit p-1`}>
-                                                            <p>{value.title}</p>
-                                                        </div>
-                                                    </div>
-                                                    <DefaultInput
-                                                        className={`${isDoneClicked && !value.value ? 'border rounded !border-default_red' : ''}`}
-                                                        required={true}
-                                                        type={value.type}
-                                                        value={value.value}
-                                                        onChange={value.action}
-                                                    />
+                                {!isDone && !isSent && orderInfor.map((value, index) => (
+                                    <div key={index}
+                                         className={`flex flex-col px-2`}>
+                                        <div className={`w-full flex items-center space-x-4 justify-between`}>
+                                            <div className={`w-1/4`}>
+                                                <div className={`bg-default_background w-fit p-1`}>
+                                                    <p>{value.title}</p>
                                                 </div>
-                                                {
-                                                    isDoneClicked && !value.value &&
-                                                    <p className={`w-fit self-end text-[10px] text-default_red font-normal`}>
-                                                        This field is required
-                                                    </p>
-                                                }
                                             </div>
-
-                                        ))
-                                        : <div className={`flex flex-col items-center justify-center`}>
-                                            <p>Order successfully!</p>
-                                            <p>Your order is being processed.</p>
+                                            <DefaultInput
+                                                className={`${isDoneClicked && !value.value ? 'border rounded !border-default_red' : ''}`}
+                                                required={true}
+                                                type={value.type}
+                                                value={value.value}
+                                                onChange={value.action}
+                                            />
                                         </div>
+                                        {
+                                            isDoneClicked && !value.value &&
+                                            <p className={`w-fit self-end text-[10px] text-default_red font-normal`}>
+                                                This field is required
+                                            </p>
+                                        }
+                                    </div>
+
+                                ))}
+                                {!isDone && isSent &&
+                                    <div className={`flex flex-col items-center justify-center *:w-full`}>
+                                        <p className={`font-semibold`}>Check your email then enter the verification
+                                            code</p>
+                                        <input
+                                            onChange={(event) => setUserCode(event.target.value)}
+                                            placeholder={"Code"}
+                                            required={true}
+                                            value={userCode}
+                                            spellCheck={`false`}
+                                            type="text"
+                                            maxLength={6}
+                                            className={`border border-black rounded py-1 px-2 appearance-none`}
+                                        />
+                                        <p className={`mt-1 text-default_red `}>Valid timer: {timer}</p>
+                                    </div>
+                                }
+                                {isDone &&
+                                    <div className={`flex flex-col items-center justify-center`}>
+                                        <p>Order successfully!</p>
+                                        <p>Your order is being processed.</p>
+                                    </div>
                                 }
                             </div>
                             {/*bottom*/}
                             <div
                                 className="flex items-center p-5 border-t border-gray-200 rounded-b justify-end">
                                 {
-                                    !isDone &&
+                                    !isDone && !isSent &&
                                     <button
                                         onClick={handlePurchaseDoneClick}
                                         type="button"
                                         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                        Done
+                                        Order
+                                    </button>
+                                }
+                                {
+                                    !isDone && isSent &&
+                                    <button
+                                        onClick={handleVerifyCode}
+                                        type="button"
+                                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        Verify
                                     </button>
                                 }
                                 <button
@@ -373,7 +459,6 @@ type TableProps = {
 const TableDemo: React.FC<TableProps> = ({feature}) => {
     const date = feature.madeTime
     feature.madeTime = new Date(date)
-    console.log("Feature=", feature)
     const {ram, rom} = useCurrentDeviceMem()
     return (
         <Table>
@@ -444,59 +529,7 @@ const TrendingCard = () => {
     )
 }
 
-const ModelPurchase = () => {
-    return (
-        <div id="default-modal" aria-hidden="true"
-             className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div className="relative p-4 w-full max-w-2xl max-h-full">
 
-                <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-
-                    <div
-                        className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                            Terms of Service
-                        </h3>
-                        <button type="button"
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                data-modal-hide="default-modal">
-                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 14 14">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                      strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                            </svg>
-                            <span className="sr-only">Close modal</span>
-                        </button>
-                    </div>
-                    <div className="p-4 md:p-5 space-y-4">
-                        <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            With less than a month to go before the European Union enacts new consumer privacy laws for
-                            its citizens, companies around the world are updating their terms of service agreements to
-                            comply.
-                        </p>
-                        <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May
-                            25 and is meant to ensure a common set of data rights in the European Union. It requires
-                            organizations to notify users as soon as possible of high-risk data breaches that could
-                            personally affect them.
-                        </p>
-                    </div>
-
-                    <div
-                        className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                        <button data-modal-hide="default-modal" type="button"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I
-                            accept
-                        </button>
-                        <button data-modal-hide="default-modal" type="button"
-                                className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 
 

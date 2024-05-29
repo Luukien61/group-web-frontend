@@ -1,7 +1,6 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
-import {instance} from "@/axios/Config.ts";
-import {categoryPath, findById, productPath, searchPath} from "@/url/Urls.ts";
-import {Product} from "@/component/CategoryCard.tsx";
+import {instance, mailInstance} from "@/axios/Config.ts";
+import {categoryPath, findById, mailPath, productPath, searchPath} from "@/url/Urls.ts";
 
 type Props = {
     category: string,
@@ -84,5 +83,25 @@ export const getProductById = async (id: string) => {
         return response.data
     } catch (error) {
         console.error("Error fetching products:", error);
+    }
+}
+type MailVerify = {
+    "to": string,
+    "subject": string,
+    "body": number
+}
+
+function createMailVerification(to: string, body: number, subject: string = "Order verification"): MailVerify {
+    return {to: to, subject: subject, body: body};
+}
+
+export const sendVerificationMail = async (email: string, code: number) => {
+    const data: MailVerify = createMailVerification(email, code)
+    try {
+        const response = await mailInstance.post(mailPath, data)
+            .then(response => response)
+        return response
+    }catch(error) {
+        console.log("Error sending email:", error);
     }
 }

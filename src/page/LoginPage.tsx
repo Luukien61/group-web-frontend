@@ -16,7 +16,7 @@ const LoginPage = () => {
                  backgroundRepeat: 'no-repeat',
              }}
         >
-            <div className={`w-1/3 gap-y-2 rounded bg-white py-5 my-12`}>
+            <div className={`w-1/3 gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
                 <div className={`w-full p-4 flex justify-center my-auto`}>
                     <img
                         className={`object-cover`}
@@ -30,7 +30,7 @@ const LoginPage = () => {
                 <div className={`flex justify-center`}>
                     <button
                         onClick={handleLogIn}
-                        className={`rounded bg-default_blue text-white py-2 px-3 hover:scale-110 duration-300`}
+                        className={`rounded bg-default_blue  text-white py-2 px-3 hover:bg-blue_other hover:font-semibold duration-300`}
                     >
                         Sign In
                     </button>
@@ -58,7 +58,7 @@ const InputFormGoogle: React.FC<InputProps> = ({type, label, action}) => {
                 spellCheck="false"
                 type={type}
                 name="floating_email"
-                className="block py-2.5 px-3 w-full autofill:bg-white border rounded border-default_blue_button text-sm text-gray-900 bg-transparent appearance-none dark:text-white   dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                className="block py-2.5 px-3 w-full autofill:bg-white border rounded border-default_green text-sm text-gray-900 bg-transparent appearance-none dark:text-white   dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder=" "
                 required
             />
