@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {price} from "../description/MenuLink.tsx";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {Link, useNavigate} from "react-router-dom";
-import {useCategory, useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
-import {linksCategory} from "@/axios/Request.ts";
+import {useCategory, useCategoryItem, useFilter} from "@/zustand/AppState.ts";
+import {getCategories} from "@/axios/Request.ts";
 
 type Producer = {
     id: number,
@@ -27,7 +27,7 @@ const NavMenu = () => {
     useNavigate();
     useEffect(() => {
         const fetchCategory = async () => {
-            const category: Category[] = await linksCategory();
+            const category: Category[] = await getCategories();
             setCategory(category)
             setCategoriesItem(category)
             const categoryLower: string[] = []

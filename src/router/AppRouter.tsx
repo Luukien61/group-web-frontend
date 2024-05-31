@@ -8,7 +8,7 @@ import AdminHome from "@/page/admin/AdminHome.tsx";
 import {useEffect, useState} from "react";
 import {Category} from "@/common/NavMenu.tsx";
 import {useCategory} from "@/zustand/AppState.ts";
-import {linksCategory} from "@/axios/Request.ts";
+import {getCategories} from "@/axios/Request.ts";
 
 
 const AppRouter = () => {
@@ -16,7 +16,7 @@ const AppRouter = () => {
     const [category, setCategory] = useState<string[]>([])
     useEffect(() => {
         const fetchCategory = async () => {
-            const category: Category[] = await linksCategory();
+            const category: Category[] = await getCategories();
             const categoryLower = category.map(item => item.name.toLowerCase());
             setCategories(categoryLower)
             setCategory(categoryLower)

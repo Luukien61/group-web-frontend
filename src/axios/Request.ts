@@ -17,7 +17,7 @@ type ParamsProps = {
     page?: number,
     size: number
 }
-export const linksCategory = async () => {
+export const getCategories = async () => {
     const result = await instance.get(categoryPath)
     return result.data
 }
@@ -66,7 +66,7 @@ export const fetchProductsCategory = async ({category, producer, price, page, si
     }
 }
 
-export const searchProdutsByName = async (name: string) => {
+export const searchProductsByName = async (name: string) => {
     try {
         const respone = await instance.get(`${searchPath}/${name}`)
             .then(response => response)
@@ -98,9 +98,8 @@ function createMailVerification(to: string, body: number, subject: string = "Ord
 export const sendVerificationMail = async (email: string, code: number) => {
     const data: MailVerify = createMailVerification(email, code)
     try {
-        const response = await mailInstance.post(mailPath, data)
+        return await mailInstance.post(mailPath, data)
             .then(response => response)
-        return response
     }catch(error) {
         console.log("Error sending email:", error);
     }

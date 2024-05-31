@@ -4,7 +4,7 @@ import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from "reac
 import Input from "../component/Input.tsx";
 import {FiShoppingCart} from "react-icons/fi";
 import NavMenu from "./NavMenu.tsx";
-import {searchProdutsByName} from "@/axios/Request.ts";
+import {searchProductsByName} from "@/axios/Request.ts";
 import {Product} from "@/component/CategoryCard.tsx";
 import {debounce} from "lodash";
 import ProductSearch from "@/component/ProductSearch.tsx";
@@ -47,7 +47,7 @@ const Header = () => {
     }, []);
     const debouncedHandleSearching = useRef(debounce(
         async (value: string) => {
-            const response = await searchProdutsByName(value)
+            const response = await searchProductsByName(value)
             setProducts(response)
         }, 500)).current;
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
