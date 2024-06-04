@@ -28,6 +28,8 @@ module.exports = {
         default_gray: "#99a2aa",
         secondary_gray: "#EDEEEF",
         default_green: "#099309",
+        outer_green: "#F5DEE0",
+        inner_green: "#DC3545",
         default_blue: "#316FF6",
         secondary_blue: "#A0DEFF",
         blue_other: "#004cff",

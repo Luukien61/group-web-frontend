@@ -1,6 +1,6 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {instance, mailInstance} from "@/axios/Config.ts";
-import {categoryPath, findById, mailPath, productPath, searchPath} from "@/url/Urls.ts";
+import {categoryPath, findById, mailPath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
 
 type Props = {
     category: string,
@@ -102,5 +102,25 @@ export const sendVerificationMail = async (email: string, code: number) => {
             .then(response => response)
     }catch(error) {
         console.log("Error sending email:", error);
+    }
+}
+
+export const getConnection=async ()=>{
+    try{
+        return await instance.get(`${productPath}/home`)
+            .then(response=>response.data)
+    }
+    catch (error){
+        console.log("Error getting connection:", error);
+        return "Error getting connection"
+    }
+}
+
+export const getProductQuntityByCategory=async (category: string)=>{
+    try{
+        return await instance.get(`${quantityPath}/${category}`)
+            .then(response => response.data)
+    }catch (error){
+        console.log(error)
     }
 }

@@ -1,18 +1,22 @@
-import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {IoPersonCircleOutline} from "react-icons/io5";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {getCategories} from "@/axios/Request.ts";
 import {Category} from "@/common/NavMenu.tsx";
+import {useCategoryItem} from "@/zustand/AppState.ts";
 
 const AdminSideBar = () => {
     const [category, setCategory] = useState<Category[]>([])
+    const {setCategoriesItem} = useCategoryItem()
     const [categoryOpen, setCategoryOpen] = useState<boolean>(false)
     useEffect(() => {
         const fetchCategory = async () => {
             const response: Category[] = await getCategories()
             setCategory(response)
+            setCategoriesItem(response)
         }
         fetchCategory()
+
     }, []);
     const handleCategoryChange = useCallback(() => {
         setCategoryOpen(prev => !prev)

@@ -6,6 +6,7 @@ export const productCategory =["phone", "laptop"]
 export const backEndPage: string = import.meta.env.VITE_BACKEND_URL
 export const categoryPath: string = "/category"
 export const productPath : string = "product"
+export const quantityPath= `${productPath}/quantity`
 export const searchPath: string = `${productPath}/searching`
 export const findById : string= `${productPath}/product-id`
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import CategoryCard, {Product} from "../component/CategoryCard.tsx";
 import CarouselBanner, {Banner} from "@/component/CarouselBanner.tsx";
-import {fetchCarouselImages, fetchProductsCategory} from "@/axios/Request.ts";
+import {fetchCarouselImages, fetchProductsCategory, getConnection} from "@/axios/Request.ts";
 
 
 const HomePage = () => {
@@ -20,6 +20,13 @@ const HomePage = () => {
         }
         fetchImages()
         fetchProductByCategory()
+    }, []);
+    useEffect(() => {
+        const getConnections = async ()=>{
+            const response =await getConnection();
+            console.log(response)
+        }
+        getConnections()
     }, []);
     return (
         <main className="flex-auto bg-opacity-50 py-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">
