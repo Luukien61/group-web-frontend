@@ -1,0 +1,23 @@
+import React from 'react';
+import {Product} from "@/component/CategoryCard.tsx";
+type Props ={
+    product: Product
+}
+const AdminProductCard :React.FC<Props> = ({product}) => {
+    return (
+        <div className={`p-3 cursor-pointer basis-1/4 w-1/4  hover:shadow-2xl duration-300`}>
+            <div className={`rounded flex shadow flex-col gap-y-2 bg-outer_blue w-full p-3 ps-4`}>
+                <p className={`font-semibold truncate`}>{product.name}</p>
+                <p className={`font-semibold text-default_gray`}>Quantity: <span
+                    className={`text-inner_green`}>{product.available}</span></p>
+                <div className={`h-fit w-fit px-2 py-1 bg-outer_red rounded `}>
+                    <p className={`font-semibold text-default_gray`}>Ordering: <span
+                        className={`text-default_red `}>{product.ordering}</span></p>
+                </div>
+
+            </div>
+        </div>
+    );
+};
+
+export default AdminProductCard;

@@ -5,7 +5,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useCategory, useCategoryItem, useFilter} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
 
-type Producer = {
+export type Producer = {
     id: number,
     name: string
 }
@@ -24,7 +24,7 @@ const NavMenu = () => {
     const {setCategories} = useCategory()
     const {setCategoriesItem} = useCategoryItem()
     const {setProductFilter} = useFilter()
-    useNavigate();
+    // useNavigate();
     useEffect(() => {
         const fetchCategory = async () => {
             const category: Category[] = await getCategories();

@@ -9,6 +9,6 @@ export const productPath : string = "product"
 export const quantityPath= `${productPath}/quantity`
 export const searchPath: string = `${productPath}/searching`
 export const findById : string= `${productPath}/product-id`
-
+export const producerBasePath ="/producer"
 export const mailServerBaseUrl : string = "http://localhost:8087/"
 export const mailPath : string = "/mail/code"

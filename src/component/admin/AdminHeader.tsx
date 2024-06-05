@@ -11,8 +11,10 @@ type HeaderItem = {
     title: string,
     icon?: React.ReactNode
 }
+
 const AdminHeader = () => {
     const [products, setProducts] = useState<Product[]>([]);
+
     const debouncedHandleSearching = useRef(debounce(
         async (value: string) => {
             const response = await searchProductsByName(value)

@@ -1,6 +1,6 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {instance, mailInstance} from "@/axios/Config.ts";
-import {categoryPath, findById, mailPath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
+import {categoryPath, findById, mailPath, producerBasePath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
 
 type Props = {
     category: string,
@@ -28,6 +28,15 @@ export const fetchCarouselImages = async (): Promise<Banner[]> => {
     } catch (error) {
         console.log(error)
         return []
+    }
+}
+
+export const getProducersByCategory = async (category: string) => {
+    try{
+        return await instance.get(`${producerBasePath}/${category}`)
+            .then(response => response.data)
+    }catch (error){
+        console.log(error)
     }
 }
 
@@ -116,7 +125,7 @@ export const getConnection=async ()=>{
     }
 }
 
-export const getProductQuntityByCategory=async (category: string)=>{
+export const getProductQuantityByCategory=async (category: string)=>{
     try{
         return await instance.get(`${quantityPath}/${category}`)
             .then(response => response.data)

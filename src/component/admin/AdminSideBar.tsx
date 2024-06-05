@@ -23,7 +23,7 @@ const AdminSideBar = () => {
     }, [])
 
     return (
-        <aside className={`block sticky w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
+        <aside className={`block fixed z-50 w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
             <div className={`overflow-y-auto z-20 max-w-2xs h-[100vh] block sticky top-0 lg:mr-0 p-4`}>
                 <div className={`py-2`}>
                     <IoPersonCircleOutline size={32}/>

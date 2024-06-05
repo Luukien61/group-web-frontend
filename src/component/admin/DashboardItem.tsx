@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Category} from "@/common/NavMenu.tsx";
-import {getProductQuntityByCategory} from "@/axios/Request.ts";
+import {getProductQuantityByCategory} from "@/axios/Request.ts";
 
 type Props = {
     category: Category;
@@ -13,7 +13,7 @@ const DashboardItem : React.FC<Props>= ({category}) => {
     const [productQuantity, setProductQuantity] = useState<number>(0);
     useEffect(() => {
         const getProductQuantity = async ()=>{
-            const productQuantity = await getProductQuntityByCategory(category.name);
+            const productQuantity = await getProductQuantityByCategory(category.name);
             setProductQuantity(productQuantity)
         }
         getProductQuantity();

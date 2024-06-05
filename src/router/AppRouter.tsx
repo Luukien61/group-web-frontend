@@ -9,6 +9,9 @@ import {useEffect, useState} from "react";
 import {Category} from "@/common/NavMenu.tsx";
 import {useCategory} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
+import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
+import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
+import AdminProductPage from "@/page/admin/AdminProductPage.tsx";
 
 
 const AppRouter = () => {
@@ -43,7 +46,20 @@ const AppRouter = () => {
             {/*login*/}
             <Route path={'/login'} element={<LoginPage/>}/>
             {/*admin*/}
-            <Route path={'/admin'} element={<AdminHome/>}/>
+            <Route path={'admin'} element={<AdminHome/>}>
+                {categories.map((value, index) => (
+                    <Route key={index} path={`${value}*`} element={<AdminProductPage/>}/>
+                ))}
+                <Route index element={<AdminMainContent/>}/>
+
+                {
+                    categories.map((value, index) => (
+                        <Route key={index} path={`${value}`} element={<CategoryAdminPage category={value}/>}/>
+                    ))
+                }
+
+
+            </Route>
         </Routes>
     );
 };

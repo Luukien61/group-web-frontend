@@ -40,6 +40,7 @@ const sendEmailCode = async (email: string, code: number) => {
 
 const ProductPage = () => {
     const {ram, rom, setRam, setRom} = useCurrentDeviceMem()
+    const [isRendered, setIsRendered] = useState(false);
     const [isDoneClicked, setIsDoneClicked] = useState<boolean>(false)
     const [timer, setTimer] = useState<number>(60)
     const [expired, setExpired] = useState<boolean>(false)
@@ -92,8 +93,10 @@ const ProductPage = () => {
             const product = await getProductById(deviceId)
             setProduct(product)
         }
-        fetchProduct()
-    }, [deviceId]);
+        if(isRendered){
+            fetchProduct()
+        }
+    }, [deviceId,isRendered]);
 
     const handleOpenModal = useCallback(() => {
         setOpenModal((pre) => !pre)
@@ -104,6 +107,12 @@ const ProductPage = () => {
     const handleModalClicks = useCallback((event: React.MouseEvent) => {
         event.stopPropagation()
     }, [])
+    useEffect(() => {
+        setIsRendered(true);
+        return () => {
+            setIsRendered(false);
+        };
+    }, []);
 
     const createVerificationCode = useCallback((): number => {
         return Math.floor(Math.random() * 900000 + 100000)
