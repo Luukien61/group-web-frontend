@@ -3,24 +3,24 @@ import ProductCard from "./ProductCard.tsx";
 import {fetchProductsCategory} from "@/axios/Request.ts";
 import {useFilter} from "@/zustand/AppState.ts";
 
-type Producer = {
+export type Producer = {
     id: number,
     name: string
 }
-type Category = {
+export type Category = {
     id: number,
     name: string,
     producers: Producer[]
 }
-type Price = {
+export type Price = {
     "id": number,
     "ram": number,
     "rom": number,
     "currentPrice": number,
     "previousPrice": number
 }
-type Color = {
-    id: number,
+export type Color = {
+    id?: number,
     color: string,
     link: string
 }
@@ -35,8 +35,8 @@ export type Feature = {
     memory: Price[],
     madeTime: Date,
 }
-type Description = {
-    id: number,
+export type Description = {
+    id?: number,
     title: string,
     content: string
 }
