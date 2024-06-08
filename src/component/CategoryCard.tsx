@@ -62,7 +62,8 @@ type CategoryProp = {
     category: string,
     page?: number,
     initialSize: number,
-    pageable: boolean
+    pageable: boolean,
+    widthClass: string
 }
 
 const CategoryCard: React.FC<CategoryProp> = ({
@@ -71,7 +72,8 @@ const CategoryCard: React.FC<CategoryProp> = ({
                                                   url,
                                                   page = 0,
                                                   initialSize,
-                                                  pageable
+                                                  pageable,
+                                                  widthClass
                                               }) => {
     const [size, setSize] = useState<number>(initialSize)
     const [last, setLast] = useState<boolean>(false)
@@ -91,14 +93,14 @@ const CategoryCard: React.FC<CategoryProp> = ({
                 page: page
             })
                 .then((response) => response)
-            const products= response.content
+            const products = response.content
             setLast(response.last)
             setProducts(products)
         }
         fetchProductByCategory()
     }, [category, size, priceFilter, page, producerFilter]);
     return (
-        <div className="rounded drop-shadow h-fit bg-white p-2 ">
+        <div className="rounded drop-shadow h-fit bg-white p-2 max-w-screen-2xl">
             <div className="flex items-center px-2 py-1">
                 <p className={`text-default_red font-medium text-[24px]`}>{name}</p>
                 <div className="flex items-center justify-end flex-1">
@@ -107,13 +109,13 @@ const CategoryCard: React.FC<CategoryProp> = ({
                         <a className={`text-blue-500 hover:underline cursor-pointer pr-2`} href={url}>View more</a>}
                 </div>
             </div>
-            <div className="h-fit max-w-[1316px] flex flex-wrap gap-x-2 justify-start gap-y-2 px-2 pb-2">
+            <div className="h-fit w-full flex flex-wrap items-center justify-start gap-y-6 px-2 pb-2">
                 {
                     products.length === 0
                         ? <p>No device found</p>
                         : (
                             products.map((product, index) => (
-                                <ProductCard key={index} product={product}/>
+                                <ProductCard key={index} product={product} widthClass={widthClass}/>
                             ))
                         )
                 }
@@ -122,8 +124,10 @@ const CategoryCard: React.FC<CategoryProp> = ({
                 pageable && !last && (
                     <div className={`w-full flex items-center justify-center pt-6 pb-4`}>
                         <button
-                            onClick={()=>handleViewMoreClick()}
-                            className={`hover:text-default_blue hover:scale-105 rounded bg-default_background p-1`}>View more</button>
+                            onClick={() => handleViewMoreClick()}
+                            className={`hover:text-default_blue hover:scale-105 rounded bg-default_background p-1`}>View
+                            more
+                        </button>
                     </div>
                 )
             }

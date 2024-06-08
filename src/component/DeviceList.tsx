@@ -10,7 +10,12 @@ const DeviceList = () => {
         <div className={`col-span-10 pl-4 w-full`}>
             {
                 path && (
-                    <CategoryCard name={path} category={path} initialSize={12} pageable={true} />
+                    <CategoryCard
+                        name={path}
+                        category={path}
+                        initialSize={12}
+                        widthClass={`w-1/4`}
+                        pageable={true} />
                 )
             }
         </div>

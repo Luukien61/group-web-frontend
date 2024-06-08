@@ -108,7 +108,7 @@ const SideBarFilter = () => {
         return (
             <aside className={`lg:static lg:h-auto lg:overflow-y-visible lg:pt-0 lg:block col-span-2`}>
                 <div
-                    className=" flex-col items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch h-[calc(100vh-3rem)] block top-12 mr-0">
+                    className=" flex-col items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch h-[calc(100vh-3rem)] block top-24 mr-0">
                     {/*Producer*/}
                     <div
                         className="flex flex-col py-2 px-2 items-start space-x-2"

@@ -23,7 +23,7 @@ const CarouselBanner : React.FC<CarouselProps> = ({imgSource}) => {
     return (
         <Carousel
             plugins={[plugin.current]}
-            className="w-full  flex-1 bg-transparent"
+            className="w-full max-w-screen-2xl flex-1 bg-transparent"
             // onMouseEnter={plugin.current.stop}
             // onMouseLeave={plugin.current.reset}
         >
