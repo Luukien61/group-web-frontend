@@ -4,16 +4,16 @@ import {fetchProductsCategory} from "@/axios/Request.ts";
 import {useFilter} from "@/zustand/AppState.ts";
 
 export type Producer = {
-    id: number,
+    id?: number,
     name: string
 }
 export type Category = {
-    id: number,
+    id?: number,
     name: string,
-    producers: Producer[]
+    producers?: Producer[]
 }
 export type Price = {
-    "id": number,
+    "id"?: number,
     "ram": number,
     "rom": number,
     "currentPrice": number,
@@ -25,7 +25,7 @@ export type Color = {
     link: string
 }
 export type Feature = {
-    id: number,
+    id?: number,
     screen: string,
     rearCamera: number[],
     frontCamera: number[],
@@ -43,15 +43,16 @@ export type Description = {
 export type Product = {
     "id": string,
     "name": string,
-    "available": number,
-    "ordering": number
+    "available"?: number,
+    "ordering"?: number
     "category": Category,
     "imgs": string[],
     "price": Price[],
     "color": Color[],
     "features": Feature,
     "description": Description,
-    "producer": Producer
+    "producer": Producer,
+    "totalQuantity": number,
 }
 type CategoryProp = {
     producer?: string[],

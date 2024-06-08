@@ -1,6 +1,7 @@
 import {create} from 'zustand'
 import {devtools, persist} from 'zustand/middleware'
 import {Category} from "@/common/NavMenu.tsx";
+import {Product} from "@/component/CategoryCard.tsx";
 
 interface BearState {
     bears: number
@@ -91,6 +92,18 @@ export const useFilter = create<Filter>()(
             priceFilter:[],
             setProductFilter: newProductFilter => set({producerFilter: newProductFilter}),
             setPriceFilter: newPriceFilter => set({priceFilter: newPriceFilter}),
+        })
+    )
+)
+type ProductPost ={
+    product: Product | string,
+    setProduct: (newProduct: Product | string) => void,
+}
+export const useProduct =create<ProductPost>()(
+    devtools(
+        (set)=>({
+            product: "",
+            setProduct: newProduct => set({product: newProduct}),
         })
     )
 )

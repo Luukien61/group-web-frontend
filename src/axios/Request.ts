@@ -1,6 +1,7 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {instance, mailInstance} from "@/axios/Config.ts";
 import {categoryPath, findById, mailPath, producerBasePath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
+import {Product} from "@/component/CategoryCard.tsx";
 
 type Props = {
     category: string,
@@ -131,5 +132,15 @@ export const getProductQuantityByCategory=async (category: string)=>{
             .then(response => response.data)
     }catch (error){
         console.log(error)
+    }
+}
+
+export const postProduct = async (product :Product)=>{
+    try{
+        return await instance.post(productPath, product)
+            .then(response => response.data)
+    }catch (error){
+        console.log("Error posting product:", error);
+        throw error;
     }
 }

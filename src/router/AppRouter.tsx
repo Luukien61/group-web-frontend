@@ -12,6 +12,7 @@ import {getCategories} from "@/axios/Request.ts";
 import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
 import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
 import AdminProductPage from "@/page/admin/AdminProductPage.tsx";
+import Test from "@/page/Test.tsx";
 
 
 const AppRouter = () => {
@@ -29,6 +30,8 @@ const AppRouter = () => {
 
     return (
         <Routes>
+            <Route path={'/test'} element={<Test/>}/>
+
             {/*customer*/}
             <Route path="/" element={<App/>}>
                 <Route index element={<HomePage/>}/>

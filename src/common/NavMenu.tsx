@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {price} from "../description/MenuLink.tsx";
 import {RiArrowDropDownLine} from "react-icons/ri";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {useCategory, useCategoryItem, useFilter} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
 

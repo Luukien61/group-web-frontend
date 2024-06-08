@@ -20,7 +20,6 @@ const imageUpload = async ({image}: Props): Promise<string | null> => {
         console.error('Error uploading image:', error);
         throw error;
     }
-
     return url;
 };
 

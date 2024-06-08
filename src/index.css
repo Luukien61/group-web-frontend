@@ -11,7 +11,7 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 select:-webkit-autofill {
-  border: 1px solid #253341;
+
   -webkit-text-fill-color: black;
   -webkit-box-shadow: 0 0 0 1000px #253341 inset;
   box-shadow: 0 0 0 1000px #ffffff inset;
@@ -113,5 +113,10 @@ select:-webkit-autofill {
       @apply bg-background text-foreground font-roboto;
     }
   }
+@layer utilities {
+  .custom-shadow-red {
+    box-shadow: 0 0 6px 2px #cb1c22;
+  }
+}
 
 

@@ -1,12 +1,13 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {CiImageOn} from "react-icons/ci";
-import {useCategory} from "@/zustand/AppState.ts";
-import {getProducersByCategory} from "@/axios/Request.ts";
+import {useCategory, useProduct} from "@/zustand/AppState.ts";
+import {getProducersByCategory, postProduct} from "@/axios/Request.ts";
 import {Producer} from "@/common/NavMenu.tsx";
 import {IoCloseCircleOutline} from "react-icons/io5";
-import {Color, Description} from "@/component/CategoryCard.tsx";
-import imageUpload from "@/cloudinary/ImageUpload.ts";
+import {Color, Description, Price, Product} from "@/component/CategoryCard.tsx";
 import mammoth from 'mammoth';
+import imageUpload from "@/cloudinary/ImageUpload.ts";
+import {useNavigate} from "react-router-dom";
 
 const readDocx = async (file: File): Promise<string> => {
     try {
@@ -18,11 +19,24 @@ const readDocx = async (file: File): Promise<string> => {
         throw error;
     }
 };
+type LoadState={
+    loading: boolean,
+    loaded: boolean,
+}
+const initialState: LoadState = {
+    loading: false,
+    loaded: false,
+}
 const AdminProductPage = () => {
     const {categories} = useCategory()
+    const {setProduct} = useProduct()
+    const navigate = useNavigate()
+    const [content, setContent] =useState<string>('')
     const fetchedProducers = useRef(new Map())
+    const [imagesLoadState, setImagesLoadState] = useState<LoadState>(initialState)
+    const [colorImagesLoadState, setColorImagesLoadState] = useState<LoadState>(initialState)
     const [producers, setProducers] = useState<Producer[]>([])
-    const [colors, setColors] = useState<Color[]>([])
+    const [rawColors, setRawColors] = useState<Color[]>([])
     const [productName, setProductName] = useState<string>('')
     const [producer, setProducer] = useState<string>('')
     const [colorName, setColorName] = useState<string>()
@@ -31,6 +45,20 @@ const AdminProductPage = () => {
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageLoaded, setImageLoaded] = useState<number>(0);
     const [urlSourceClicked, setUrlSourceClicked] = useState<number>();
+    const [rom, setRom] = useState<number>()
+    const [OS, setOS] = useState<string>('')
+    const [processor, setProcessor] = useState<string>('');
+    const [rawRam, setRawRam] = useState<string>('');
+    const [screen, setScreen] = useState<string>('');
+    const [rawBattery, setRawBattery] = useState<string>('');
+    const [frontCamera, setFrontCamera] = useState<string>('');
+    const [rearCamera, setRearCamera] = useState<string>('');
+    const [rawMadeTime, setRawMadeTime] = useState<string>('')
+    const [title, setTitle] = useState<string>('')
+    const [rawCurrentPrice, setRawCurrentPrice] = useState<string>('')
+    const [rawPrePrice, setRawPrePrice] = useState<string>('')
+    const [rawTotalQuantity, setRawTotalQuantity] = useState<string>('')
+    const [rawAvaiQuantity, setRawAvaiQuantity] = useState<string>('')
     const maxImages: number = 5
     const innerDiv = useRef<HTMLDivElement>(null);
     const description: Description = {
@@ -80,27 +108,148 @@ const AdminProductPage = () => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             try {
-                description.content = await readDocx(file)
-                e.target.files = null
-                console.log("Is content saved ?", description.content)
+                const result = await readDocx(file)
+                setContent(result)
             } catch (error) {
                 console.error('Error reading docx file:', error);
             }
         }
     };
-    const handleAddProduct = async (e: ChangeEvent<HTMLInputElement>) => {
-        const url = await imageUpload({image: colorImg})
-        console.log("Image url:", url)
-        if (url && colorName) {
-            const color: Color = {
-                color: colorName,
-                link: url
+    const handleAddProduct = async () => {
+        checkFillInput()
+        const ram = parseInt(rawRam)
+        const frontCams= convertTextToArrayInt(frontCamera)
+        const rearCams = convertTextToArrayInt(rearCamera)
+        const battery= parseInt(rawBattery)
+        const madeTime = new Date(`01/${rawMadeTime}`)
+        description.title= title
+        // const category = categoryPick
+        const currentPice = parseInt(rawCurrentPrice)
+        const prePrice = parseInt(rawPrePrice)
+        const totalQuantiy = parseInt(rawTotalQuantity)
+        const avaiQuantity = parseInt(rawAvaiQuantity)
+        const id = productName.toLocaleLowerCase().trim().replace(/\s+/g,'-')
+        const colors  =(await uploadColorImages())?.filter((color): color is Color => color !== undefined);
+        setRawColors([])
+        const imgs =(await uploadProductImgs())?.filter((img): img is string => img !== undefined);
+        setPreviews([])
+        if(colors && imgs && imgs.length > 0 && rom && OS){
+            const memory: Price = {
+                ram: ram,
+                rom: rom,
+                currentPrice: currentPice,
+                previousPrice: prePrice
             }
-            setColors(prevState => [...prevState, color])
-            console.log("Colors: ", colors)
+            const product : Product = {
+                id: id,
+                name: productName,
+                price : [memory],
+                features:{
+                    screen: screen,
+                    frontCamera: frontCams,
+                    rearCamera: rearCams,
+                    memory: [memory],
+                    os: OS,
+                    battery: battery,
+                    madeTime: madeTime,
+                    chip: processor
+                },
+                description: {
+                    title: title,
+                    content: content
+                },
+                color: colors,
+                imgs: imgs,
+                category: {
+                    name: categoryPick
+                },
+                producer: {
+                    name: producer
+                },
+                totalQuantity: totalQuantiy,
+                available: avaiQuantity
+            }
+            saveNewProduct(product)
+            setProduct(product)
+            navigate("/test")
+        }
+
+    }
+    const saveNewProduct=async (product: Product)=>{
+        try{
+            await postProduct(product);
+        } catch (error){
+            setProduct(`Sorry, an error occurred`)
         }
     }
-    const handleSelecProducer =(e: React.ChangeEvent<HTMLSelectElement>)=>{
+    const uploadColorImages=async ()=>{
+        if(rawColors.length ==0) {
+            alert("Please select a color")
+            return
+        }
+        setColorImagesLoadState({loading:true,loaded:false})
+        const promise = rawColors.map(async (value) => {
+            const url = await imageUpload({image: value.link})
+            if (url && value.color) {
+                const color: Color = {
+                    color: value.color,
+                    link: url
+                }
+                return color
+            }
+        })
+        const results = await Promise.all(promise)
+        setColorImagesLoadState({loading:false, loaded: true})
+        return results
+    }
+    const uploadProductImgs=async ()=>{
+        if(previews.length ==0) {
+            alert("Please upload an image")
+            return
+        }
+        setImagesLoadState({loading:true,loaded:false})
+        const promise = previews.map(async (value) => {
+            const url = await imageUpload({image: value})
+            if (url) {
+                return url
+            }
+        })
+        const result = await Promise.all(promise)
+        setImagesLoadState({loading:false, loaded:true})
+        return result
+    }
+    const checkFillInput=()=>{
+        const inputs = document.getElementsByTagName('input')
+        for(let i=0; i<inputs.length; i++){
+            if(!inputs[i].value && inputs[i].required){
+                scrollToView(inputs[i].id)
+                break
+            }
+        }
+    }
+    const scrollToView=(elementId: string)=>{
+        const element = document.getElementById(elementId);
+        if(element){
+            const parent = element.parentElement;
+            element.scrollIntoView({behavior: "smooth", block: "center"})
+            const className= parent?.className
+            const newClassName= `${className} custom-shadow-red`
+            if(parent){
+                parent.className = newClassName;
+                setTimeout(() => {
+                    if(parent){
+                        parent.className = className || '';
+                    }
+                }, 2000);
+            }
+
+        }
+    }
+    const convertTextToArrayInt=(input: string )=>{
+        const results = input.trim().split(",").filter(Boolean)
+        return results.map(value => parseInt(value))
+    }
+    const handleSelectProducer = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setProducer(e.target.value)
     }
     const handleColorAdd = async () => {
@@ -113,12 +262,12 @@ const AdminProductPage = () => {
                 color: colorName,
                 link: colorImg
             }
-            setColors(prevState => [...prevState, color])
+            setRawColors(prevState => [...prevState, color])
             setColorName('')
         }
     }
     const handleRemoveColor = (colorName: string) => {
-        setColors(prevState => prevState.filter(value => value.color !== colorName))
+        setRawColors(prevState => prevState.filter(value => value.color !== colorName))
     }
     useEffect(() => {
         function handleClickOutsite(event: MouseEvent) {
@@ -164,69 +313,109 @@ const AdminProductPage = () => {
     }
     const productDetailText: Input[] = [
         {
+            require: true,
             label: "Processor",
-            type: "text"
+            type: "text",
+            value: processor,
+            onChange: (e) => setProcessor(e.target.value),
         },
         {
+            require: true,
             label: "RAM",
-            type: "text | number"
+            type: "text | number",
+            placeholder: "Ex: 6",
+            value: rawRam,
+            onChange: (e) => setRawRam(e.target.value),
         },
         {
+            require: true,
             label: "Screen",
-            type: "text"
+            type: "text",
+            value: screen,
+            onChange: (e)=>setScreen(e.target.value)
         },
         {
+            require: true,
             label: "Front camera",
-            type: "text"
+            type: "text",
+            placeholder: "Ex: 32,64",
+            value: frontCamera,
+            onChange: (e)=> setFrontCamera(e.target.value),
         },
         {
+            require: true,
             label: "Rear camera",
+            value: rearCamera,
+            placeholder: "Ex: 50,100",
+            onChange: (e)=>setRearCamera(e.target.value)
+
         },
         {
-            label: "Battery"
+            require: true,
+            label: "Battery",
+            value: rawBattery,
+            placeholder: "Ex: 5160",
+            onChange: (e)=>setRawBattery(e.target.value)
         },
         {
+            require: true,
             label: "Made time",
-            placeholder: "Ex: 11/2021"
+            placeholder: "Ex: 11/2021",
+            value: rawMadeTime,
+            onChange: (e)=>setRawMadeTime(e.target.value)
         }
     ]
     const phoneDetailSelect: SelectInput[] = [
         {
+            id: "rom",
             label: "ROM - Storage",
             options: [64, 128, 256, 512, 1024],
-            selectedOption: "Choose a ROM"
+            selectedOption: "Choose a ROM",
+            onChange: (e) => setRom(parseInt(e.target.value)),
         },
         {
+            id: "OS",
             label: "OS",
             options: ["Android", "IOS"],
-            selectedOption: "Choose an OS"
+            selectedOption: "Choose an OS",
+            onChange: (e) => setOS(e.target.value)
         }
     ]
     const defaultDetail: SelectInput[] = [
         {
+            id: "rom",
             label: "ROM - Storage",
-            options: []
+            options: [],
+            onChange: () => {
+            }
         },
         {
+            id: "OS",
             label: "OS",
-            options: []
+            options: [],
+            onChange: () => {
+            }
         }
     ]
     const lapDetailSelect: SelectInput[] = [
         {
+            id: "rom",
             label: "ROM - Storage",
             options: [256, 512, 1024],
-            selectedOption: "Choose a ROM"
+            selectedOption: "Choose a ROM",
+            onChange: (e) => setRom(parseInt(e.target.value)),
         },
         {
+            id: "OS",
             label: "OS",
             options: ["Windows", "MacOS", "Ubuntu"],
-            selectedOption: "Choose an OS"
+            selectedOption: "Choose an OS",
+            onChange: (e) => setOS(e.target.value)
         }
     ]
     const productDetailSelect = useRef(defaultDetail)
     return (
-        <div className={`w-[1250px] flex rounded bg-inherit p-6`}>
+        <div className={`w-[1250px]  flex rounded bg-inherit p-6`}>
             <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
                 {/*Category*/}
                 <div className={`flex flex-col `}>
@@ -262,16 +451,18 @@ const AdminProductPage = () => {
                     <div className={`w-full py-3 flex flex-col gap-y-2`}>
                         <div className={`flex w-full gap-x-4 *:flex-1 px-4`}>
                             <Input input={{
+                            require: true,
                                 value: productName,
-                                onChange : (e)=>setProductName(e.target.value),
+                                onChange: (e) => setProductName(e.target.value),
                                 label: "Product name",
                                 placeholder: "Enter product name"
                             }}/>
                             {/*producer*/}
                             <div>
                                 <Selector selector={{
+                                    id: "producer",
                                     value: producer,
-                                    onChange: handleSelecProducer,
+                                    onChange: handleSelectProducer,
                                     label: "Producer",
                                     selectedOption: "Choose a producer",
                                     options: producers.map(value => value.name)
@@ -297,7 +488,13 @@ const AdminProductPage = () => {
                     <Title title={"Description"}/>
                     <div className={`flex flex-col px-4`}>
                         <div className={`w-full py-3 flex flex-col gap-y-2`}>
-                            <Input input={{label: "Title", placeholder: "Enter title"}}/>
+                            <Input input={{
+                            require: true,
+                                label: "Title",
+                                placeholder: "Enter title",
+                                value: title,
+                                onChange: (e) => setTitle(e.target.value),
+                            }}/>
                         </div>
                         <div className={`flex gap-x-3 items-center pb-4`}>
                             <label className={`text-sm font-medium text-gray-900`}>Content </label>
@@ -324,6 +521,7 @@ const AdminProductPage = () => {
                         <div className={`flex border-r w-2/3 border-gray-600`}>
                             <div className={`flex flex-col gap-y-4 w-2/3`}>
                                 <Input input={{
+                                    require: false,
                                     label: "Name",
                                     placeholder: "Enter color",
                                     value: colorName,
@@ -355,7 +553,7 @@ const AdminProductPage = () => {
                         {/*color list*/}
                         <div className={`w-1/3 flex flex-wrap gap-y-1 *:w-1/2`}>
                             {
-                                colors.map((value, index) => (
+                                rawColors.map((value, index) => (
                                     <div key={index} className={`px-2 `}>
                                         <div
                                             className={`bg-gray-300 relative flex items-center justify-center rounded py-1`}>
@@ -436,16 +634,38 @@ const AdminProductPage = () => {
                 <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
                     <Title title={"Price"}/>
                     <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
-                        <Input input={{label: "Current price"}}/>
-                        <Input input={{label: "Previous price"}}/>
+                        <Input input={{
+                            require: true,
+                            label: "Current price",
+                            placeholder: "Ex: 12000000",
+                            value: rawCurrentPrice,
+                            onChange: (e)=>setRawCurrentPrice(e.target.value)
+                        }}/>
+                        <Input input={{
+                            require: true,
+                            label: "Previous price",
+                            placeholder: "Ex: 15000000",
+                            value: rawPrePrice,
+                            onChange: (e)=>setRawPrePrice(e.target.value)
+                        }}/>
                     </div>
                 </div>
                 {/*quantity*/}
                 <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
                     <Title title={"Quantity"}/>
                     <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
-                        <Input input={{label: "Total quantity"}}/>
-                        <Input input={{label: "Available quantity"}}/>
+                        <Input input={{
+                            require: true,
+                            label: "Total quantity",
+                            value: rawTotalQuantity,
+                            onChange: (e)=>setRawTotalQuantity(e.target.value)
+                        }}/>
+                        <Input input={{
+                            require: true,
+                            label: "Available quantity",
+                            value: rawAvaiQuantity,
+                            onChange: (e)=>setRawAvaiQuantity(e.target.value)
+                        }}/>
                     </div>
                 </div>
                 {/*preview*/}
@@ -465,6 +685,7 @@ const AdminProductPage = () => {
                                     </div>
                             }
                         </div>
+                        {/*preview*/}
                         <div className={`flex w-1/2 flex-col gap-y-2 p-2 h-full`}>
                             <div className={`flex flex-col gap-y-4 font-medium py-4 justify-center`}>
                                 <div
@@ -477,7 +698,10 @@ const AdminProductPage = () => {
                                 </div>
                                 <div
                                     className={`w-full flex items-center justify-start px-2 py-2 rounded bg-outer_red`}>
-                                    <p className={`text-inner_red truncate`}>{12000000 .toLocaleString('vi-VN')}VND</p>
+                                    <p className={`text-inner_red truncate`}>{
+                                        rawCurrentPrice ?
+                                        parseInt(rawCurrentPrice).toLocaleString('vi-VN') : 0}VND
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -485,10 +709,16 @@ const AdminProductPage = () => {
                     </div>
                     <div className={`w-full flex items-center justify-center px-2 pt-2 pb-0`}>
                         <button
+                            onClick={()=>handleAddProduct()}
                             className={`py-1 px-1 w-full rounded bg-default_blue text-white font-medium hover:bg-blue_other`}>Add
                             product
                         </button>
                     </div>
+                    {
+                        imagesLoadState.loading || colorImagesLoadState.loading && (
+                            <Loading/>
+                        )
+                    }
                 </div>
             </div>
         </div>
@@ -508,6 +738,7 @@ const Title: React.FC<TitleProps> = ({title}) => {
     )
 }
 type Input = {
+    require: boolean
     value?: string,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
     label: string,
@@ -523,12 +754,14 @@ const Input: React.FC<InputProps> = ({input}) => {
         <div className={`flex flex-col w-full`}>
             <label className={`text-sm font-medium text-gray-900 mb-2`}>{input.label}</label>
             <div
-                className={`w-full border border-gray-300 text-gray-900 text-sm rounded-lg flex items-center p-2.5`}>
+                className={`w-full border border-gray-300 text-gray-900 text-sm rounded-lg flex items-center p-2.5 `}>
                 <input
+                    required={input.require}
+                    id={input.label}
                     onChange={input.onChange}
                     value={input.value}
                     placeholder={input.placeholder ?? input.label}
-                    className={`outline-none w-full placeholder:italic`}
+                    className={`outline-none w-full placeholder:italic appearance-none border-0`}
                     spellCheck={false}
                     type="text"/>
             </div>
@@ -537,8 +770,9 @@ const Input: React.FC<InputProps> = ({input}) => {
     )
 }
 type SelectInput = {
+    id: string,
     value?: string | number,
-    onChange : (e: React.ChangeEvent<HTMLSelectElement>)=>void,
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void,
     label?: string,
     selectedOption?: string,
     options: string[] | number[]
@@ -549,9 +783,8 @@ type SelectProp = {
 const Selector: React.FC<SelectProp> = ({selector}) => {
     return (
         <form className="max-w-sm mx-auto">
-            <label htmlFor="countries"
-                   className="block mb-2 text-sm font-medium text-gray-900">{selector.label ?? "Select an option"}</label>
-            <select id="countries"
+            <label className="block mb-2 text-sm font-medium text-gray-900">{selector.label ?? "Select an option"}</label>
+            <select id={selector.id}
                     value={selector.value}
                     onChange={selector.onChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 outline-none text-sm rounded-lg block w-full p-[13px]">
@@ -594,6 +827,28 @@ const FileUpload: React.FC<FileUploadProps> = ({input, text, style}) => {
                 </div>
                 {input}
             </label>
+        </div>
+    )
+}
+const Loading=()=>{
+    return(
+        <div className={`w-screen h-screen flex fixed backdrop-blur-sm bg-black bg-opacity-10 inset-0 z-50 items-center justify-center  `}>
+            <div className={``}>
+                <div role="status">
+                    <svg aria-hidden="true"
+                         className="w-8 h-8 text-gray-200 animate-spin  fill-blue-600"
+                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"/>
+                        <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentFill"/>
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                </div>
+
+            </div>
         </div>
     )
 }
