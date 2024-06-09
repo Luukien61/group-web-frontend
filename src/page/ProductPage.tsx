@@ -411,7 +411,6 @@ const SideBarADs = () => {
                 <TrendingCard/>
                 <TrendingCard/>
                 <TrendingCard/>
-                <TrendingCard/>
             </div>
         </div>
     )
@@ -439,14 +438,14 @@ const CarouselDApiDemo: React.FC<CarouselProps> = ({links}) => {
     }, [api])
 
     return (
-        <div className={`sticky top-20 flex flex-col items-center h-fit pt-5`}>
-            <Carousel setApi={setApi} className=" max-w-xs">
+        <div className={`sticky top-20 flex flex-col items-center  h-fit pt-5`}>
+            <Carousel setApi={setApi} className=" max-w-xs ">
                 <CarouselPrevious/>
                 <CarouselContent>
                     {links.map((link, index) => (
                         <CarouselItem key={index}>
                             <Card>
-                                <CardContent className="flex items-center justify-center ">
+                                <CardContent className="flex !min-h-[450px] items-center justify-center ">
                                     <img src={link} alt={"image"}/>
                                 </CardContent>
                             </Card>
@@ -519,7 +518,7 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 <TableRow>
                     {/*Time*/}
                     <TableCell className="font-medium border-r">Time</TableCell>
-                    <TableCell>T{feature.madeTime.getMonth()}/{feature.madeTime.getFullYear()}</TableCell>
+                    <TableCell>T{feature.madeTime.getMonth()+1}/{feature.madeTime.getFullYear()}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

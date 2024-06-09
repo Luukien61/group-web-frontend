@@ -7,6 +7,7 @@ type InputProps = {
     type?: 'text' | 'password' | 'email' | 'password_confirmation' | "number";
     className?: string;
     required?: boolean;
+    disabled?: boolean;
 }
 const Input = (input: InputProps) => {
     return (
@@ -26,6 +27,7 @@ const Input = (input: InputProps) => {
 export const DefaultInput : React.FC<InputProps> = (inputProps) => {
     return (
         <input
+            disabled={inputProps.disabled}
             required={inputProps.required && false}
             value={inputProps.value}
             onChange={inputProps.onChange}
