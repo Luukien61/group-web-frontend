@@ -11,8 +11,9 @@ import {useCategory} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
 import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
 import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
-import AdminProductPage from "@/page/admin/AdminProductPage.tsx";
-import Test from "@/page/Test.tsx";
+import AdminAddProductPage from "@/page/admin/AdminAddProductPage.tsx";
+import ProductDetail from "@/page/admin/ProductDetail.tsx";
+import Redirect from "@/page/Redirect.tsx";
 
 
 const AppRouter = () => {
@@ -30,7 +31,7 @@ const AppRouter = () => {
 
     return (
         <Routes>
-            <Route path={'/test'} element={<Test/>}/>
+            <Route path={'/test'} element={<AdminAddProductPage/>}/>
 
             {/*customer*/}
             <Route path="/" element={<App/>}>
@@ -49,19 +50,21 @@ const AppRouter = () => {
             {/*login*/}
             <Route path={'/login'} element={<LoginPage/>}/>
             {/*admin*/}
-            <Route path={'admin'} element={<AdminHome/>}>
-                {categories.map((value, index) => (
-                    <Route key={index} path={`${value}*`} element={<AdminProductPage/>}/>
-                ))}
+            <Route path='admin' element={<AdminHome/>}>
                 <Route index element={<AdminMainContent/>}/>
+                {category.map((value, index) => (
+                    <Route key={index} path={`${value}/new`} element={<AdminAddProductPage/>}/>
+                ))}
 
                 {
-                    categories.map((value, index) => (
-                        <Route key={index} path={`${value}`} element={<CategoryAdminPage category={value}/>}/>
+                    category.map((value, index) => (
+                        <>
+                            <Route key={index} path={`${value}`} element={<CategoryAdminPage category={value}/>}/>
+                            <Route key={index} path={`${value}/:productId`} element={<ProductDetail/>}/>
+                            <Route key={index} path={`${value}/`} element={<Redirect to={`/admin/${value}`}/>}/>
+                        </>
                     ))
                 }
-
-
             </Route>
         </Routes>
     );

@@ -9,37 +9,33 @@ import {Product} from "@/component/CategoryCard.tsx";
 type Props = {
     category: string
 }
-
 const CategoryAdminPage: React.FC<Props> = ({category}) => {
     const [producers, setProducers] = useState<Producer[]>([])
-    const [product, setProduct]=useState<Product[]>([])
+    const [product, setProduct] = useState<Product[]>([])
     const [allProducts, setAllProducts] = useState<Product[]>([])
-    const {products, handleChange } = useProductSearch();
+    const {products, handleChange} = useProductSearch();
     useEffect(() => {
-        console.log("Product:",products)
-    }, [products]);
-    useEffect(() => {
-        const getProducers = async ()=>{
-            const response : Producer[] = await getProducersByCategory(category)
+        const getProducers = async () => {
+            const response: Producer[] = await getProducersByCategory(category)
             setProducers(response)
         }
         getProducers()
-    },[category])
+    }, [category])
     useEffect(() => {
         setProduct(products)
-        if(!products){
+        if (!products) {
             setProduct(allProducts)
         }
     }, [products]);
-    const fetchProps={
+    const fetchProps = {
         category: category,
         page: 0,
         size: 30
     }
     useEffect(() => {
-        const fetchAllProduct=async ()=>{
+        const fetchAllProduct = async () => {
             const response = await fetchProductsCategory(fetchProps)
-            const products= response.content
+            const products = response.content
             setProduct(products)
             setAllProducts(products)
         }
@@ -49,7 +45,7 @@ const CategoryAdminPage: React.FC<Props> = ({category}) => {
     return (
         <div className={`flex flex-col  w-full `}>
             {/*head filter*/}
-            <div className={`flex fixed w-full h-20 z-20 shadow-2xl bg-outer_green rounded p-2 pt-0`}>
+            <div className={`flex fixed w-full h-20 z-20 shadow-2xl bg-white rounded p-2 pt-0`}>
                 {/*producer*/}
                 <div className={`flex w-full items-center`}>
                     <div
@@ -65,7 +61,7 @@ const CategoryAdminPage: React.FC<Props> = ({category}) => {
                     </div>
                     <div className={`w-1/3 fixed end-0`}>
                         <div className={`flex justify-center items-center`}>
-                            <DefaultInput className={`rounded-xl`} onChange={handleChange}
+                            <DefaultInput className={`rounded-xl border `} onChange={handleChange}
                                           placeholder={'Search productions here...'}/>
                         </div>
                     </div>
@@ -78,7 +74,8 @@ const CategoryAdminPage: React.FC<Props> = ({category}) => {
                 <div className={`w-full shadow flex flex-wrap bg-white rounded p-4`}>
                     {
                         product.map((value, index) => (
-                            <AdminProductCard key={index} product={value} />
+                            <AdminProductCard
+                                key={index} product={value}/>
                         ))
                     }
                 </div>

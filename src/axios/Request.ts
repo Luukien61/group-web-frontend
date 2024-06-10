@@ -2,6 +2,7 @@ import {Banner} from "@/component/CarouselBanner.tsx";
 import {instance, mailInstance} from "@/axios/Config.ts";
 import {categoryPath, findById, mailPath, producerBasePath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
+import axios from "axios";
 
 type Props = {
     category: string,
@@ -33,10 +34,10 @@ export const fetchCarouselImages = async (): Promise<Banner[]> => {
 }
 
 export const getProducersByCategory = async (category: string) => {
-    try{
+    try {
         return await instance.get(`${producerBasePath}/${category}`)
             .then(response => response.data)
-    }catch (error){
+    } catch (error) {
         console.log(error)
     }
 }
@@ -88,11 +89,12 @@ export const searchProductsByName = async (name: string) => {
 
 export const getProductById = async (id: string) => {
     try {
-        const response = await instance.get(`${findById}/${id}`)
-            .then(response => response)
-        return response.data
+        return await instance.get(`${findById}/${id}`)
+           .then(response => response.data)
     } catch (error) {
-        console.error("Error fetching products:", error);
+        if(axios.isAxiosError(error) && error.response){
+            console.log(error.response.data.message)
+        }
     }
 }
 type MailVerify = {
@@ -110,57 +112,86 @@ export const sendVerificationMail = async (email: string, code: number) => {
     try {
         return await mailInstance.post(mailPath, data)
             .then(response => response)
-    }catch(error) {
+    } catch (error) {
         console.log("Error sending email:", error);
     }
 }
 
-export const getConnection=async ()=>{
-    try{
+export const getConnection = async () => {
+    try {
         return await instance.get(`${productPath}/home`)
-            .then(response=>response.data)
-    }
-    catch (error){
+            .then(response => response.data)
+    } catch (error) {
         console.log("Error getting connection:", error);
         return "Error getting connection"
     }
 }
 
-export const getProductQuantityByCategory=async (category: string)=>{
-    try{
+export const getProductQuantityByCategory = async (category: string) => {
+    try {
         return await instance.get(`${quantityPath}/${category}`)
             .then(response => response.data)
-    }catch (error){
+    } catch (error) {
         console.log(error)
     }
 }
 
-export const postProduct = async (product :Product)=>{
-    try{
+export const postProduct = async (product: Product) => {
+    try {
         return await instance.post(productPath, product)
             .then(response => response.data)
-    }catch (error){
-        console.log("Error posting product:", error);
+    } catch (error) {
+        if(axios.isAxiosError(error) && error.response){
+            const customError : Error = error.response.data
+            alert(customError.message)
+        }
+        // console.log("Error posting producer: ", error);
+        throw error;
+    }
+}
+export type Error = {
+    "message": string,
+    "statusCode": number,
+    "timestamp": string
+}
+export const postNewCategory = async (category: Category) => {
+    try {
+        return await instance.post(categoryPath, category)
+            .then(response => response.data)
+    } catch (error) {
+        if(axios.isAxiosError(error) && error.response){
+            const customError : Error = error.response.data
+            alert(customError.message)
+        }
+        // console.log("Error posting producer: ", error);
+         throw error;
+    }
+}
+
+export const postNewProducer = async (producer: Producer[], category: string) => {
+    try {
+        return await instance.post(`${producerBasePath}/many/${category}`, producer)
+            .then(response => response.data)
+    } catch (error) {
+        if(axios.isAxiosError(error) && error.response){
+            const customError : Error = error.response.data
+            alert(customError.message)
+        }
         throw error;
     }
 }
 
-export const postNewCategory = async (category:Category)=>{
+export const updateProduct = async (product: Product,productId : string) => {
     try{
-        return await instance.post(categoryPath,category)
-        .then(response => response.data)
-    }catch (error){
-        console.log("Error posting category:", error);
+        return await instance.put(`${productPath}/${productId}`, product)
+            .then(response => response.data)
+    }catch(error){
+        if(axios.isAxiosError(error) && error.response){
+            const customError : Error = error.response.data
+            alert(customError.message)
+        }
         throw error;
     }
+
 }
 
-export const postNewProducer = async (producer: Producer[], category: string)=>{
-    try{
-        return await instance.post(`${producerBasePath}/many/${category}`,producer)
-            .then(response=>response.data)
-    }catch (error){
-        console.log("Error posting a new producer:", error);
-        throw error;
-    }
-}

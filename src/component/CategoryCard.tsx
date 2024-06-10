@@ -43,8 +43,8 @@ export type Description = {
 export type Product = {
     "id": string,
     "name": string,
-    "available"?: number,
-    "ordering"?: number
+    "available": number,
+    "ordering": number
     "category": Category,
     "imgs": string[],
     "price": Price[],

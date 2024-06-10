@@ -1,7 +1,15 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {CiImageOn} from "react-icons/ci";
-import {useCategory, useProduct} from "@/zustand/AppState.ts";
-import {getCategories, getProducersByCategory, postNewCategory, postNewProducer, postProduct} from "@/axios/Request.ts";
+import {useCategory} from "@/zustand/AppState.ts";
+import {GrCaretNext, GrCaretPrevious} from "react-icons/gr";
+import {
+    getCategories,
+    getProducersByCategory,
+    postNewCategory,
+    postNewProducer,
+    postProduct,
+    updateProduct
+} from "@/axios/Request.ts";
 import {IoCloseCircleOutline} from "react-icons/io5";
 import {Category, Color, Description, Price, Producer, Product} from "@/component/CategoryCard.tsx";
 import mammoth from 'mammoth';
@@ -9,6 +17,7 @@ import imageUpload from "@/cloudinary/ImageUpload.ts";
 import {useNavigate} from "react-router-dom";
 import {IoIosAddCircleOutline} from "react-icons/io";
 import {DefaultInput} from "@/component/Input.tsx";
+import axios from "axios";
 
 const readDocx = async (file: File): Promise<string> => {
     try {
@@ -28,9 +37,12 @@ const initialState: LoadState = {
     loading: false,
     loaded: false,
 }
-const AdminProductPage = () => {
+type ProductInfoProps = {
+    product: Product | null;
+}
+
+const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const {categories, setCategories} = useCategory()
-    const {setProduct} = useProduct()
     const navigate = useNavigate()
     const [content, setContent] = useState<string>('')
     const fetchedProducers = useRef(new Map())
@@ -62,12 +74,43 @@ const AdminProductPage = () => {
     const [rawTotalQuantity, setRawTotalQuantity] = useState<string>('')
     const [rawAvaiQuantity, setRawAvaiQuantity] = useState<string>('')
     const maxImages: number = 5
+    const [warningDelete, setWarningDelete] = useState<boolean>(false)
+    const [confirmText, setConfirmText] = useState<string>('')
     const [addCategory, setAddCategory] = useState<boolean>(false)
     const innerDiv = useRef<HTMLDivElement>(null);
     const description: Description = {
         title: '',
         content: ''
     }
+    useEffect(() => {
+        if (product) {
+            const categoryName = product.category.name.toLowerCase()
+            handleCategoryClick(categoryName)
+            const feature = product.features
+            const madeTime = feature.madeTime
+            feature.madeTime = new Date(madeTime)
+            setCategoryPick(categoryName)
+            setProductName(product.name)
+            setProcessor(feature.chip)
+            setRawRam(feature.memory[0].ram.toString())
+            setScreen(feature.screen)
+            setFrontCamera(feature.frontCamera.join(","))
+            setRearCamera(feature.rearCamera.join(","))
+            setRawBattery(feature.battery.toString())
+            setRawMadeTime(`${feature.madeTime.getMonth() + 1}/${feature.madeTime.getFullYear()}`)
+            setTitle(product.description.title)
+            setContent(product.description.content)
+            setRawCurrentPrice(product.price[0].currentPrice.toString())
+            setRawPrePrice(product.price[0].previousPrice.toString())
+            setRawTotalQuantity(product.totalQuantity.toString())
+            setRawAvaiQuantity(product.available.toString())
+            setPreviews(product.imgs)
+            setRawColors(product.color)
+            setProducer(product.producer.name)
+            setRom(feature.memory[0].rom)
+            setOS(feature.os)
+        }
+    }, [product]);
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -119,6 +162,32 @@ const AdminProductPage = () => {
         }
     };
     const handleAddProduct = async () => {
+        const id = productName.toLocaleLowerCase().trim().replace(/\s+/g, '-')
+        const newProduct = await assembleProduct(id, 0)
+        if (newProduct) {
+            await postProduct(newProduct);
+            navigate("/test")
+        }
+    }
+    const handleUpdateProduct = async () => {
+        if (product) {
+            const productId: string = product.id
+            const newProduct = await assembleProduct(productId, product.ordering)
+            if (newProduct) {
+                await updateProduct(product, productId);
+                navigate("/test")
+            }
+        }
+    }
+    const handleDeleteProductRequest = () => {
+        setWarningDelete(true)
+    }
+    const handleDeleteProduct=()=>{
+        if(confirmText===product?.name){
+            alert("Deleted")
+        }
+    }
+    const assembleProduct = async (productId: string, ordering: number) => {
         checkFillInput()
         const ram = parseInt(rawRam)
         const frontCams = convertTextToArrayInt(frontCamera)
@@ -131,7 +200,6 @@ const AdminProductPage = () => {
         const prePrice = parseInt(rawPrePrice)
         const totalQuantiy = parseInt(rawTotalQuantity)
         const avaiQuantity = parseInt(rawAvaiQuantity)
-        const id = productName.toLocaleLowerCase().trim().replace(/\s+/g, '-')
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
         setRawColors([])
         const imgs = (await uploadProductImgs())?.filter((img): img is string => img !== undefined);
@@ -143,8 +211,8 @@ const AdminProductPage = () => {
                 currentPrice: currentPice,
                 previousPrice: prePrice
             }
-            const product: Product = {
-                id: id,
+            const newProduct: Product = {
+                id: productId,
                 name: productName,
                 price: [memory],
                 features: {
@@ -170,19 +238,10 @@ const AdminProductPage = () => {
                     name: producer
                 },
                 totalQuantity: totalQuantiy,
-                available: avaiQuantity
+                available: avaiQuantity,
+                ordering: ordering
             }
-            saveNewProduct(product)
-            setProduct(product)
-            navigate("/test")
-        }
-
-    }
-    const saveNewProduct = async (product: Product) => {
-        try {
-            await postProduct(product);
-        } catch (error) {
-            setProduct(`Sorry, an error occurred`)
+            return newProduct
         }
     }
     const uploadColorImages = async () => {
@@ -282,17 +341,17 @@ const AdminProductPage = () => {
         document.addEventListener('mousedown', handleClickOutsite);
     }, []);
     useEffect(() => {
-        if (openAddCategory) {
+        if (openAddCategory || warningDelete) {
             document.body.classList.add('overflow-hidden')
         } else document.body.classList.remove("overflow-hidden")
         loadCategory()
-    }, [openAddCategory]);
+    }, [openAddCategory,warningDelete]);
     const loadCategory = async () => {
         const category: Category[] = await getCategories();
         const categoryLower = category.map(item => item.name.toLowerCase());
         setCategories(categoryLower)
     }
-    const handleAddCategoryOrProducerClick=(category: boolean)=>{
+    const handleAddCategoryOrProducerClick = (category: boolean) => {
         setOpenAddCategory(true)
         setAddCategory(category)
     }
@@ -397,6 +456,7 @@ const AdminProductPage = () => {
             id: "rom",
             label: "ROM - Storage",
             addNew: true,
+            value: rom,
             options: [64, 128, 256, 512, 1024],
             selectedOption: "Choose a ROM",
             onChange: (e) => setRom(parseInt(e.target.value)),
@@ -405,6 +465,7 @@ const AdminProductPage = () => {
             id: "OS",
             label: "OS",
             addNew: true,
+            value: OS,
             options: ["Android", "IOS"],
             selectedOption: "Choose an OS",
             onChange: (e) => setOS(e.target.value)
@@ -415,6 +476,7 @@ const AdminProductPage = () => {
             id: "rom",
             label: "ROM - Storage",
             options: [],
+            value: rom,
             addNew: false,
             onChange: () => {
             }
@@ -422,6 +484,7 @@ const AdminProductPage = () => {
         {
             id: "OS",
             label: "OS",
+            value: OS,
             options: [],
             addNew: false,
             onChange: () => {
@@ -433,6 +496,7 @@ const AdminProductPage = () => {
             id: "rom",
             label: "ROM - Storage",
             options: [256, 512, 1024],
+            value: rom,
             addNew: true,
             selectedOption: "Choose a ROM",
             onChange: (e) => setRom(parseInt(e.target.value)),
@@ -441,334 +505,423 @@ const AdminProductPage = () => {
             id: "OS",
             label: "OS",
             addNew: true,
+            value: OS,
             options: ["Windows", "MacOS", "Ubuntu"],
             selectedOption: "Choose an OS",
             onChange: (e) => setOS(e.target.value)
         }
     ]
     const productDetailSelect = useRef(defaultDetail)
+    const scrollCategory = useRef<HTMLDivElement>(null)
+    const scroll = (direction: string) => {
+        const container = scrollCategory.current;
+        const scrollAmount = direction === 'left' ? -100 : 100;
+        if (container) {
+            container.scrollBy({left: scrollAmount, behavior: 'smooth'});
+        }
+    };
     return (
-        <div className={`w-[1250px]  flex rounded bg-inherit p-6 `}>
-            <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
-                {/*Category*/}
-                <div className={`flex flex-col `}>
-                    <div className={`flex flex-col p-5 gap-y-3`}>
-                        <div className={`flex w-full`}>
-                            <p className={`font-semibold flex-1`}>Category</p>
-                            <div
-                                onClick={()=>handleAddCategoryOrProducerClick(true)}
-                                className={`flex items-center gap-x-2 cursor-pointer hover:scale-[1.03] transform duration-300`}>
-                                <IoIosAddCircleOutline color={`#3B7DDD`} size={28}/>
-                                <p className={`text-[16px] text-inner_blue font-medium`}>Add category </p>
-                            </div>
-                        </div>
-                        <hr className={`h-1 border-b-default_gray w-full`}/>
-                        <div className={`flex`}>
-                            <div className={`flex-1 overflow-hidden`}>
-                                <div className={`flex items-center overflow-x-auto`}>
-                                    <div className={'flex transform translate-x-0 translate-y-0 gap-x-4'}>
-                                        {
-                                            categories.map((value, index) => (
-                                                <div
-                                                    onClick={() => handleCategoryClick(value)}
-                                                    key={index}
-                                                    className={`cursor-pointer w-[100px] flex items-center justify-center h-[124px] rounded bg-gray-100 p-3 
-                                                    ${categoryPick === value && 'border-[3px] border-inner_blue bg-gradient-to-r from-outer_blue'}`}>
-                                                    <p>{value.toLocaleUpperCase()}</p>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/*Producer detail*/}
-                <div className={`flex flex-col`}>
-                    <Title title={"Product Detail"}/>
-                    <div className={`w-full py-3 flex flex-col gap-y-2`}>
-                        <div className={`flex w-full gap-x-4 *:flex-1 px-4`}>
-                            <Input input={{
-                                require: true,
-                                value: productName,
-                                onChange: (e) => setProductName(e.target.value),
-                                label: "Product name",
-                                placeholder: "Enter product name"
-                            }}/>
-                            {/*producer*/}
-                            <div>
-                                <Selector selector={{
-                                    id: "producer",
-                                    value: producer,
-                                    addNew: categoryPick !== '',
-                                    onChange: handleSelectProducer,
-                                    label: "Producer",
-                                    action: () => handleAddCategoryOrProducerClick(false),
-                                    selectedOption: "Choose a producer",
-                                    options: producers.map(value => value.name)
-                                }}/>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={`w-full p-3 flex flex-wrap *:w-1/3 *:px-3 *:py-3`}>
-                        {
-                            productDetailText.map((value, index) => (
-                                <Input key={index} input={value}/>
-                            ))
-                        }
-                        {
-                            productDetailSelect.current.map((value, index) => (
-                                <Selector key={index} selector={value}/>
-                            ))
-                        }
-                    </div>
-                </div>
-                {/*Description*/}
-                <div className={`flex flex-col`}>
-                    <Title title={"Description"}/>
-                    <div className={`flex flex-col px-4`}>
-                        <div className={`w-full py-3 flex flex-col gap-y-2`}>
-                            <Input input={{
-                                require: true,
-                                label: "Title",
-                                placeholder: "Enter title",
-                                value: title,
-                                onChange: (e) => setTitle(e.target.value),
-                            }}/>
-                        </div>
-                        <div className={`flex gap-x-3 items-center pb-4`}>
-                            <label className={`text-sm font-medium text-gray-900`}>Content </label>
-                            <FileUpload
-                                text={false}
-                                style={`w-1/6 aspect-[3/1]`}
-                                input={
-                                    <input
-                                        onChange={handleContentDocUpload}
-                                        className={`hidden`}
-                                        type="file"
-                                        accept="application/msword, .docx, .doc"/>
-                                }
-                            />
-
-                        </div>
-                    </div>
-                </div>
-                {/*Color*/}
-                <div className={`flex flex-col`}>
-                    <Title title={"Color"}/>
-                    <div className={`flex px-4 gap-x-3  py-3`}>
-                        {/*color add*/}
-                        <div className={`flex border-r w-2/3 border-gray-600`}>
-                            <div className={`flex flex-col gap-y-4 w-2/3`}>
-                                <Input input={{
-                                    require: false,
-                                    label: "Name",
-                                    placeholder: "Enter color",
-                                    value: colorName,
-                                    onChange: (e) => setColorName(e.target.value)
-                                }}/>
-                                <div className={`flex gap-x-3 items-center `}>
-                                    <label className={`text-sm font-medium text-gray-900`}>Image </label>
-                                    <FileUpload
-                                        text={false}
-                                        style={`w-full aspect-[5/1]`}
-                                        input={
-                                            <input
-                                                onChange={handleColorImageSource}
-                                                className={`hidden`}
-                                                type="file"
-                                                accept="image/*"/>
-                                        }
-                                    />
-                                </div>
-                            </div>
-                            <div className={`w-1/3 p-2 pb-0 flex items-end justify-center`}>
+        <div className={`flex justify-center items-center`}>
+            <div className={`w-[1250px] flex rounded bg-inherit p-6 `}>
+                <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
+                    {/*Category*/}
+                    <div className={`flex flex-col`}>
+                        <div className={`flex flex-col p-5 gap-y-3`}>
+                            <div className={`flex w-full`}>
+                                <p className={`font-semibold flex-1`}>Category</p>
                                 <div
-                                    className={`rounded bg-default_blue cursor-pointer hover:bg-blue_other w-1/2 px-2 py-1`}>
-                                    <button onClick={handleColorAdd} className={`w-full text-white font-medium`}>Add
-                                    </button>
+                                    onClick={() => handleAddCategoryOrProducerClick(true)}
+                                    className={`flex items-center gap-x-2 cursor-pointer hover:scale-[1.03] transform duration-300`}>
+                                    <IoIosAddCircleOutline color={`#3B7DDD`} size={28}/>
+                                    <p className={`text-[16px] text-inner_blue font-medium`}>Add category </p>
                                 </div>
                             </div>
-                        </div>
-                        {/*color list*/}
-                        <div className={`w-1/3 flex flex-wrap gap-y-1 *:w-1/2`}>
-                            {
-                                rawColors.map((value, index) => (
-                                    <div key={index} className={`px-2 `}>
-                                        <div
-                                            className={`bg-gray-300 relative flex items-center justify-center rounded py-1`}>
-                                            <p className={`cursor-default`}>{value.color}</p>
-                                            <IoCloseCircleOutline
-                                                onClick={() => handleRemoveColor(value.color)}
-                                                className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                            <hr className={`h-1 border-b-default_gray w-full`}/>
+                            <div className={`flex `}>
+                                <div className={`flex-1 overflow-hidden relative`}>
+                                    <div className={``}>
+                                        <div className={`absolute flex items-center inset-0 left-1  w-fit z-20`}>
+                                            <div
+                                                onClick={() => scroll('left')}
+                                                className={`rounded-[100%] flex items-center justify-center bg-white p-1 cursor-pointer hover:bg-outer_green duration-300`}>
+                                                <GrCaretPrevious/>
+                                            </div>
+                                        </div>
+                                        <div className={`absolute flex items-center inset-0 left-[95%] w-fit z-20`}>
+                                            <div
+                                                onClick={() => scroll('right')}
+                                                className={`rounded-[100%] flex items-center justify-center bg-white p-1 cursor-pointer hover:bg-outer_green duration-300`}>
+                                                <GrCaretNext/>
+                                            </div>
                                         </div>
                                     </div>
-                                ))
-                            }
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/**/}
-            <div className={`w-1/3 p-3 flex-col flex gap-y-4`}>
-                {/*images*/}
-                <div className={`bg-white w-full rounded shadow-2xl flex flex-col `}>
-                    <Title title={"Product images"}/>
-                    <div ref={innerDiv} className={`w-full p-2`}>
-                        {/*images*/}
-                        <div className={`w-full flex flex-wrap items-center *:p-1 *:w-1/3 *:rounded *:aspect-square `}>
-                            <FileUpload
-                                text={true}
-                                style={'w-1/3'}
-                                input={
-                                    <input
-                                        disabled={imageLoaded >= 5}
-                                        id="dropzone-file"
-                                        type="file"
-                                        accept={'image/*'}
-                                        multiple={true}
-                                        onChange={handleImageChange}
-                                        className="hidden"/>}/>
-                            {
-                                Array.from({length: maxImages}).map((value, index) => (
-                                    <div className={`p-1 relative`}>
-                                        <div
-                                            className={`flex bg-gray-100 items-center justify-center w-full aspect-square rounded`}>
+                                    <div
+                                        ref={scrollCategory}
+                                        className={`flex items-center overflow-x-auto`}>
+                                        <div className={'flex transform translate-x-0 translate-y-0 gap-x-4'}>
                                             {
-                                                previews[index] ?
-                                                    <div className={`relative h-full`}>
-                                                        <img key={index} src={previews[index]} alt={`Preview ${index}`}
-                                                             className="h-full w-auto object-contain "/>
-                                                        <IoCloseCircleOutline
-                                                            onClick={() => handleRemoveProductImage(index)}
-                                                            className={`cursor-pointer absolute -top-2 -right-2`}
-                                                        />
+                                                categories.map((value, index) => (
+                                                    <div
+                                                        onClick={() => handleCategoryClick(value)}
+                                                        key={index}
+                                                        className={`cursor-pointer w-[100px] flex items-center justify-center h-[124px] rounded bg-gray-100 p-3 
+                                                    ${categoryPick === value && 'border-[3px] border-inner_blue bg-gradient-to-r from-outer_blue'}`}>
+                                                        <p>{value.toLocaleUpperCase()}</p>
                                                     </div>
-                                                    :
-                                                    <div onClick={() => handleImageSource(index)}
-                                                         className={`w-full z-0 h-full flex items-center justify-center`}>
-                                                        <CiImageOn/>
-                                                    </div>
+                                                ))
                                             }
                                         </div>
-                                        <div
-                                            className={`rounded border-black border bg-white z-20 absolute w-[200px]  
-                                            py-1 px-2 ${urlSourceClicked === index ? 'block' : 'hidden'}`}>
-                                            <input
-                                                type={'text'}
-                                                spellCheck={false}
-                                                placeholder={"URL"}
-                                                className={`w-full p-2 placeholder:italic right-0 outline-none `}/>
-                                        </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/*Producer detail*/}
+                    <div className={`flex flex-col`}>
+                        <Title title={"Product Detail"}/>
+                        <div className={`w-full py-3 flex flex-col gap-y-2`}>
+                            <div className={`flex w-full gap-x-4 *:flex-1 px-4`}>
+                                <Input input={{
+                                    require: true,
+                                    value: productName,
+                                    onChange: (e) => setProductName(e.target.value),
+                                    label: "Product name",
+                                    placeholder: "Enter product name"
+                                }}/>
+                                {/*producer*/}
+                                <div>
+                                    <Selector selector={{
+                                        id: "producer",
+                                        value: producer,
+                                        addNew: categoryPick !== '',
+                                        onChange: handleSelectProducer,
+                                        label: "Producer",
+                                        action: () => handleAddCategoryOrProducerClick(false),
+                                        selectedOption: "Choose a producer",
+                                        options: producers.map(value => value.name)
+                                    }}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`w-full p-3 flex flex-wrap *:w-1/3 *:px-3 *:py-3`}>
+                            {
+                                productDetailText.map((value, index) => (
+                                    <Input key={index} input={value}/>
+                                ))
+                            }
+                            {
+                                productDetailSelect.current.map((value, index) => (
+                                    <Selector selector={value} key={index}/>
                                 ))
                             }
                         </div>
                     </div>
-                    <div className={`mt-2 w-full flex gap-x-1 *:w-1/3`}>
-                        <div></div>
-                    </div>
-                </div>
-                {/*Price*/}
-                <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
-                    <Title title={"Price"}/>
-                    <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
-                        <Input input={{
-                            require: true,
-                            label: "Current price",
-                            placeholder: "Ex: 12000000",
-                            value: rawCurrentPrice,
-                            onChange: (e) => setRawCurrentPrice(e.target.value)
-                        }}/>
-                        <Input input={{
-                            require: true,
-                            label: "Previous price",
-                            placeholder: "Ex: 15000000",
-                            value: rawPrePrice,
-                            onChange: (e) => setRawPrePrice(e.target.value)
-                        }}/>
-                    </div>
-                </div>
-                {/*quantity*/}
-                <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
-                    <Title title={"Quantity"}/>
-                    <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
-                        <Input input={{
-                            require: true,
-                            label: "Total quantity",
-                            value: rawTotalQuantity,
-                            onChange: (e) => setRawTotalQuantity(e.target.value)
-                        }}/>
-                        <Input input={{
-                            require: true,
-                            label: "Available quantity",
-                            value: rawAvaiQuantity,
-                            onChange: (e) => setRawAvaiQuantity(e.target.value)
-                        }}/>
-                    </div>
-                </div>
-                {/*preview*/}
-                <div className={`bg-white pb-2 w-full rounded shadow-2xl flex flex-col`}>
-                    <Title title={"Preview"}/>
-                    <div className={`flex w-full`}>
-                        <div className={`w-1/2 p-2 *:w-full bg-white`}>
-                            {
-                                previews[0] ?
-                                    <img
-                                        src={previews[0]}
-                                        className={` h-full aspect-[3/4] object-contain`}
-                                        alt={'Product preview'}/>
-                                    :
-                                    <div className={` z-0 aspect-[3/4] bg-gray-100 flex items-center justify-center`}>
-                                        <CiImageOn/>
-                                    </div>
-                            }
-                        </div>
-                        {/*preview*/}
-                        <div className={`flex w-1/2 flex-col gap-y-2 p-2 h-full`}>
-                            <div className={`flex flex-col gap-y-4 font-medium py-4 justify-center`}>
-                                <div
-                                    className={`w-full flex items-center justify-start px-2 py-2  rounded bg-outer_blue`}>
-                                    <p className={`text-inner_blue truncate`}>{productName || 'Product name'}</p>
-                                </div>
-                                <div
-                                    className={`w-full flex items-center justify-start px-2 py-2 rounded bg-outer_green`}>
-                                    <p className={`text-inner_green truncate`}>{producer || 'Producer'}</p>
-                                </div>
-                                <div
-                                    className={`w-full flex items-center justify-start px-2 py-2 rounded bg-outer_red`}>
-                                    <p className={`text-inner_red truncate`}>{
-                                        rawCurrentPrice ?
-                                            parseInt(rawCurrentPrice).toLocaleString('vi-VN') : 0}VND
-                                    </p>
-                                </div>
+                    {/*Description*/}
+                    <div className={`flex flex-col`}>
+                        <Title title={"Description"}/>
+                        <div className={`flex flex-col px-4`}>
+                            <div className={`w-full py-3 flex flex-col gap-y-2`}>
+                                <Input input={{
+                                    require: true,
+                                    label: "Title",
+                                    placeholder: "Enter title",
+                                    value: title,
+                                    onChange: (e) => setTitle(e.target.value),
+                                }}/>
+                            </div>
+                            <div className={`flex gap-x-3 items-center pb-4`}>
+                                <label className={`text-sm font-medium text-gray-900`}>Content </label>
+                                <FileUpload
+                                    text={false}
+                                    style={`w-1/6 aspect-[3/1]`}
+                                    input={
+                                        <input
+                                            onChange={handleContentDocUpload}
+                                            className={`hidden`}
+                                            type="file"
+                                            accept="application/msword, .docx, .doc"/>
+                                    }
+                                />
+
                             </div>
                         </div>
+                    </div>
+                    {/*Color*/}
+                    <div className={`flex flex-col`}>
+                        <Title title={"Color"}/>
+                        <div className={`flex px-4 gap-x-3  py-3`}>
+                            {/*color add*/}
+                            <div className={`flex border-r w-2/3 border-gray-600`}>
+                                <div className={`flex flex-col gap-y-4 w-2/3`}>
+                                    <Input input={{
+                                        require: false,
+                                        label: "Name",
+                                        placeholder: "Enter color",
+                                        value: colorName,
+                                        onChange: (e) => setColorName(e.target.value)
+                                    }}/>
+                                    <div className={`flex gap-x-3 items-center `}>
+                                        <label className={`text-sm font-medium text-gray-900`}>Image </label>
+                                        <FileUpload
+                                            text={false}
+                                            style={`w-full aspect-[5/1]`}
+                                            input={
+                                                <input
+                                                    onChange={handleColorImageSource}
+                                                    className={`hidden`}
+                                                    type="file"
+                                                    accept="image/*"/>
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className={`w-1/3 p-2 pb-0 flex items-end justify-center`}>
+                                    <div
+                                        className={`rounded bg-default_blue cursor-pointer hover:bg-blue_other w-1/2 px-2 py-1`}>
+                                        <button onClick={handleColorAdd} className={`w-full text-white font-medium`}>Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {/*color list*/}
+                            <div className={`w-1/3 flex flex-wrap gap-y-1 *:w-1/2`}>
+                                {
+                                    rawColors.map((value, index) => (
+                                        <div key={index} className={`px-2 `}>
+                                            <div
+                                                className={`bg-gray-300 relative flex items-center justify-center rounded py-1`}>
+                                                <p className={`cursor-default`}>{value.color}</p>
+                                                <IoCloseCircleOutline
+                                                    onClick={() => handleRemoveColor(value.color)}
+                                                    className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
 
+                            </div>
+                        </div>
                     </div>
-                    <div className={`w-full flex items-center justify-center px-2 pt-2 pb-0`}>
-                        <button
-                            onClick={() => handleAddProduct()}
-                            className={`py-1 px-1 w-full rounded bg-default_blue text-white font-medium hover:bg-blue_other`}>Add
-                            product
-                        </button>
+                </div>
+                {/**/}
+                <div className={`w-1/3 p-3 flex-col flex gap-y-4`}>
+                    {/*images*/}
+                    <div className={`bg-white w-full rounded shadow-2xl flex flex-col `}>
+                        <Title title={"Product images"}/>
+                        <div ref={innerDiv} className={`w-full p-2`}>
+                            {/*images*/}
+                            <div
+                                className={`w-full flex flex-wrap items-center *:p-1 *:w-1/3 *:rounded *:aspect-square `}>
+                                <FileUpload
+                                    text={true}
+                                    style={'w-1/3'}
+                                    input={
+                                        <input
+                                            disabled={imageLoaded >= 5}
+                                            id="dropzone-file"
+                                            type="file"
+                                            accept={'image/*'}
+                                            multiple={true}
+                                            onChange={handleImageChange}
+                                            className="hidden"/>}/>
+                                {
+                                    Array.from({length: maxImages}).map((value, index) => (
+                                        <div className={`p-1 relative`}>
+                                            <div
+                                                className={`flex bg-gray-100 items-center justify-center w-full aspect-square rounded`}>
+                                                {
+                                                    previews[index] ?
+                                                        <div className={`relative h-full`}>
+                                                            <img key={index} src={previews[index]}
+                                                                 alt={`Preview ${index}`}
+                                                                 className="h-full w-auto object-contain "/>
+                                                            <IoCloseCircleOutline
+                                                                onClick={() => handleRemoveProductImage(index)}
+                                                                className={`cursor-pointer absolute -top-2 -right-2`}
+                                                            />
+                                                        </div>
+                                                        :
+                                                        <div onClick={() => handleImageSource(index)}
+                                                             className={`w-full z-0 h-full flex items-center justify-center`}>
+                                                            <CiImageOn/>
+                                                        </div>
+                                                }
+                                            </div>
+                                            <div
+                                                className={`rounded border-black border bg-white z-20 absolute w-[200px]  
+                                            py-1 px-2 ${urlSourceClicked === index ? 'block' : 'hidden'}`}>
+                                                <input
+                                                    type={'text'}
+                                                    spellCheck={false}
+                                                    placeholder={"URL"}
+                                                    className={`w-full p-2 placeholder:italic right-0 outline-none `}/>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className={`mt-2 w-full flex gap-x-1 *:w-1/3`}>
+                            <div></div>
+                        </div>
                     </div>
-                    {
-                        imagesLoadState.loading || colorImagesLoadState.loading && (
-                            <Loading/>
-                        )
-                    }
-                    {
-                        openAddCategory &&
-                        <AddCategory setAction={setOpenAddCategory} category={addCategory ? undefined : categoryPick}/>
-                    }
+                    {/*Price*/}
+                    <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
+                        <Title title={"Price"}/>
+                        <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
+                            <Input input={{
+                                require: true,
+                                label: "Current price",
+                                placeholder: "Ex: 12000000",
+                                value: rawCurrentPrice,
+                                onChange: (e) => setRawCurrentPrice(e.target.value)
+                            }}/>
+                            <Input input={{
+                                require: true,
+                                label: "Previous price",
+                                placeholder: "Ex: 15000000",
+                                value: rawPrePrice,
+                                onChange: (e) => setRawPrePrice(e.target.value)
+                            }}/>
+                        </div>
+                    </div>
+                    {/*quantity*/}
+                    <div className={`bg-white pb-6 w-full rounded shadow-2xl flex flex-col`}>
+                        <Title title={"Quantity"}/>
+                        <div className={`flex flex-col gap-y-2 mt-4 px-4`}>
+                            <Input input={{
+                                require: true,
+                                label: "Total quantity",
+                                value: rawTotalQuantity,
+                                onChange: (e) => setRawTotalQuantity(e.target.value)
+                            }}/>
+                            <Input input={{
+                                require: true,
+                                label: "Available quantity",
+                                value: rawAvaiQuantity,
+                                onChange: (e) => setRawAvaiQuantity(e.target.value)
+                            }}/>
+                        </div>
+                    </div>
+                    {/*preview*/}
+                    <div className={`bg-white pb-2 w-full rounded shadow-2xl flex flex-col`}>
+                        <Title title={"Preview"}/>
+                        <div className={`flex w-full`}>
+                            <div className={`w-1/2 p-2 *:w-full bg-white`}>
+                                {
+                                    previews[0] ?
+                                        <img
+                                            src={previews[0]}
+                                            className={` h-full aspect-[3/4] object-contain`}
+                                            alt={'Product preview'}/>
+                                        :
+                                        <div
+                                            className={` z-0 aspect-[3/4] bg-gray-100 flex items-center justify-center`}>
+                                            <CiImageOn/>
+                                        </div>
+                                }
+                            </div>
+                            {/*preview*/}
+                            <div className={`flex w-1/2 flex-col gap-y-2 p-2 h-full`}>
+                                <div className={`flex flex-col gap-y-4 font-medium py-4 justify-center`}>
+                                    <div
+                                        className={`w-full flex items-center justify-start px-2 py-2  rounded bg-outer_blue`}>
+                                        <p className={`text-inner_blue truncate`}>{productName || 'Product name'}</p>
+                                    </div>
+                                    <div
+                                        className={`w-full flex items-center justify-start px-2 py-2 rounded bg-outer_green`}>
+                                        <p className={`text-inner_green truncate`}>{producer || 'Producer'}</p>
+                                    </div>
+                                    <div
+                                        className={`w-full flex items-center justify-start px-2 py-2 rounded bg-outer_red`}>
+                                        <p className={`text-inner_red truncate`}>{
+                                            rawCurrentPrice ?
+                                                parseInt(rawCurrentPrice).toLocaleString('vi-VN') : 0}VND
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div className={`w-full flex items-center justify-center px-2 pt-2 pb-1`}>
+                            {
+                                product ?
+                                    <div className={`w-full flex items-center justify-center gap-x-4`}>
+                                        <DefaultButton
+                                            label={"Delete"}
+                                            style={`bg-default_red hover:bg-red-600 w-full`}
+                                            onclick={handleDeleteProductRequest}/>
+                                        <DefaultButton
+                                            label={"Update"}
+                                            style={`bg-inner_green hover:bg-default_green w-full`}
+                                            onclick={handleUpdateProduct}/>
+                                    </div> :
+                                    <DefaultButton
+                                        label={"Add product"}
+                                        style={`bg-default_blue hover:bg-blue_other w-full`}
+                                        onclick={handleAddProduct}/>
+                            }
+
+                        </div>
+                        {
+                            imagesLoadState.loading || colorImagesLoadState.loading && (
+                                <Loading/>
+                            )
+                        }
+                        {
+                            openAddCategory &&
+                            <AddCategory setAction={setOpenAddCategory}
+                                         category={addCategory ? undefined : categoryPick}/>
+                        }
+                        {
+                            warningDelete &&
+                            <div
+                                className={`w-screen h-screen flex fixed backdrop-blur-sm bg-black bg-opacity-10 inset-0 z-50 items-center justify-center `}>
+                                <div
+                                    className={`w-[500px] h-fit max-h-[550px] bg-white drop-shadow rounded-xl flex flex-col items-center p-10`}>
+                                    <p className={`font-bold`}>Are you sure to delete this product?</p>
+                                    <p className={`text-red-600`}>This action can not be undo!!!</p>
+                                    <div className={`w-full flex items-center justify-center flex-col mt-4`}>
+                                        <label className={`text-[16px] select-none flex flex-col items-center gap-y-2`}>
+                                            To confirm, type "{product?.name}" in the box below
+                                            <DefaultInput onChange={(e)=>setConfirmText(e.target.value)} value={confirmText} type={'text'} className={`w-full`}/>
+                                        </label>
+                                    </div>
+                                    <div className={`flex gap-x-3 items-center mt-3 justify-center w-full`}>
+                                        <DefaultButton
+                                            label={"Cancel"}
+                                            style={`bg-gray-400 w-fit hover:bg-gray-500 px-3`}
+                                            onclick={()=>setWarningDelete(false)}/>
+                                        <DefaultButton
+                                            label={"Delete"}
+                                            style={`bg-default_red w-fit hover:bg-red-600 px-3`}
+                                            onclick={handleDeleteProduct}/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
+type Button = {
+    onclick: () => void,
+    label: string,
+    style?: string
+}
+
+export const DefaultButton: React.FC<Button> = ({label, style, onclick}) => {
+    return (
+        <button
+            onClick={onclick}
+            className={` py-1 px-1 rounded text-white font-medium ${style}`}>
+            {label}
+        </button>
+    )
+}
 type TitleProps = {
     title: string
 }
@@ -795,7 +948,6 @@ type InputProps = {
 }
 const Input: React.FC<InputProps> = ({input}) => {
     return (
-
         <div className={`flex flex-col w-full`}>
             <label className={`text-sm font-medium text-gray-900 mb-2`}>{input.label}</label>
             <div
@@ -947,15 +1099,18 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
             setAction(false)
             setIsLoading(false)
         } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                const customError: Error = error.response.data
+                alert(customError.message)
+            }
             setSuccess(false)
             setIsLoading(false)
-            alert("An error occurred")
         }
     }
     const handleAddProducers = async () => {
         try {
             if (category) {
-                await postNewProducer(producers,category)
+                await postNewProducer(producers, category)
                 setSuccess(true)
                 setAction(false)
                 setIsLoading(false)
@@ -963,7 +1118,6 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
         } catch (error) {
             setSuccess(false)
             setIsLoading(false)
-            alert("An error occurred")
         }
     }
     const handleAddClick = () => {
@@ -1013,8 +1167,10 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
                                             {value.name}
                                         </p>
                                         <div className={`absolute -top-2 -right-2`}>
-                                            <IoCloseCircleOutline onClick={() => handleRemoveClick(value.name)}
-                                                                  color={'black'}/>
+                                            <IoCloseCircleOutline
+                                                className={`cursor-pointer`}
+                                                onClick={() => handleRemoveClick(value.name)}
+                                                color={'black'}/>
                                         </div>
                                     </div>
                                 ))
@@ -1051,4 +1207,4 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
         </div>
     )
 }
-export default AdminProductPage;
+export default ProductInfo;
