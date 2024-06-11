@@ -8,6 +8,7 @@ const LoginPage = () => {
         console.log(email)
         console.log(password)
     }
+    const emailpPattern : string = '/([A-z 0-9])+@([A-z])+.([A-z])/'
     return (
         <div className="w-full flex px-4 mx-auto max-w-8xl h-screen justify-center drop-shadow-2xl "
              style={{

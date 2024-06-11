@@ -192,6 +192,18 @@ export const updateProduct = async (product: Product,productId : string) => {
         }
         throw error;
     }
+}
 
+export const deleteProduct = async (id: string) => {
+    try{
+        return await instance.delete(`${productPath}/${id}`)
+            .then(response=>response.data)
+    }catch(error){
+        if(axios.isAxiosError(error) && error.response){
+            const customError : Error = error.response.data
+            alert(customError.message)
+        }
+        throw error;
+    }
 }
 

@@ -13,6 +13,7 @@ import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
 import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
 import AdminAddProductPage from "@/page/admin/AdminAddProductPage.tsx";
 import ProductDetail from "@/page/admin/ProductDetail.tsx";
+import Test from "@/page/Test.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -48,7 +49,7 @@ const AppRouter = () => {
     return (
         <CleanUrlMiddleware>
             <Routes>
-                <Route path={'/test'} element={<AdminAddProductPage/>}/>
+                <Route path={'/test'} element={<Test/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>

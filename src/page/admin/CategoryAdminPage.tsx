@@ -74,6 +74,10 @@ const CategoryAdminPage = () => {
             <div className={`w-[1200px] relative top-20 self-center py-6`}>
                 <div className={`w-full shadow flex flex-wrap bg-white rounded p-4`}>
                     {
+                        product.length==0 &&
+                        <p className={`text-red-600 font-medium`}>No device found</p>
+                    }
+                    {
                         product.map((value, index) => (
                             <AdminProductCard
                                 key={index} product={value}/>
