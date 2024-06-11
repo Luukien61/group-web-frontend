@@ -1,22 +1,23 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
-import {useCategoryItem, useFilter, useLocationStore} from "@/zustand/AppState.ts";
+import {useCategoryItem, useFilter} from "@/zustand/AppState.ts";
 import {laptopPrice, MenuLink, phonePrice} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
+import {getProducersByCategory} from "@/axios/Request.ts";
+import {Producer} from "@/component/CategoryCard.tsx";
 
 
 const SideBarFilter = () => {
-        const {categoriesItem} = useCategoryItem()
         const path = useLocation().pathname.slice(1).split("/")[0]
         const search = useLocation().search
         const navigate = useNavigate()
         const [producerChecked, setProducerChecked] = useState<string[]>([])
         const [checkAllProducer, setCheckAllProducer] = useState<boolean>(true)
         const [producerSort, setProducerSort] = useState<string[]>([]);
-        const [producers, setProducers] = useState<string[]>([]);
+        const [producersName, setProducersName] = useState<string[]>([]);
         const [priceSort, setPriceSort] = useState<number[]>([]);
         const {producerFilter, priceFilter, setProductFilter, setPriceFilter} = useFilter()
         useEffect(() => {
@@ -30,16 +31,13 @@ const SideBarFilter = () => {
                     break;
                 }
             }
-            const getAllProducer = () => {
-                const category = categoriesItem.find(value =>
-                    value.name.toLowerCase() === path.toLowerCase())
-                const producer = category?.producers.map(value => value.name)
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                setProducers(producer)
-            }
-            getAllProducer()
+            getProducers(path)
         }, [path]);
+        const getProducers = async (category: string) => {
+            const producers: Producer[] = await getProducersByCategory(category)
+            const producerNames = producers.map((value) => value.name)
+            setProducersName(producerNames)
+        }
         const priceItemsRef = useRef<MenuLink[]>([]);
         const handleItemCheck = (checkedState: CheckedState, value: string) => {
             if (checkedState) {
@@ -133,7 +131,7 @@ const SideBarFilter = () => {
                                 </label>
                             </div>
                             {
-                                producers?.map((value, index1) => (
+                                producersName?.map((value, index1) => (
                                     <div key={index1 + 1}
                                          className={`flex w-1/2 py-2  `}
                                     >
@@ -150,7 +148,6 @@ const SideBarFilter = () => {
                                 ))
                             }
                         </div>
-
                     </div>
                     {/*Price*/}
                     <div
@@ -166,7 +163,6 @@ const SideBarFilter = () => {
                                     <Label className={`px-2 text-[14px] font-normal`}>All</Label>
                                 </div>
                                 {
-
                                     priceItemsRef.current.map((value, index1) => (
                                         <div key={index1} className="flex items-center space-x-2">
                                             <RadioGroupItem className={`text-default_red rounded-sm`}

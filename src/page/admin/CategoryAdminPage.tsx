@@ -5,11 +5,12 @@ import useProductSearch from "@/hooks/useProductSearch.ts";
 import {DefaultInput} from "@/component/Input.tsx";
 import AdminProductCard from "@/component/admin/AdminProductCard.tsx";
 import {Product} from "@/component/CategoryCard.tsx";
+import {useLocation} from "react-router-dom";
 
-type Props = {
-    category: string
-}
-const CategoryAdminPage: React.FC<Props> = ({category}) => {
+
+const CategoryAdminPage = () => {
+    const locations = useLocation().pathname.split("/");
+    const category = locations[locations.length - 1];
     const [producers, setProducers] = useState<Producer[]>([])
     const [product, setProduct] = useState<Product[]>([])
     const [allProducts, setAllProducts] = useState<Product[]>([])

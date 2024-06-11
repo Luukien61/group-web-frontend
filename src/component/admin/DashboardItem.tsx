@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Category} from "@/common/NavMenu.tsx";
 import {getProductQuantityByCategory} from "@/axios/Request.ts";
+import {Link} from "react-router-dom";
 
 type Props = {
     category: Category;
@@ -38,20 +39,24 @@ const DashboardItem : React.FC<Props>= ({category}) => {
     return (
         <div className={`aspect-square w-1/2`}>
             <div className={`px-2 w-full`}>
-                <div className={`bg-white p-4 flex flex-col rounded-xl aspect-square w-[90%] shadow-xl`}>
-                    <div className={`w-full aspect-square flex flex-col gap-y-2`}>
-                        <p className={`font-semibold`}>{category.name}</p>
-                        <hr className={`bg-black`}/>
-                        <div className={`w-full h-full`}>
-                            <div className={`flex  flex-wrap gap-x-1 w-full h-full items-center justify-center`}>
-                                <div className={`h-fit w-fit px-2 py-1 ${quantityColor.outerColor} rounded-xl `}>
-                                    <p className={` text-[45px]  ${quantityColor.mainColor}`}>{productQuantity} </p>
+                <Link
+                    to={`${category.name.toLowerCase()}`}
+                    className={`w-full`}>
+                    <div className={`bg-white p-4 flex flex-col rounded-xl aspect-square w-[90%] shadow-xl`}>
+                        <div className={`w-full aspect-square flex flex-col gap-y-2`}>
+                            <p className={`font-semibold`}>{category.name}</p>
+                            <hr className={`bg-black`}/>
+                            <div className={`w-full h-full`}>
+                                <div className={`flex flex-wrap gap-x-1 w-full h-full items-center justify-center`}>
+                                    <div className={`h-fit w-fit px-2 py-1 ${quantityColor.outerColor} rounded-xl `}>
+                                        <p className={` text-[45px]  ${quantityColor.mainColor}`}>{productQuantity} </p>
+                                    </div>
+                                    <p className={`text-[32px] text-[#939BA2] font-medium`}>products</p>
                                 </div>
-                                <p className={`text-[32px] text-[#939BA2] font-medium`}>products</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </Link>
             </div>
         </div>
     );
