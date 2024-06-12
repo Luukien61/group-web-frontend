@@ -44,6 +44,7 @@ type ProductInfoProps = {
 const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const {categories, setCategories} = useCategory()
     const navigate = useNavigate()
+    const [productImageUrl, setProductImageUrl] = useState<string >();
     const [content, setContent] = useState<string>('')
     const fetchedProducers = useRef(new Map())
     const [imagesLoadState, setImagesLoadState] = useState<LoadState>(initialState)
@@ -59,7 +60,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [imageLoaded, setImageLoaded] = useState<number>(0);
     const [urlSourceClicked, setUrlSourceClicked] = useState<number>();
     const [rom, setRom] = useState<number>()
-    const [OS, setOS] = useState<string>('')
+    const [OS, setOS] = useState<string>()
     const [openAddCategory, setOpenAddCategory] = useState<boolean>(false)
     const [processor, setProcessor] = useState<string>('');
     const [rawRam, setRawRam] = useState<string>('');
@@ -82,14 +83,70 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         title: '',
         content: ''
     }
+    const defaultDetail: SelectInput[] = [
+        {
+            id: "rom",
+            label: "ROM - Storage",
+            options: [],
+            value: rom,
+            addNew: false,
+            onChange: (e) => setRom(parseInt(e.target.value))
+        },
+        {
+            id: "OS",
+            label: "OS",
+            value: OS,
+            options: [],
+            addNew: false,
+            onChange: (e) => setOS(e.target.value)
+        }
+    ]
+    const phoneDetailSelect: SelectInput[] = [
+        {
+            id: "rom",
+            label: "ROM - Storage",
+            addNew: true,
+            value: rom,
+            options: [64, 128, 256, 512, 1024],
+            selectedOption: "Choose a ROM",
+            onChange: (e) => setRom(parseInt(e.target.value)),
+        },
+        {
+            id: "OS",
+            label: "OS",
+            addNew: true,
+            value: OS,
+            options: ["Android", "IOS"],
+            selectedOption: "Choose an OS",
+            onChange: (e) => setOS(e.target.value)
+        }
+    ]
+    const lapDetailSelect: SelectInput[] = [
+        {
+            id: "rom",
+            label: "ROM - Storage",
+            options: [256, 512, 1024],
+            value: rom,
+            addNew: true,
+            selectedOption: "Choose a ROM",
+            onChange: (e) => setRom(parseInt(e.target.value)),
+        },
+        {
+            id: "OS",
+            label: "OS",
+            addNew: true,
+            value: OS,
+            options: ["Windows", "MacOS", "Ubuntu"],
+            selectedOption: "Choose an OS",
+            onChange: (e) => setOS(e.target.value)
+        }
+    ]
     useEffect(() => {
         if (product) {
             const categoryName = product.category.name.toLowerCase()
-            handleCategoryClick(categoryName)
             const feature = product.features
             const madeTime = feature.madeTime
             feature.madeTime = new Date(madeTime)
-            setCategoryPick(categoryName)
             setProductName(product.name)
             setProcessor(feature.chip)
             setRawRam(feature.memory[0].ram.toString())
@@ -102,31 +159,37 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             setContent(product.description.content)
             setRawCurrentPrice(product.price[0].currentPrice.toString())
             setRawPrePrice(product.price[0].previousPrice.toString())
-            setRawTotalQuantity(product.totalQuantity.toString())
-            setRawAvaiQuantity(product.available.toString())
+            setRawTotalQuantity(product.totalQuantity?.toString())
+            setRawAvaiQuantity(product.available?.toString())
             setPreviews(product.imgs)
             setRawColors(product.color)
             setProducer(product.producer.name)
             setRom(feature.memory[0].rom)
             setOS(feature.os)
+            handleCategoryClick(categoryName)
         }
-    }, [product]);
+    }, []);
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                    setPreviews(prevState => [...prevState, reader.result as string]);
-                    setUrlSourceClicked(-1)
+                    handleImageLoaded(reader.result as string);
                 };
                 reader.readAsDataURL(file);
             });
-            setImageLoaded(prevState => prevState + files.length)
         } else {
             setPreviews([]);
         }
     };
+    const handleImageLoaded =(url: string | undefined)=>{
+        if(!url || url ==='') return
+        setPreviews(prevState => [...prevState,url]);
+        setUrlSourceClicked(-1)
+        setImageLoaded(prevState => prevState + 1)
+        setProductImageUrl('')
+    }
     useEffect(() => {
         setImageLoaded(previews.length)
     }, [previews]);
@@ -173,8 +236,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         if (product) {
             const productId: string = product.id
             const newProduct = await assembleProduct(productId, product.ordering)
+            console.log("New product: ", newProduct)
             if (newProduct) {
-                await updateProduct(product, productId);
+                await updateProduct(newProduct, productId);
                 navigate("/test")
             }
         }
@@ -182,8 +246,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleDeleteProductRequest = () => {
         setWarningDelete(true)
     }
-    const handleDeleteProduct=()=>{
-        if(confirmText===product?.name){
+    const handleDeleteProduct = () => {
+        if (confirmText === product?.name) {
             alert("Deleted")
         }
     }
@@ -196,9 +260,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const madeTime = new Date(`01/${rawMadeTime}`)
         description.title = title
         // const category = categoryPick
-        const currentPice = parseInt(rawCurrentPrice)
+        const currentPrice = parseInt(rawCurrentPrice)
         const prePrice = parseInt(rawPrePrice)
-        const totalQuantiy = parseInt(rawTotalQuantity)
+        const totalQuantity = parseInt(rawTotalQuantity)
         const avaiQuantity = parseInt(rawAvaiQuantity)
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
         setRawColors([])
@@ -206,9 +270,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         setPreviews([])
         if (colors && imgs && imgs.length > 0 && rom && OS) {
             const memory: Price = {
+                id: product?.features.memory[0].id,
                 ram: ram,
                 rom: rom,
-                currentPrice: currentPice,
+                currentPrice: currentPrice,
                 previousPrice: prePrice
             }
             const newProduct: Product = {
@@ -216,9 +281,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 name: productName,
                 price: [memory],
                 features: {
+                    id: product?.features.id ,
                     screen: screen,
-                    frontCamera: frontCams,
-                    rearCamera: rearCams,
+                    frontCamera: frontCams || [],
+                    rearCamera: rearCams || [],
                     memory: [memory],
                     os: OS,
                     battery: battery,
@@ -226,6 +292,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     chip: processor
                 },
                 description: {
+                    id: product?.description.id ,
                     title: title,
                     content: content
                 },
@@ -237,7 +304,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 producer: {
                     name: producer
                 },
-                totalQuantity: totalQuantiy,
+                totalQuantity: totalQuantity,
                 available: avaiQuantity,
                 ordering: ordering
             }
@@ -254,6 +321,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             const url = await imageUpload({image: value.link})
             if (url && value.color) {
                 const color: Color = {
+                    id: value.id || undefined,
                     color: value.color,
                     link: url
                 }
@@ -345,7 +413,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             document.body.classList.add('overflow-hidden')
         } else document.body.classList.remove("overflow-hidden")
         loadCategory()
-    }, [openAddCategory,warningDelete]);
+    }, [openAddCategory, warningDelete]);
     const loadCategory = async () => {
         const category: Category[] = await getCategories();
         const categoryLower = category.map(item => item.name.toLowerCase());
@@ -357,9 +425,15 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
     useEffect(() => {
         const getProducers = async () => {
-            const response: Producer[] = await getProducersByCategory(categoryPick)
-            setProducers(response.sort((a, b) => a.name.localeCompare(b.name)))
-            fetchedProducers.current.set(categoryPick, response)
+            if (categoryPick) {
+                const response: Producer[] = await getProducersByCategory(categoryPick)
+                if (Array.isArray(response)) {
+                    setProducers(response.sort((a, b) => a.name.localeCompare(b.name)));
+                } else {
+                    console.error('Response is not an array');
+                }
+                fetchedProducers.current.set(categoryPick, response)
+            }
         }
         getProducers()
     }, [openAddCategory]);
@@ -377,6 +451,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 }
             }
         }
+        chooseDetailSelect()
         const getProducers = async () => {
             const response: Producer[] = await getProducersByCategory(category)
             setProducers(response.sort((a, b) => a.name.localeCompare(b.name)))
@@ -384,10 +459,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         }
 
         if (!fetchedProducers.current.has(category)) {
-            console.log("Hello")
             getProducers()
         } else {
-            console.log("Bye")
             const producers = fetchedProducers.current.get(category);
             if (producers) {
                 setProducers(producers);
@@ -395,7 +468,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 setProducers([])
             }
         }
-        chooseDetailSelect()
     }
     const productDetailText: Input[] = [
         {
@@ -449,66 +521,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             placeholder: "Ex: 11/2021",
             value: rawMadeTime,
             onChange: (e) => setRawMadeTime(e.target.value)
-        }
-    ]
-    const phoneDetailSelect: SelectInput[] = [
-        {
-            id: "rom",
-            label: "ROM - Storage",
-            addNew: true,
-            value: rom,
-            options: [64, 128, 256, 512, 1024],
-            selectedOption: "Choose a ROM",
-            onChange: (e) => setRom(parseInt(e.target.value)),
-        },
-        {
-            id: "OS",
-            label: "OS",
-            addNew: true,
-            value: OS,
-            options: ["Android", "IOS"],
-            selectedOption: "Choose an OS",
-            onChange: (e) => setOS(e.target.value)
-        }
-    ]
-    const defaultDetail: SelectInput[] = [
-        {
-            id: "rom",
-            label: "ROM - Storage",
-            options: [],
-            value: rom,
-            addNew: false,
-            onChange: () => {
-            }
-        },
-        {
-            id: "OS",
-            label: "OS",
-            value: OS,
-            options: [],
-            addNew: false,
-            onChange: () => {
-            }
-        }
-    ]
-    const lapDetailSelect: SelectInput[] = [
-        {
-            id: "rom",
-            label: "ROM - Storage",
-            options: [256, 512, 1024],
-            value: rom,
-            addNew: true,
-            selectedOption: "Choose a ROM",
-            onChange: (e) => setRom(parseInt(e.target.value)),
-        },
-        {
-            id: "OS",
-            label: "OS",
-            addNew: true,
-            value: OS,
-            options: ["Windows", "MacOS", "Ubuntu"],
-            selectedOption: "Choose an OS",
-            onChange: (e) => setOS(e.target.value)
         }
     ]
     const productDetailSelect = useRef(defaultDetail)
@@ -609,11 +621,25 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                     <Input key={index} input={value}/>
                                 ))
                             }
-                            {
-                                productDetailSelect.current.map((value, index) => (
-                                    <Selector selector={value} key={index}/>
-                                ))
-                            }
+                            <Selector selector={{
+                                id: "ROM",
+                                value: rom,
+                                addNew: false,
+                                onChange: (e)=>setRom(parseInt(e.target.value)),
+                                label: "ROM",
+                                selectedOption: "Choose a ROM",
+                                options: [32,64,128,256,512, 1024]
+                            }}/>
+                            <Selector selector={{
+                                id: "OS",
+                                value: OS,
+                                addNew: false,
+                                onChange: (e)=>setOS(e.target.value),
+                                label: "OS",
+                                selectedOption: "Choose an OS",
+                                options: categoryPick ==="phone" ? ["Android", "IOS"] : (categoryPick =="laptop" ? ["Windows","MAC OS", "Ubuntu"] : [])
+                            }}/>
+
                         </div>
                     </div>
                     {/*Description*/}
@@ -726,7 +752,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                             className="hidden"/>}/>
                                 {
                                     Array.from({length: maxImages}).map((value, index) => (
-                                        <div className={`p-1 relative`}>
+                                        <div key={index} className={`p-1 relative`}>
                                             <div
                                                 className={`flex bg-gray-100 items-center justify-center w-full aspect-square rounded`}>
                                                 {
@@ -751,6 +777,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                                 className={`rounded border-black border bg-white z-20 absolute w-[200px]  
                                             py-1 px-2 ${urlSourceClicked === index ? 'block' : 'hidden'}`}>
                                                 <input
+                                                    onChange={(e)=>setProductImageUrl(e.target.value)}
+                                                    value={productImageUrl}
+                                                    onKeyDown={()=>handleImageLoaded(productImageUrl)}
                                                     type={'text'}
                                                     spellCheck={false}
                                                     placeholder={"URL"}
@@ -884,14 +913,15 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                     <div className={`w-full flex items-center justify-center flex-col mt-4`}>
                                         <label className={`text-[16px] select-none flex flex-col items-center gap-y-2`}>
                                             To confirm, type "{product?.name}" in the box below
-                                            <DefaultInput onChange={(e)=>setConfirmText(e.target.value)} value={confirmText} type={'text'} className={`w-full`}/>
+                                            <DefaultInput onChange={(e) => setConfirmText(e.target.value)}
+                                                          value={confirmText} type={'text'} className={`w-full`}/>
                                         </label>
                                     </div>
                                     <div className={`flex gap-x-3 items-center mt-3 justify-center w-full`}>
                                         <DefaultButton
                                             label={"Cancel"}
                                             style={`bg-gray-400 w-fit hover:bg-gray-500 px-3`}
-                                            onclick={()=>setWarningDelete(false)}/>
+                                            onclick={() => setWarningDelete(false)}/>
                                         <DefaultButton
                                             label={"Delete"}
                                             style={`bg-default_red w-fit hover:bg-red-600 px-3`}
@@ -980,28 +1010,32 @@ type SelectProp = {
     selector: SelectInput
 }
 const Selector: React.FC<SelectProp> = ({selector}) => {
+    const [innerSelector, setInnerSelector] = useState<SelectInput>(selector)
+    useEffect(() => {
+        setInnerSelector(selector)
+    }, [selector]);
     return (
         <form className="max-w-sm mx-auto">
             <div className={`w-full flex items-center justify-center`}>
                 <label
                     className="flex-1 block mb-2 text-sm font-medium text-gray-900">
-                    {selector.label ?? "Select an option"}
+                    {innerSelector.label ?? "Select an option"}
                 </label>
                 {
                     selector.addNew &&
                     <IoIosAddCircleOutline
-                        onClick={selector.action}
+                        onClick={innerSelector.action}
                         className={`cursor-pointer hover:scale-[1.03] duration-300 transform`}
                         color={`#3B7DDD`} size={24}/>
                 }
             </div>
-            <select id={selector.id}
-                    value={selector.value}
-                    onChange={selector.onChange}
+            <select id={innerSelector.id}
+                    value={innerSelector.value}
+                    onChange={innerSelector.onChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 outline-none text-sm rounded-lg block w-full p-[13px]">
-                <option value={''} className={`text-gray-400`} selected>{selector.selectedOption}</option>
+                <option value={''} className={`text-gray-400`} selected>{innerSelector.selectedOption}</option>
                 {
-                    selector.options.map((value, index) => (
+                    innerSelector.options.map((value, index) => (
                         <option key={index} value={value}>{value}</option>
                     ))
                 }

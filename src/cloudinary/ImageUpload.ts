@@ -3,13 +3,19 @@ import axios from "axios";
 type Props = {
     image: string | null
 };
-
+//const rawImageUrl ='data:image/jpeg;base64'
 const imageUpload = async ({image}: Props): Promise<string | null> => {
-    const cloudName : string = "dmi3xizxq";
+    const rawImageRegex = /^data:image\/\w+/;
+
+    // const rawRegex= `^https:\\/\\/res\\.cloudinary\\.com\\/${cloudName}\\/image\\/upload\\/v`;
+    // const regex = new RegExp(rawRegex);
     let url: string | null = null;
 
     if (!image) return url;
-
+    if(!rawImageRegex.test(image)){
+        return image;
+    }
+    const cloudName : string = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
     const formData = new FormData();
     formData.append('file', image);
     formData.append('upload_preset', 'unsigned_preset');
