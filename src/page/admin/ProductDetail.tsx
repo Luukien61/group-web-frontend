@@ -17,6 +17,7 @@ const ProductDetail = () => {
         const response: Product = await getProductById(productId)
         setProduct(response)
         setIsLoading(false)
+        document.title= response.name
     }
     return (
         <div>

@@ -61,6 +61,11 @@ const ProductPage = () => {
         setRam(newRam)
         setRom(newRom)
     }
+    useEffect(() => {
+        if(product){
+            document.title= product.name
+        }
+    }, [product]);
     const orderInfor: OrderProp[] = [
         {
             title: "Full name",

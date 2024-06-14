@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Producer} from "@/common/NavMenu.tsx";
 import {fetchProductsCategory, getProducersByCategory} from "@/axios/Request.ts";
 import useProductSearch from "@/hooks/useProductSearch.ts";
@@ -7,7 +7,39 @@ import AdminProductCard from "@/component/admin/AdminProductCard.tsx";
 import {Product} from "@/component/CategoryCard.tsx";
 import {useLocation} from "react-router-dom";
 
-
+export type ProductPageable = {
+    content: Product[],
+    pageabel: {
+        "pageNumber": number,
+        "pageSize": number,
+        "sort": {
+            "empty": boolean,
+            "sorted": boolean,
+            "unsorted": boolean
+        },
+        "offset": number,
+        "paged": boolean,
+        "unpaged": boolean
+    },
+    "last": boolean,
+    "totalPages": number,
+    "totalElements": number,
+    "first": boolean,
+    "size": number,
+    "number": number,
+    "sort": {
+        "empty": boolean,
+        "sorted": boolean,
+        "unsorted": boolean
+    },
+    "numberOfElements": number,
+    "empty": boolean
+}
+type FetchProps = {
+    category: string,
+    page: number,
+    size: number
+}
 const CategoryAdminPage = () => {
     const locations = useLocation().pathname.split("/");
     const category = locations[locations.length - 1];
@@ -15,6 +47,16 @@ const CategoryAdminPage = () => {
     const [product, setProduct] = useState<Product[]>([])
     const [allProducts, setAllProducts] = useState<Product[]>([])
     const {products, handleChange} = useProductSearch();
+    const [lastPage, setLastPage] = useState<boolean>(false)
+    const fetchProp = {
+        category: category,
+        page: 0,
+        size: 10
+    }
+    useEffect(() => {
+        document.title="Admin Categories"
+    }, []);
+    const [fetchProps, setFetchProps] = useState<FetchProps>(fetchProp)
     useEffect(() => {
         const getProducers = async () => {
             const response: Producer[] = await getProducersByCategory(category)
@@ -28,21 +70,22 @@ const CategoryAdminPage = () => {
             setProduct(allProducts)
         }
     }, [products]);
-    const fetchProps = {
-        category: category,
-        page: 0,
-        size: 30
-    }
+
     useEffect(() => {
         const fetchAllProduct = async () => {
-            const response = await fetchProductsCategory(fetchProps)
+            const response: ProductPageable = await fetchProductsCategory(fetchProps)
             const products = response.content
+            const last = response.last
+            setLastPage(last)
             setProduct(products)
             setAllProducts(products)
         }
         fetchAllProduct()
 
-    }, []);
+    }, [fetchProps]);
+    const handleLoadMoreClick = useCallback(() => {
+        setFetchProps(prevState => ({...prevState, size: prevState.size + 10}))
+    }, [])
     return (
         <div className={`flex flex-col  w-full `}>
             {/*head filter*/}
@@ -72,16 +115,28 @@ const CategoryAdminPage = () => {
             </div>
             {/*content*/}
             <div className={`w-[1200px] relative top-20 self-center py-6`}>
-                <div className={`w-full shadow flex flex-wrap bg-white rounded p-4`}>
+                <div className={`w-full flex-col shadow flex flex-wrap bg-white rounded p-4`}>
                     {
-                        product.length==0 &&
+                        product.length == 0 &&
                         <p className={`text-red-600 font-medium`}>No device found</p>
                     }
+                    <div className={`w-full flex flex-wrap `}>
+                        {
+                            product.map((value, index) => (
+                                <AdminProductCard
+                                    key={index} product={value}/>
+                            ))
+                        }
+                    </div>
                     {
-                        product.map((value, index) => (
-                            <AdminProductCard
-                                key={index} product={value}/>
-                        ))
+                        !lastPage &&
+                        <div className={`w-full flex items-center  justify-center pt-6 pb-4`}>
+                            <button
+                                onClick={handleLoadMoreClick}
+                                className={`hover:text-default_blue hover:scale-105 rounded bg-gray-200 p-1`}>
+                                View more
+                            </button>
+                        </div>
                     }
                 </div>
             </div>

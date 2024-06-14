@@ -12,6 +12,9 @@ const ProductCategoryPage = () => {
     useEffect(() => {
         setPathname(path);
     }, [path]);
+    useEffect(() => {
+        document.title="Categories";
+    }, []);
     return (
         <div className={`py-4 grid grid-cols-12 w-full `}>
             <SideBarFilter/>

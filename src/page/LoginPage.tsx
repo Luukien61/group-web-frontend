@@ -1,14 +1,84 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {homeBackgroundimg} from "@/url/Urls.ts";
+import {authenticateRequest, login, TokenResponse} from "@/axios/Request.ts";
+import {useNavigate} from "react-router-dom";
+import {useLoginState} from "@/zustand/AppState.ts";
 
-const LoginPage = () => {
-    const [email, setEmail]= useState<string>("")
-    const [password, setPassword]= useState<string>("")
-    const handleLogIn=()=>{
-        console.log(email)
-        console.log(password)
+export type LoginProps = {
+    email: string,
+    password: string,
+}
+export type LoginResponse={
+    "message": string,
+    "tokenResponse": TokenResponse,
+    "user": {
+        "staffID": number,
+        "fullName": string,
+        "email": string,
+        "phone": string
     }
-    const emailpPattern : string = '/([A-z 0-9])+@([A-z])+.([A-z])/'
+}
+export const ACCESS_TOKEN: string = "access_token";
+export const REFRESH_TOKEN: string = "refresh_token";
+export const EXPIRE_DATE: string = "expire_date";
+const LoginPage = () => {
+    const navigate = useNavigate();
+    const {isLogin, setIsLogin} = useLoginState()
+    const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [isEmailValid, setIsEmailValid] = useState<boolean>(true)
+    const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.\w{3,4}$/
+    const handleLogIn = async () => {
+        const isEmailValid: boolean = emailPattern.test(email)
+        if (isEmailValid) {
+            const loginRequest: LoginProps = {
+                email: email,
+                password: password
+            }
+            try {
+                const loginResponse: LoginResponse = await login(loginRequest)
+                const tokenResponse: TokenResponse = loginResponse.tokenResponse;
+                localStorage.setItem(ACCESS_TOKEN, tokenResponse.access_token)
+                localStorage.setItem(REFRESH_TOKEN, tokenResponse.refresh_token)
+                localStorage.setItem(EXPIRE_DATE, tokenResponse.expires_in.toString())
+                setIsLogin(true)
+                navigate("/admin")
+            } catch (e) {
+                console.error(e)
+            }
+        } else {
+            setIsEmailValid(false)
+            setTimeout(() => {
+                setIsEmailValid(true)
+            }, 2000)
+        }
+    }
+
+    useEffect( () => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if(token){
+            authenticate()
+        }
+        const handlePopState = () => {
+            if (isLogin) {
+                navigate('/admin');
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        document.title="Login"
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+    const authenticate = useCallback(async () => {
+        const state= await authenticateRequest()
+        setIsLogin(state)
+        if(state){
+            navigate("/admin")
+        }
+    },[])
     return (
         <div className="w-full flex px-4 mx-auto max-w-8xl h-screen justify-center drop-shadow-2xl "
              style={{
@@ -25,8 +95,11 @@ const LoginPage = () => {
                         alt={"App logo"}/>
                 </div>
                 <div className={`p-4`}>
-                    <InputFormGoogle label={`Email`} type={"email"} action={(value) => setEmail(value)}/>
+                    <InputFormGoogle style={`${!isEmailValid && 'border-red-600 border-2'}`} label={`Email`} type={"email"} action={(value) => setEmail(value)}/>
                     <InputFormGoogle label={`Password`} type={'password'} action={(value) => setPassword(value)}/>
+                    <div className={`w-full flex items-center justify-end `}>
+                        <p className={`italic text-[14px] hover:text-inner_blue cursor-pointer`}>Forgot password?</p>
+                    </div>
                 </div>
                 <div className={`flex justify-center`}>
                     <button
@@ -48,10 +121,11 @@ export default LoginPage;
 interface InputProps {
     type: string;
     label: string;
+    style?: string,
     action: (value: string) => void;
 }
 
-const InputFormGoogle: React.FC<InputProps> = ({type, label, action}) => {
+const InputFormGoogle: React.FC<InputProps> = ({type, label, action,style}) => {
     return (
         <div className="relative z-0 w-full mb-5 ">
             <input
@@ -59,7 +133,9 @@ const InputFormGoogle: React.FC<InputProps> = ({type, label, action}) => {
                 spellCheck="false"
                 type={type}
                 name="floating_email"
-                className="block py-2.5 px-3 w-full autofill:bg-white border rounded border-default_green text-sm text-gray-900 bg-transparent appearance-none dark:text-white   dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                className={`block py-2.5 px-3 w-full autofill:bg-white border rounded border-default_green text-sm
+                 text-gray-900 bg-transparent appearance-none focus:outline-none
+                  focus:ring-0 focus:border-blue-600 peer ${style}`}
                 placeholder=" "
                 required
             />

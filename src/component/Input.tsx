@@ -32,7 +32,7 @@ export const DefaultInput : React.FC<InputProps> = (inputProps) => {
             value={inputProps.value}
             onChange={inputProps.onChange}
             spellCheck={'false'}
-            className={`${inputProps.className ? inputProps.className :"" } rounded border bg-white text-black h-8 md:h-10 px-3 py-3 border-gray-600 focus:outline-0 focus:ring-0 placeholder:italic`}
+            className={`${inputProps.className ? inputProps.className :"" } bg-white text-black h-8 md:h-10 px-3 py-3 border-gray-600 focus:outline-0 focus:ring-0 placeholder:italic`}
             type={inputProps.type}
             placeholder={inputProps.placeholder}/>
     )

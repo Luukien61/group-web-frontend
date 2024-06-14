@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import AdminDashboard from "@/component/admin/AdminDashboard.tsx";
 import OrderDashboard from "@/component/admin/OrderDashboard.tsx";
 import AdminHeader from "@/component/admin/AdminHeader.tsx";
 
 const AdminMainContent = () => {
+    useEffect(() => {
+        document.title="Admin Home";
+    }, []);
     return (
         <div className={`w-full flex flex-col`}>
             <AdminHeader/>

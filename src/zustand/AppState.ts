@@ -107,3 +107,17 @@ export const useProduct =create<ProductPost>()(
         })
     )
 )
+
+type LoginState ={
+    isLogin: boolean,
+    setIsLogin: (newState: boolean)=>void
+}
+
+export const useLoginState = create<LoginState>()(
+    devtools(
+        (set)=>({
+            isLogin: false,
+            setIsLogin: newState => set({isLogin: newState}),
+        })
+    )
+)

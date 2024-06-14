@@ -1,8 +1,19 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
-import {instance, mailInstance} from "@/axios/Config.ts";
-import {categoryPath, findById, mailPath, producerBasePath, productPath, quantityPath, searchPath} from "@/url/Urls.ts";
+import {adminInstance, instance, mailInstance} from "@/axios/Config.ts";
+import {
+    authenticatePath,
+    categoryPath,
+    findById,
+    loginPath,
+    mailPath,
+    producerBasePath,
+    productPath,
+    quantityPath,
+    searchPath
+} from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
 import axios from "axios";
+import {ACCESS_TOKEN, LoginProps} from "@/page/LoginPage.tsx";
 
 type Props = {
     category: string,
@@ -73,7 +84,7 @@ export const fetchProductsCategory = async ({category, producer, price, page, si
         });
         return response.data;
     } catch (error) {
-        console.log(error)
+        handleError(error)
     }
 }
 
@@ -83,7 +94,7 @@ export const searchProductsByName = async (name: string) => {
             .then(response => response)
         return respone.data
     } catch (error) {
-        console.error("Error fetching products:", error);
+        handleError(error)
     }
 }
 
@@ -92,9 +103,7 @@ export const getProductById = async (id: string) => {
         return await instance.get(`${findById}/${id}`)
            .then(response => response.data)
     } catch (error) {
-        if(axios.isAxiosError(error) && error.response){
-            console.log(error.response.data.message)
-        }
+        handleError(error)
     }
 }
 type MailVerify = {
@@ -122,8 +131,7 @@ export const getConnection = async () => {
         return await instance.get(`${productPath}/home`)
             .then(response => response.data)
     } catch (error) {
-        console.log("Error getting connection:", error);
-        return "Error getting connection"
+        handleError(error)
     }
 }
 
@@ -132,7 +140,7 @@ export const getProductQuantityByCategory = async (category: string) => {
         return await instance.get(`${quantityPath}/${category}`)
             .then(response => response.data)
     } catch (error) {
-        console.log(error)
+        handleError(error)
     }
 }
 
@@ -141,10 +149,7 @@ export const postProduct = async (product: Product) => {
         return await instance.post(productPath, product)
             .then(response => response.data)
     } catch (error) {
-        if(axios.isAxiosError(error) && error.response){
-            const customError : Error = error.response.data
-            alert(customError.message)
-        }
+        handleError(error)
         // console.log("Error posting producer: ", error);
         throw error;
     }
@@ -159,10 +164,7 @@ export const postNewCategory = async (category: Category) => {
         return await instance.post(categoryPath, category)
             .then(response => response.data)
     } catch (error) {
-        if(axios.isAxiosError(error) && error.response){
-            const customError : Error = error.response.data
-            alert(customError.message)
-        }
+        handleError(error)
         // console.log("Error posting producer: ", error);
          throw error;
     }
@@ -173,10 +175,7 @@ export const postNewProducer = async (producer: Producer[], category: string) =>
         return await instance.post(`${producerBasePath}/many/${category}`, producer)
             .then(response => response.data)
     } catch (error) {
-        if(axios.isAxiosError(error) && error.response){
-            const customError : Error = error.response.data
-            alert(customError.message)
-        }
+        handleError(error)
         throw error;
     }
 }
@@ -186,10 +185,7 @@ export const updateProduct = async (product: Product,productId : string) => {
         return await instance.put(`${productPath}/${productId}`, product)
             .then(response => response.data)
     }catch(error){
-        if(axios.isAxiosError(error) && error.response){
-            const customError : Error = error.response.data
-            alert(customError.message)
-        }
+        handleError(error)
         throw error;
     }
 }
@@ -199,11 +195,40 @@ export const deleteProduct = async (id: string) => {
         return await instance.delete(`${productPath}/${id}`)
             .then(response=>response.data)
     }catch(error){
-        if(axios.isAxiosError(error) && error.response){
-            const customError : Error = error.response.data
-            alert(customError.message)
-        }
+        handleError(error)
         throw error;
     }
 }
+export type TokenResponse ={
+    access_token: string,
+    refresh_token: string,
+    token_type: string,
+    expires_in: Date
+}
 
+export const login =async (loginRequest: LoginProps)=>{
+    try{
+        return await adminInstance.post(loginPath,loginRequest)
+            .then(response => response.data)
+    }catch (error){
+        handleError(error)
+    }
+}
+export const authenticateRequest = async ()=>{
+    try{
+        const state = await adminInstance.get(`${authenticatePath}`)
+            .then(response => response.status)
+        return state === 200;
+    }catch (error){
+        // if(axios.isAxiosError(error) && error.response && error.response.status === 401){
+            return false
+        // }
+    }
+}
+
+const handleError =(error : unknown)=>{
+    if(axios.isAxiosError(error) && error.response){
+        const customError : Error = error.response.data
+        alert(customError.message)
+    }
+}

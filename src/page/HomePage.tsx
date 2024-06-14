@@ -27,6 +27,7 @@ const HomePage = () => {
             console.log(response)
         }
         getConnections()
+        document.title= "Home"
     }, []);
     return (
         <main className="flex-auto bg-opacity-50 py-4 space-y-3 w-full min-w-0 static max-h-full overflow-visible ">

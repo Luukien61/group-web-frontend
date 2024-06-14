@@ -1,6 +1,6 @@
 import {homePage} from "../url/Urls.ts";
 import {CgProfile} from "react-icons/cg";
-import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, useCallback, useRef, useState} from "react";
 import Input from "../component/Input.tsx";
 import {FiShoppingCart} from "react-icons/fi";
 import NavMenu from "./NavMenu.tsx";
