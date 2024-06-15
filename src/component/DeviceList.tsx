@@ -11,7 +11,9 @@ const DeviceList = () => {
             {
                 path && (
                     <CategoryCard
+                        renderWhenEmpty={true}
                         name={path}
+                        heightClass={'min-h-full'}
                         category={path}
                         initialSize={12}
                         widthClass={`w-1/4`}

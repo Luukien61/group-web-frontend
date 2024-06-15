@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
-import {useCategoryItem, useFilter} from "@/zustand/AppState.ts";
+import {useFilter} from "@/zustand/AppState.ts";
 import {laptopPrice, MenuLink, phonePrice} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
@@ -19,7 +19,7 @@ const SideBarFilter = () => {
         const [producerSort, setProducerSort] = useState<string[]>([]);
         const [producersName, setProducersName] = useState<string[]>([]);
         const [priceSort, setPriceSort] = useState<number[]>([]);
-        const {producerFilter, priceFilter, setProductFilter, setPriceFilter} = useFilter()
+        const {producerFilter, setProducerFilter, setPriceFilter} = useFilter()
         useEffect(() => {
             switch (path) {
                 case "phone" : {
@@ -29,6 +29,9 @@ const SideBarFilter = () => {
                 case "laptop" : {
                     priceItemsRef.current = laptopPrice;
                     break;
+                }
+                default: {
+                    priceItemsRef.current = phonePrice;
                 }
             }
             getProducers(path)
@@ -43,7 +46,7 @@ const SideBarFilter = () => {
             if (checkedState) {
                 if (value == "all") {
                     setProducerSort([])
-                    setProductFilter([])
+                    setProducerFilter([])
                     setCheckAllProducer(true)
                 } else {
                     setProducerSort([...producerSort, value.toLowerCase()])
@@ -63,13 +66,21 @@ const SideBarFilter = () => {
             } else {
                 const price = priceItemsRef.current[parseInt(index)].key
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
                 setPriceSort(price)
             }
         }
+
+        const arraysEqual=(a: number[], b: number[]): boolean =>{
+            if (a.length !== b.length) return false;
+            for (let i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
+
         useEffect(() => {
             const newProductFilter = [...producerSort, ...producerFilter]
-            setProductFilter(newProductFilter)
+            setProducerFilter(newProductFilter)
             setPriceFilter(priceSort)
             const params = handleParams()
             navigate(`${params}`)
@@ -81,10 +92,10 @@ const SideBarFilter = () => {
                 param.push(producerParam)
             }
             if (priceSort.length > 0) {
-                const minPrice = `minPrice=${priceSort[0]}`
+                const minPrice = `min-price=${priceSort[0]}`
                 param.push(minPrice)
                 if (priceSort.length > 1) {
-                    const maxPrice = `maxPrice=${priceSort[1]}`
+                    const maxPrice = `max-price=${priceSort[1]}`
                     param.push(maxPrice)
                 }
             }
@@ -93,14 +104,21 @@ const SideBarFilter = () => {
         useEffect(() => {
             const params = search.slice(1).split("&")
             const producersParam = params.filter((value) => value.includes("producer"))
+            const priceParams = params.filter((value) => value.includes("price"))
             if (producersParam.length > 0) {
                 const producerList = producersParam[0]
                 const equalIndex = producerList.indexOf("=")
                 const producers = producerList.slice(equalIndex + 1).split(",")
                 setProducerChecked(producers)
-                setProductFilter(producers)
+                setProducerFilter(producers)
                 setProducerSort(producers)
                 setCheckAllProducer(false)
+            }
+            if (priceParams.length > 0) {
+                //[min-price=2000000', 'max-price=4000000]
+                const priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
+                setPriceFilter(priceFilter)
+                setPriceSort(priceFilter)
             }
         }, [search]);
         return (
@@ -157,16 +175,22 @@ const SideBarFilter = () => {
                             Price
                         </h1>
                         <div className={`flex w-full items-start flex-wrap `}>
-                            <RadioGroup onValueChange={value => handlePriceFilter(value)} defaultValue="all">
+                            <RadioGroup
+                                onValueChange={value => handlePriceFilter(value)}>
                                 <div className="flex items-center space-x-2">
-                                    <RadioGroupItem className={`text-default_red rounded-sm`} value="all"/>
+                                    <RadioGroupItem
+                                        checked={priceSort.length===0}
+                                        className={`text-default_red rounded-sm`}
+                                        value="all"/>
                                     <Label className={`px-2 text-[14px] font-normal`}>All</Label>
                                 </div>
                                 {
                                     priceItemsRef.current.map((value, index1) => (
                                         <div key={index1} className="flex items-center space-x-2">
-                                            <RadioGroupItem className={`text-default_red rounded-sm`}
-                                                            value={index1.toString()}/>
+                                            <RadioGroupItem
+                                                checked={arraysEqual(priceSort,value.key)}
+                                                className={`text-default_red rounded-sm`}
+                                                value={index1.toString()}/>
                                             <Label className={`px-2 font-normal text-[16px]`}>{value.name}</Label>
                                         </div>
                                     ))

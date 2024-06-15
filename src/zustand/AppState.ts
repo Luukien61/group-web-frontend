@@ -84,14 +84,14 @@ type Filter = {
     producerFilter: string[],
     priceFilter: number[],
     setPriceFilter: (newPriceFilter: number[]) => void,
-    setProductFilter: (newProductFilter: string[]) => void,
+    setProducerFilter: (newProductFilter: string[]) => void,
 }
 export const useFilter = create<Filter>()(
     devtools(
         (set) => ({
             producerFilter: [],
             priceFilter: [],
-            setProductFilter: newProductFilter => set({producerFilter: newProductFilter}),
+            setProducerFilter: newProductFilter => set({producerFilter: newProductFilter}),
             setPriceFilter: newPriceFilter => set({priceFilter: newPriceFilter}),
         })
     )

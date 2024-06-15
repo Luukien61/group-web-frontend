@@ -19,11 +19,16 @@ type ProducerFilterProps = {
     category: string
 }
 
+type PriceFilterProps = {
+    category: string,
+    priceRange: number[]
+}
+
 const NavMenu = () => {
     const [category, setCategory] = useState<Category[]>([])
     const {setCategories} = useCategory()
     const {setCategoriesItem} = useCategoryItem()
-    const {setProductFilter} = useFilter()
+    const {setProducerFilter, setPriceFilter} = useFilter()
     // useNavigate();
     useEffect(() => {
         const fetchCategory = async () => {
@@ -41,7 +46,11 @@ const NavMenu = () => {
     const handleProducerFilter = ({producer}: ProducerFilterProps) => {
         producer = producer.toLowerCase();
         const listProducer = [producer]
-        setProductFilter(listProducer)
+        setProducerFilter(listProducer)
+    }
+
+    const handlePriceFilter = (price: PriceFilterProps) => {
+        setPriceFilter(price.priceRange)
     }
     return (
         <ul className="bg-secondary flex gap-x-5 px-7 h-10 items-center justify-start drop-shadow">
@@ -69,19 +78,22 @@ const NavMenu = () => {
                                             category.producers
                                                 .sort((a, b) => a.name.localeCompare(b.name))
                                                 .map((producer, sublinkIndex) => (
-                                                <a onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
-                                                   key={sublinkIndex}
-                                                   href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
-                                                   className="cursor-pointer hover:text-default_green">
-                                                    {producer.name}
-                                                </a>
-                                                // <div
-                                                //     onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
-                                                //     className="cursor-pointer hover:text-default_green bg-inherit outline-none ring-0"
-                                                //     key={sublinkIndex}>
-                                                //     <p>{producer.name}</p>
-                                                // </div>
-                                            ))
+                                                    <a onClick={() => handleProducerFilter({
+                                                        producer: producer.name,
+                                                        category: category.name
+                                                    })}
+                                                       key={sublinkIndex}
+                                                       href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
+                                                       className="cursor-pointer hover:text-default_green">
+                                                        {producer.name}
+                                                    </a>
+                                                    // <div
+                                                    //     onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
+                                                    //     className="cursor-pointer hover:text-default_green bg-inherit outline-none ring-0"
+                                                    //     key={sublinkIndex}>
+                                                    //     <p>{producer.name}</p>
+                                                    // </div>
+                                                ))
                                         }
                                     </div>
                                     <div className="flex flex-col gap-3">
@@ -90,11 +102,15 @@ const NavMenu = () => {
                                         </h1>
                                         {
                                             price.sublink.map((price, sublinkIndex) => (
-                                                <Link key={sublinkIndex}
-                                                      to={`/${category.name.toLowerCase()}/price/start=${price.key[0]}${price.key[1] != undefined ? `&end=${price.key[1]}` : ''}`}
-                                                      className="cursor-pointer hover:text-default_green">
+                                                <a key={sublinkIndex}
+                                                   onClick={() => handlePriceFilter({
+                                                       category: category.name,
+                                                       priceRange: price.key
+                                                   })}
+                                                   href={`/${category.name.toLowerCase()}/filter?&min-price=${price.key[0]}${price.key[1] != undefined ? `&max-price=${price.key[1]}` : ''}`}
+                                                   className="cursor-pointer hover:text-default_green">
                                                     {price.name}
-                                                </Link>
+                                                </a>
                                             ))
                                         }
                                     </div>

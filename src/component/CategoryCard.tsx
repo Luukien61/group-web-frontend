@@ -63,7 +63,9 @@ type CategoryProp = {
     page?: number,
     initialSize: number,
     pageable: boolean,
-    widthClass: string
+    widthClass: string,
+    heightClass?: string,
+    renderWhenEmpty?: boolean,
 }
 
 const CategoryCard: React.FC<CategoryProp> = ({
@@ -73,7 +75,9 @@ const CategoryCard: React.FC<CategoryProp> = ({
                                                   page = 0,
                                                   initialSize,
                                                   pageable,
-                                                  widthClass
+                                                  widthClass,
+                                                  renderWhenEmpty = false,
+                                                  heightClass
                                               }) => {
     const [size, setSize] = useState<number>(initialSize)
     const [last, setLast] = useState<boolean>(false)
@@ -100,38 +104,45 @@ const CategoryCard: React.FC<CategoryProp> = ({
         fetchProductByCategory()
     }, [category, size, priceFilter, page, producerFilter]);
     return (
-        <div className="rounded drop-shadow h-fit bg-white p-2 max-w-screen-2xl">
-            <div className="flex items-center px-2 py-1">
-                <p className={`text-default_red font-medium text-[24px]`}>{name}</p>
-                <div className="flex items-center justify-end flex-1">
-                    {/*<a className="text-blue-500 hover:underline cursor-pointer pr-2">View more</a>*/}
-                    {url &&
-                        <a className={`text-blue-500 hover:underline cursor-pointer pr-2`} href={url}>View more</a>}
-                </div>
-            </div>
-            <div className="h-fit w-full flex flex-wrap items-center justify-start gap-y-6 px-2 pb-2">
-                {
-                    products.length === 0
-                        ? <p>No device found</p>
-                        : (
-                            products.map((product, index) => (
-                                <ProductCard key={index} product={product} widthClass={widthClass}/>
-                            ))
-                        )
-                }
-            </div>
+        <>
             {
-                pageable && !last && (
-                    <div className={`w-full flex items-center justify-center pt-6 pb-4`}>
-                        <button
-                            onClick={() => handleViewMoreClick()}
-                            className={`hover:text-default_blue hover:scale-105 rounded bg-default_background p-1`}>View
-                            more
-                        </button>
+                (renderWhenEmpty || products.length > 0) && (
+                    <div className={`rounded drop-shadow h-fit  bg-white p-2 max-w-screen-2xl ${heightClass}`}>
+                        <div className="flex items-center px-2 py-1">
+                            <p className={`text-default_red font-medium text-[24px]`}>{name}</p>
+                            <div className="flex items-center justify-end flex-1">
+                                {/*<a className="text-blue-500 hover:underline cursor-pointer pr-2">View more</a>*/}
+                                {url &&
+                                    <a className={`text-blue-500 hover:underline cursor-pointer pr-2`} href={url}>View
+                                        more</a>}
+                            </div>
+                        </div>
+                        <div className="h-fit w-full flex flex-wrap items-center justify-start gap-y-6 px-2 pb-2">
+                            {
+                                products.length === 0
+                                    ? <p>No device found</p>
+                                    : (
+                                        products.map((product, index) => (
+                                            <ProductCard key={index} product={product} widthClass={widthClass}/>
+                                        ))
+                                    )
+                            }
+                        </div>
+                        {
+                            pageable && !last && (
+                                <div className={`w-full flex items-center justify-center pt-6 pb-4`}>
+                                    <button
+                                        onClick={() => handleViewMoreClick()}
+                                        className={`hover:text-default_blue hover:scale-105 rounded bg-default_background p-1`}>View
+                                        more
+                                    </button>
+                                </div>
+                            )
+                        }
                     </div>
                 )
             }
-        </div>
+        </>
     );
 };
 

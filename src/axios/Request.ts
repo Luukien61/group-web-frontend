@@ -8,12 +8,14 @@ import {
     mailPath,
     producerBasePath,
     productPath,
-    quantityPath, refreshTokenPath,
-    searchPath, userResponsePath
+    quantityPath,
+    refreshTokenPath,
+    searchPath,
+    userResponsePath
 } from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
 import axios from "axios";
-import {ACCESS_TOKEN, LoginProps, UserResponse} from "@/page/LoginPage.tsx";
+import {LoginProps, UserResponse} from "@/page/LoginPage.tsx";
 
 type Props = {
     category: string,
@@ -61,9 +63,9 @@ export const fetchProductsCategory = async ({category, producer, price, page, si
             params.producer = producer;
         }
         if (price && price.length > 0) {
-            params.minPrice = price[0];
+            params.minPrice = price[0]*1000000;
             if (price.length == 2) {
-                params.maxPrice = price[1];
+                params.maxPrice = price[1]*1000000;
             }
         }
         const response = await instance.get(productPath, {
