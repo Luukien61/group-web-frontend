@@ -33,11 +33,11 @@ export const footerContent: footerProps[] = [
         title: "Contact us",
         child: [
             {
-                name: "Phone",
+                name: "0386888888",
                 link: "/"
             },
             {
-                name: "Email",
+                name: "knv@gmail.com",
                 link: "/"
             }
         ]

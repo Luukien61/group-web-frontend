@@ -53,7 +53,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [rawColors, setRawColors] = useState<Color[]>([])
     const [productName, setProductName] = useState<string>('')
     const [producer, setProducer] = useState<string>('')
-    const [colorName, setColorName] = useState<string>()
+    const [colorName, setColorName] = useState<string>('')
     const [colorImg, setColorImg] = useState<string | null>(null)
     const [categoryPick, setCategoryPick] = useState<string>('')
     const [previews, setPreviews] = useState<string[]>([]);
@@ -967,8 +967,8 @@ const Title: React.FC<TitleProps> = ({title}) => {
 }
 type Input = {
     require: boolean
-    value?: string,
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     label: string,
     placeholder?: string,
     type?: string
@@ -986,7 +986,7 @@ const Input: React.FC<InputProps> = ({input}) => {
                     required={input.require}
                     id={input.label}
                     onChange={input.onChange}
-                    value={input.value}
+                    value={input.value || ''}
                     placeholder={input.placeholder ?? input.label}
                     className={`outline-none w-full placeholder:italic appearance-none border-0`}
                     spellCheck={false}

@@ -197,7 +197,7 @@ const ProductPage = () => {
                             <div className={`w-full flex flex-col`}>
                                 <div className={`w-full flex`}>
                                     <div className={`block w-1/2`}>
-                                        <CarouselDApiDemo links={product.imgs}/>
+                                        <CarouselApiDemo links={product.imgs}/>
                                     </div>
                                     {/*right side*/}
                                     <div className={`w-1/2 flex`}>
@@ -272,8 +272,8 @@ const ProductPage = () => {
                                 <hr className={`w-full border`}/>
                                 {/*device description*/}
                                 <div className={`pt-4 flex flex-col`}>
-                                    <h1 className={`self-center font-bold py-3`}>Detailed Review of
-                                        the {product.name}</h1>
+                                    <h1 className={`self-center font-bold py-3`}>
+                                        Detailed Review of the {product.name}</h1>
                                     <h2 className={`font-medium pb-4 text-justify`}>{product.description.title}</h2>
                                     <p className={`text-justify`}>{product.description.content}</p>
                                 </div>
@@ -328,7 +328,7 @@ const ProductPage = () => {
                                                 </div>
                                             </div>
                                             <DefaultInput
-                                                className={`${isDoneClicked && !value.value ? 'border rounded !border-default_red' : ''}`}
+                                                className={`border rounded ${isDoneClicked && !value.value ? '!border-default_red' : ''}`}
                                                 required={true}
                                                 type={value.type}
                                                 value={value.value}
@@ -425,7 +425,7 @@ type CarouselProps = {
     links: string[]
 }
 
-const CarouselDApiDemo: React.FC<CarouselProps> = ({links}) => {
+const CarouselApiDemo: React.FC<CarouselProps> = ({links}) => {
     const [api, setApi] = React.useState<CarouselApi>()
     const [current, setCurrent] = React.useState(0)
     const [count, setCount] = React.useState(0)

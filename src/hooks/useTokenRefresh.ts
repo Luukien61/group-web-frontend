@@ -38,6 +38,7 @@ const useTokenRefresh = () => {
                 // Schedule refresh before token expiry
                 const timeout = expiryDate.getTime() - now.getTime() - 60000; // 1 minute before expiry
                 setInterval(async () => {
+                    console.log("refreshToken")
                     const newTokens : TokenResponse = await refreshTokenRequest(refreshToken);
                     persistToken(newTokens)
                 }, timeout);

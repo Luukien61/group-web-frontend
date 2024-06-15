@@ -4,3 +4,5 @@ Group web frontend
 - Tailwind
 - Shadcn
 - Zustand
+- Cloudinary
+- Token authentication
