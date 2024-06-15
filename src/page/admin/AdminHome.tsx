@@ -1,8 +1,10 @@
 import React from 'react';
 import AdminSideBar from "@/component/admin/AdminSideBar.tsx";
 import {Outlet} from "react-router-dom";
+import useAuthenticate from "@/hooks/useAuthenticate.ts";
 
 const AdminHome = () => {
+    useAuthenticate();
     return (
         <div className={`w-full mx-auto`}>
             <div className={`flex bg-[#F4F6FA] w-full`}>

@@ -16,3 +16,4 @@ export const registerPath: string = "/register"
 export const refreshTokenPath: string = "/auth/refresh-token"
 export const userPath: string = "/user"
 export const authenticatePath : string = "/auth/authenticate"
+export const userResponsePath : string= `${userPath}/user-id`

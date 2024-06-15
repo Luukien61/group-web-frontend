@@ -8,12 +8,12 @@ import {
     mailPath,
     producerBasePath,
     productPath,
-    quantityPath,
-    searchPath
+    quantityPath, refreshTokenPath,
+    searchPath, userResponsePath
 } from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
 import axios from "axios";
-import {ACCESS_TOKEN, LoginProps} from "@/page/LoginPage.tsx";
+import {ACCESS_TOKEN, LoginProps, UserResponse} from "@/page/LoginPage.tsx";
 
 type Props = {
     category: string,
@@ -101,7 +101,7 @@ export const searchProductsByName = async (name: string) => {
 export const getProductById = async (id: string) => {
     try {
         return await instance.get(`${findById}/${id}`)
-           .then(response => response.data)
+            .then(response => response.data)
     } catch (error) {
         handleError(error)
     }
@@ -166,7 +166,7 @@ export const postNewCategory = async (category: Category) => {
     } catch (error) {
         handleError(error)
         // console.log("Error posting producer: ", error);
-         throw error;
+        throw error;
     }
 }
 
@@ -180,55 +180,79 @@ export const postNewProducer = async (producer: Producer[], category: string) =>
     }
 }
 
-export const updateProduct = async (product: Product,productId : string) => {
-    try{
+export const updateProduct = async (product: Product, productId: string) => {
+    try {
         return await instance.put(`${productPath}/${productId}`, product)
             .then(response => response.data)
-    }catch(error){
+    } catch (error) {
         handleError(error)
         throw error;
     }
 }
 
 export const deleteProduct = async (id: string) => {
-    try{
+    try {
         return await instance.delete(`${productPath}/${id}`)
-            .then(response=>response.data)
-    }catch(error){
+            .then(response => response.data)
+    } catch (error) {
         handleError(error)
         throw error;
     }
 }
-export type TokenResponse ={
+export type TokenResponse = {
     access_token: string,
     refresh_token: string,
     token_type: string,
     expires_in: Date
 }
 
-export const login =async (loginRequest: LoginProps)=>{
-    try{
-        return await adminInstance.post(loginPath,loginRequest)
+export const login = async (loginRequest: LoginProps) => {
+    try {
+        return await instance.post(loginPath, loginRequest)
             .then(response => response.data)
-    }catch (error){
+    } catch (error) {
         handleError(error)
     }
 }
-export const authenticateRequest = async ()=>{
-    try{
+export const authenticateRequest = async () => {
+    try {
         const state = await adminInstance.get(`${authenticatePath}`)
             .then(response => response.status)
         return state === 200;
-    }catch (error){
+    } catch (error) {
         // if(axios.isAxiosError(error) && error.response && error.response.status === 401){
-            return false
+        return false
         // }
     }
 }
 
-const handleError =(error : unknown)=>{
-    if(axios.isAxiosError(error) && error.response){
-        const customError : Error = error.response.data
-        alert(customError.message)
+
+
+export const refreshTokenRequest = async (refreshToken: string) => {
+    try {
+        const response = await adminInstance.post(refreshTokenPath, {
+            refreshToken: refreshToken
+        })
+            .then(response => response.data)
+        return response
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const getUserResponseById = async (userId: number) => {
+    try {
+        const response: UserResponse = await adminInstance.get(`${userResponsePath}/${userId}`)
+            .then(response => response.data)
+        return response
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response) {
+        const customError: Error = error.response.data
+        console.error(customError.message)
     }
 }

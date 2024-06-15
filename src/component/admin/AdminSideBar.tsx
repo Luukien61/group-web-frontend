@@ -4,8 +4,12 @@ import {RiArrowDropDownLine} from "react-icons/ri";
 import {getCategories} from "@/axios/Request.ts";
 import {Category} from "@/common/NavMenu.tsx";
 import {useCategoryItem} from "@/zustand/AppState.ts";
+import {UserResponse} from "@/page/LoginPage.tsx";
+import useCurrentUser from "@/hooks/useCurrentUser.ts";
 
 const AdminSideBar = () => {
+    const logggedInUser = useCurrentUser()
+    const [currentUser, setCurrentUser] = useState<UserResponse>(logggedInUser)
     const [category, setCategory] = useState<Category[]>([])
     const {setCategoriesItem} = useCategoryItem()
     const [categoryOpen, setCategoryOpen] = useState<boolean>(false)
@@ -18,6 +22,9 @@ const AdminSideBar = () => {
         fetchCategory()
 
     }, []);
+    useEffect(() => {
+        setCurrentUser(logggedInUser)
+    }, [logggedInUser]);
     const handleCategoryChange = useCallback(() => {
         setCategoryOpen(prev => !prev)
     }, [])
@@ -27,8 +34,8 @@ const AdminSideBar = () => {
             <div className={`overflow-y-auto z-20 max-w-2xs h-[100vh] block sticky top-0 lg:mr-0 p-4`}>
                 <div className={`py-2`}>
                     <IoPersonCircleOutline size={32}/>
-                    <h1 className={`mt-2`}>User Admin</h1>
-                    <h4 className={`font-light opacity-50`}>Manager</h4>
+                    <h1 className={`mt-2`}>{currentUser.fullName}</h1>
+                    <h4 className={`font-light opacity-50`}>{currentUser.role}</h4>
                 </div>
                 <hr className={`bg-white`}/>
                 <nav className={`mt-6 mb-4`}>

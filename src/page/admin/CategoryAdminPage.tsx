@@ -89,7 +89,7 @@ const CategoryAdminPage = () => {
     return (
         <div className={`flex flex-col  w-full `}>
             {/*head filter*/}
-            <div className={`flex fixed w-full h-20 z-20 shadow-2xl bg-white rounded p-2 pt-0`}>
+            <div className={`flex fixed w-full h-20 z-20 shadow-xl bg-white rounded p-2 pt-0`}>
                 {/*producer*/}
                 <div className={`flex w-full items-center`}>
                     <div

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useLoginState, useProduct} from "@/zustand/AppState.ts";
 import {deleteProduct} from "@/axios/Request.ts";
 
@@ -8,6 +8,9 @@ const Test = () => {
     const handleDelete = async ()=>{
          await deleteProduct("iphone-17")
     }
+    useEffect(() => {
+        document.title="Test"
+    }, []);
     return (
         <div>
             Hello this is test

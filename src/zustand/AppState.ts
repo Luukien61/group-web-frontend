@@ -2,6 +2,7 @@ import {create} from 'zustand'
 import {devtools, persist} from 'zustand/middleware'
 import {Category} from "@/common/NavMenu.tsx";
 import {Product} from "@/component/CategoryCard.tsx";
+import {UserResponse} from "@/page/LoginPage.tsx";
 
 interface BearState {
     bears: number
@@ -46,7 +47,7 @@ interface CurrentDeviceMem {
 
 export const useCurrentDeviceMem = create<CurrentDeviceMem>()(
     devtools(
-        (set)=>({
+        (set) => ({
             ram: 8,
             rom: 256,
             setRom: (differRom: number) => set({rom: differRom}),
@@ -55,69 +56,107 @@ export const useCurrentDeviceMem = create<CurrentDeviceMem>()(
     )
 )
 type CategoryInstance = {
-    categories : string[],
-    setCategories : (newCategory: string[]) => void,
+    categories: string[],
+    setCategories: (newCategory: string[]) => void,
 }
-export const useCategory =create<CategoryInstance >()(
+export const useCategory = create<CategoryInstance>()(
     devtools(
-        (set)=>({
+        (set) => ({
             categories: [''],
             setCategories: (newCategory: string[]) => set({categories: newCategory}),
         })
     )
 )
-type CategoryItemType ={
+type CategoryItemType = {
     categoriesItem: Category[],
-    setCategoriesItem: (newCategories : Category[])=>void
+    setCategoriesItem: (newCategories: Category[]) => void
 }
 export const useCategoryItem = create<CategoryItemType>()(
     devtools(
-        (set)=>({
+        (set) => ({
             categoriesItem: [],
-            setCategoriesItem: (newCategories : Category[]) => set({categoriesItem: newCategories}),
+            setCategoriesItem: (newCategories: Category[]) => set({categoriesItem: newCategories}),
         })
     )
 )
 
-type Filter={
-    producerFilter : string[],
+type Filter = {
+    producerFilter: string[],
     priceFilter: number[],
-    setPriceFilter: (newPriceFilter : number[]) => void,
-    setProductFilter: (newProductFilter : string[]) => void,
+    setPriceFilter: (newPriceFilter: number[]) => void,
+    setProductFilter: (newProductFilter: string[]) => void,
 }
 export const useFilter = create<Filter>()(
     devtools(
-        (set)=>({
+        (set) => ({
             producerFilter: [],
-            priceFilter:[],
+            priceFilter: [],
             setProductFilter: newProductFilter => set({producerFilter: newProductFilter}),
             setPriceFilter: newPriceFilter => set({priceFilter: newPriceFilter}),
         })
     )
 )
-type ProductPost ={
+type ProductPost = {
     product: Product | string,
     setProduct: (newProduct: Product | string) => void,
 }
-export const useProduct =create<ProductPost>()(
+export const useProduct = create<ProductPost>()(
     devtools(
-        (set)=>({
+        (set) => ({
             product: "",
             setProduct: newProduct => set({product: newProduct}),
         })
     )
 )
 
-type LoginState ={
+type LoginState = {
     isLogin: boolean,
-    setIsLogin: (newState: boolean)=>void
+    setIsLogin: (newState: boolean) => void
 }
 
 export const useLoginState = create<LoginState>()(
     devtools(
-        (set)=>({
+        (set) => ({
             isLogin: false,
             setIsLogin: newState => set({isLogin: newState}),
+        })
+    )
+)
+
+type UserIdLoginState = {
+    userId: number | null,
+    setUserId: (newUserId: number) => void,
+}
+export const useUserIdLogin = create<UserIdLoginState>()(
+    devtools(
+        persist(
+            (set) => ({
+                userId: null,
+                setUserId: newUserId => set({userId: newUserId}),
+            }),
+            {
+                name: "userId",
+            }
+        ),
+    )
+)
+
+type UserLoggedIn = {
+    user: UserResponse,
+    setUser: (newUser: UserResponse) => void
+}
+
+export const useUserLogin = create<UserLoggedIn>()(
+    devtools(
+        (set) => ({
+            user: {
+                staffID: -11,
+                email: "",
+                fullName: "User",
+                phone: "",
+                role: "User"
+            },
+            setUser: newUser => set({user: newUser}),
         })
     )
 )

@@ -7,14 +7,13 @@ import LoginPage from "@/page/LoginPage.tsx";
 import AdminHome from "@/page/admin/AdminHome.tsx";
 import React, {useEffect} from "react";
 import {Category} from "@/common/NavMenu.tsx";
-import {useCategory, useCategoryItem, useLoginState} from "@/zustand/AppState.ts";
+import {useCategory, useCategoryItem} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
 import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
 import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
 import AdminAddProductPage from "@/page/admin/AdminAddProductPage.tsx";
 import ProductDetail from "@/page/admin/ProductDetail.tsx";
 import Test from "@/page/Test.tsx";
-import PrivateRoute from "@/page/admin/PrivateRoute.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -36,9 +35,9 @@ const CleanUrlMiddleware: React.FC<CleanProps> = ({children}) => {
 
 const AppRouter = () => {
     const {setCategories} = useCategory()
-    const {setCategoriesItem}=useCategoryItem()
-    const {isLogin} = useLoginState()
+    const {setCategoriesItem} = useCategoryItem()
     useEffect(() => {
+        //setIsLoading(true)
         const fetchCategory = async () => {
             const category: Category[] = await getCategories();
             const categoryLower = category.map(item => item.name.toLowerCase());
@@ -47,7 +46,6 @@ const AppRouter = () => {
         }
         fetchCategory()
     }, []);
-
     return (
         <CleanUrlMiddleware>
             <Routes>
@@ -61,14 +59,11 @@ const AppRouter = () => {
                 {/*login*/}
                 <Route path={'/login'} element={<LoginPage/>}/>
                 {/*admin*/}
-                <Route path={'/admin'} element={<PrivateRoute isAuthenticated={isLogin}/>}>
-                    <Route path='' element={<AdminHome/>}>
-                        <Route index element={<AdminMainContent/>}/>
-                        <Route path={`:category/new`} element={<AdminAddProductPage/>}/>
-                        <Route path={`:category/:productId`} element={<ProductDetail/>}/>
-                        <Route path={`:category`} element={<CategoryAdminPage/>}/>
-                    </Route>
-
+                <Route path='/admin' element={<AdminHome/>}>
+                    <Route index element={<AdminMainContent/>}/>
+                    <Route path={`:category/new`} element={<AdminAddProductPage/>}/>
+                    <Route path={`:category/:productId`} element={<ProductDetail/>}/>
+                    <Route path={`:category`} element={<CategoryAdminPage/>}/>
                 </Route>
             </Routes>
         </CleanUrlMiddleware>

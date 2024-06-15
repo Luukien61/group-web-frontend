@@ -1,28 +1,34 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {homeBackgroundimg} from "@/url/Urls.ts";
 import {authenticateRequest, login, TokenResponse} from "@/axios/Request.ts";
 import {useNavigate} from "react-router-dom";
-import {useLoginState} from "@/zustand/AppState.ts";
+import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
 
+export type UserResponse = {
+    "staffID": number,
+    "fullName": string,
+    "email": string,
+    "phone": string,
+    "role": string
+}
 export type LoginProps = {
     email: string,
     password: string,
 }
-export type LoginResponse={
+export type LoginResponse = {
     "message": string,
     "tokenResponse": TokenResponse,
-    "user": {
-        "staffID": number,
-        "fullName": string,
-        "email": string,
-        "phone": string
-    }
+    "user": UserResponse
 }
 export const ACCESS_TOKEN: string = "access_token";
 export const REFRESH_TOKEN: string = "refresh_token";
 export const EXPIRE_DATE: string = "expire_date";
+
+
 const LoginPage = () => {
     const navigate = useNavigate();
+    const {setUserId} = useUserIdLogin()
+    const {setUser}= useUserLogin()
     const {isLogin, setIsLogin} = useLoginState()
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -41,6 +47,8 @@ const LoginPage = () => {
                 localStorage.setItem(ACCESS_TOKEN, tokenResponse.access_token)
                 localStorage.setItem(REFRESH_TOKEN, tokenResponse.refresh_token)
                 localStorage.setItem(EXPIRE_DATE, tokenResponse.expires_in.toString())
+                setUserId(loginResponse.user.staffID)
+                setUser(loginResponse.user)
                 setIsLogin(true)
                 navigate("/admin")
             } catch (e) {
@@ -53,32 +61,26 @@ const LoginPage = () => {
             }, 2000)
         }
     }
-
-    useEffect( () => {
+    useEffect(() => {
         const token = localStorage.getItem(ACCESS_TOKEN);
-        if(token){
+        if (isLogin) {
+            navigate("/admin", {replace: true})
+            return
+        }
+        if (token && !isLogin) {
             authenticate()
         }
-        const handlePopState = () => {
-            if (isLogin) {
-                navigate('/admin');
-            }
-        };
-
-        window.addEventListener('popstate', handlePopState);
-        document.title="Login"
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
     }, []);
-    const authenticate = useCallback(async () => {
-        const state= await authenticateRequest()
-        setIsLogin(state)
-        if(state){
-            navigate("/admin")
+    const authenticate = async () => {
+        const state = await authenticateRequest()
+        if (state) {
+            setIsLogin(true)
+            navigate("/admin", {replace: true});
         }
-    },[])
+    }
+    useEffect(() => {
+        document.title = "Login"
+    }, []);
     return (
         <div className="w-full flex px-4 mx-auto max-w-8xl h-screen justify-center drop-shadow-2xl "
              style={{
@@ -95,7 +97,8 @@ const LoginPage = () => {
                         alt={"App logo"}/>
                 </div>
                 <div className={`p-4`}>
-                    <InputFormGoogle style={`${!isEmailValid && 'border-red-600 border-2'}`} label={`Email`} type={"email"} action={(value) => setEmail(value)}/>
+                    <InputFormGoogle style={`${!isEmailValid && 'border-red-600 border-2'}`} label={`Email`}
+                                     type={"email"} action={(value) => setEmail(value)}/>
                     <InputFormGoogle label={`Password`} type={'password'} action={(value) => setPassword(value)}/>
                     <div className={`w-full flex items-center justify-end `}>
                         <p className={`italic text-[14px] hover:text-inner_blue cursor-pointer`}>Forgot password?</p>
@@ -125,7 +128,7 @@ interface InputProps {
     action: (value: string) => void;
 }
 
-const InputFormGoogle: React.FC<InputProps> = ({type, label, action,style}) => {
+const InputFormGoogle: React.FC<InputProps> = ({type, label, action, style}) => {
     return (
         <div className="relative z-0 w-full mb-5 ">
             <input
