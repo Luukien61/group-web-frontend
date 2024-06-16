@@ -18,6 +18,8 @@ import {useNavigate} from "react-router-dom";
 import {IoIosAddCircleOutline} from "react-icons/io";
 import {DefaultInput} from "@/component/Input.tsx";
 import axios from "axios";
+import useCurrentUser from "@/hooks/useCurrentUser.ts";
+import {UserResponse} from "@/page/LoginPage.tsx";
 
 const readDocx = async (file: File): Promise<string> => {
     try {
@@ -43,8 +45,10 @@ type ProductInfoProps = {
 
 const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const {categories, setCategories} = useCategory()
+    const logggedInUser = useCurrentUser()
+    const [isManager, setIsManager] = useState<boolean>(true)
     const navigate = useNavigate()
-    const [productImageUrl, setProductImageUrl] = useState<string >();
+    const [productImageUrl, setProductImageUrl] = useState<string>();
     const [content, setContent] = useState<string>('')
     const fetchedProducers = useRef(new Map())
     const [imagesLoadState, setImagesLoadState] = useState<LoadState>(initialState)
@@ -142,6 +146,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         }
     ]
     useEffect(() => {
+
         if (product) {
             const categoryName = product.category.name.toLowerCase()
             const feature = product.features
@@ -169,6 +174,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             handleCategoryClick(categoryName)
         }
     }, []);
+    useEffect(() => {
+        if (logggedInUser.staffID > 0) {
+            setIsManager(logggedInUser.role === "ADMIN")
+        }
+    }, [logggedInUser]);
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -183,9 +193,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             setPreviews([]);
         }
     };
-    const handleImageLoaded =(url: string | undefined)=>{
-        if(!url || url ==='') return
-        setPreviews(prevState => [...prevState,url]);
+    const handleImageLoaded = (url: string | undefined) => {
+        if (!url || url === '') return
+        setPreviews(prevState => [...prevState, url]);
         setUrlSourceClicked(-1)
         setImageLoaded(prevState => prevState + 1)
         setProductImageUrl('')
@@ -229,17 +239,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const newProduct = await assembleProduct(id, 0)
         if (newProduct) {
             await postProduct(newProduct);
-            navigate("/test")
+            navigate(`/admin/${categoryPick.toLowerCase()}`)
         }
     }
     const handleUpdateProduct = async () => {
         if (product) {
             const productId: string = product.id
             const newProduct = await assembleProduct(productId, product.ordering)
-            console.log("New product: ", newProduct)
             if (newProduct) {
                 await updateProduct(newProduct, productId);
-                navigate("/test")
+                navigate(`/admin/${categoryPick.toLowerCase()}`)
             }
         }
     }
@@ -281,7 +290,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 name: productName,
                 price: [memory],
                 features: {
-                    id: product?.features.id ,
+                    id: product?.features.id,
                     screen: screen,
                     frontCamera: frontCams || [],
                     rearCamera: rearCams || [],
@@ -292,7 +301,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     chip: processor
                 },
                 description: {
-                    id: product?.description.id ,
+                    id: product?.description.id,
                     title: title,
                     content: content
                 },
@@ -532,6 +541,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             container.scrollBy({left: scrollAmount, behavior: 'smooth'});
         }
     };
+
     return (
         <div className={`flex justify-center items-center`}>
             <div className={`w-[1250px] flex rounded bg-inherit p-6 `}>
@@ -625,19 +635,19 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                 id: "ROM",
                                 value: rom,
                                 addNew: false,
-                                onChange: (e)=>setRom(parseInt(e.target.value)),
+                                onChange: (e) => setRom(parseInt(e.target.value)),
                                 label: "ROM",
                                 selectedOption: "Choose a ROM",
-                                options: [32,64,128,256,512, 1024]
+                                options: [32, 64, 128, 256, 512, 1024]
                             }}/>
                             <Selector selector={{
                                 id: "OS",
                                 value: OS,
                                 addNew: false,
-                                onChange: (e)=>setOS(e.target.value),
+                                onChange: (e) => setOS(e.target.value),
                                 label: "OS",
                                 selectedOption: "Choose an OS",
-                                options: categoryPick ==="phone" ? ["Android", "IOS"] : (categoryPick =="laptop" ? ["Windows","MAC OS", "Ubuntu"] : [])
+                                options: categoryPick === "phone" ? ["Android", "IOS"] : (categoryPick == "laptop" ? ["Windows", "MAC OS", "Ubuntu"] : [])
                             }}/>
 
                         </div>
@@ -777,9 +787,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                                 className={`rounded border-black border bg-white z-20 absolute w-[200px]  
                                             py-1 px-2 ${urlSourceClicked === index ? 'block' : 'hidden'}`}>
                                                 <input
-                                                    onChange={(e)=>setProductImageUrl(e.target.value)}
+                                                    onChange={(e) => setProductImageUrl(e.target.value)}
                                                     value={productImageUrl}
-                                                    onKeyDown={()=>handleImageLoaded(productImageUrl)}
+                                                    onKeyDown={() => handleImageLoaded(productImageUrl)}
                                                     type={'text'}
                                                     spellCheck={false}
                                                     placeholder={"URL"}
@@ -874,23 +884,30 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                         </div>
                         <div className={`w-full flex items-center justify-center px-2 pt-2 pb-1`}>
                             {
-                                product ?
-                                    <div className={`w-full flex items-center justify-center gap-x-4`}>
-                                        <DefaultButton
-                                            label={"Delete"}
-                                            style={`bg-default_red hover:bg-red-600 w-full`}
-                                            onclick={handleDeleteProductRequest}/>
-                                        <DefaultButton
-                                            label={"Update"}
-                                            style={`bg-inner_green hover:bg-default_green w-full`}
-                                            onclick={handleUpdateProduct}/>
-                                    </div> :
-                                    <DefaultButton
-                                        label={"Add product"}
-                                        style={`bg-default_blue hover:bg-blue_other w-full`}
-                                        onclick={handleAddProduct}/>
-                            }
+                                isManager ?
+                                    <>
+                                        {
+                                            product ?
+                                                <div className={`w-full flex items-center justify-center gap-x-4`}>
+                                                    <DefaultButton
+                                                        label={"Delete"}
+                                                        style={`bg-default_red hover:bg-red-600 w-full`}
+                                                        onclick={handleDeleteProductRequest}/>
+                                                    <DefaultButton
+                                                        label={"Update"}
+                                                        style={`bg-inner_green hover:bg-default_green w-full`}
+                                                        onclick={handleUpdateProduct}/>
+                                                </div> :
+                                                <DefaultButton
+                                                    label={"Add product"}
+                                                    style={`bg-default_blue hover:bg-blue_other w-full`}
+                                                    onclick={handleAddProduct}/>
+                                        }
+                                    </>
+                                    : <div className={`w-full flex items-center justify-center p-4`}>
 
+                                    </div>
+                            }
                         </div>
                         {
                             imagesLoadState.loading || colorImagesLoadState.loading && (

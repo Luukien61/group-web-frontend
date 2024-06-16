@@ -13,16 +13,10 @@ import {
 import {Table, TableBody, TableCell, TableRow,} from "@/shadcn/ui/table"
 import {useCurrentDeviceMem} from "@/zustand/AppState.ts";
 import {useLocation} from "react-router-dom";
-import {getProductById, sendVerificationMail} from "@/axios/Request.ts";
+import {getProductById, OrderDetail, placeOrder, sendVerificationMail} from "@/axios/Request.ts";
 import {Feature, Product} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
 
-type Price = {
-    ram: number,
-    rom: number,
-    current_price: number,
-    previous_price: number
-}
 type OrderProp = {
     title: string,
     value: string,
@@ -39,7 +33,6 @@ const sendEmailCode = async (email: string, code: number) => {
 }
 
 const ProductPage = () => {
-    const {ram, rom, setRam, setRom} = useCurrentDeviceMem()
     const [isRendered, setIsRendered] = useState(false);
     const [isDoneClicked, setIsDoneClicked] = useState<boolean>(false)
     const [timer, setTimer] = useState<number>(60)
@@ -56,10 +49,9 @@ const ProductPage = () => {
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
     const [product, setProduct] = useState<Product>()
     const [isDone, setIsDone] = useState<boolean>(false)
-    const handleSelectedIndex = (index: number, newRam: number, newRom: number) => {
+    const [message, setMessage]= useState<string>('')
+    const handleSelectedIndex = (index: number) => {
         setSelectedIndex(index)
-        setRam(newRam)
-        setRom(newRom)
     }
     useEffect(() => {
         if (product) {
@@ -140,20 +132,34 @@ const ProductPage = () => {
                 .catch(error => alert(error))
         }
     }
-    const now = new Date().toLocaleTimeString("vi-VN")
-
-    const handleVerifyCode = useCallback(() => {
+    const handleVerifyCode = () => {
         if (userCode.length === 6 && !expired) {
             if (userCode === verificationCode && !expired) {
-                setTimeout(() => setIsDone(true), 2000)
-                const orderId = makeId(10)
+                setTimeout(() => setIsDone(true), 1000)
+                order()
             } else {
-                alert("Error")
+                alert("Error 1")
             }
         } else {
-            alert("Error")
+            alert("Error 2")
         }
-    }, [verificationCode, userCode]);
+    };
+
+    const order = async ()=>{
+       if(product){
+           const orderId = makeId(10)
+           const orderDetail : OrderDetail ={
+               orderId: orderId,
+               productId: product.id,
+               email: email,
+               phone: phone,
+               done: false,
+               time: new Date()
+           }
+           const message : string = await placeOrder(orderDetail)
+           setMessage(message)
+       }
+    }
 
     const makeId =(length: number) : string =>{
         let result : string=''
@@ -166,13 +172,12 @@ const ProductPage = () => {
     }
 
     useEffect(() => {
-        if (timer === 0 && intervalTimer.current) {
+        if ( timer === 0&& intervalTimer.current) {
             setExpired(true)
             clearInterval(intervalTimer.current)
             intervalTimer.current = null
         }
     }, [timer]);
-
 
     useEffect(() => {
         if (openModal) {
@@ -189,6 +194,11 @@ const ProductPage = () => {
             setUserCode("")
             setIsSent(false)
             setTimer(60)
+            setExpired(false)
+            if(intervalTimer.current){
+                clearInterval(intervalTimer.current)
+                intervalTimer.current = null
+            }
         }
     }, [openModal]);
 
@@ -228,7 +238,7 @@ const ProductPage = () => {
                                                         product.price.map((price, index) => (
                                                             <div
                                                                 key={index}
-                                                                onClick={() => handleSelectedIndex(index, price.ram, price.rom)}
+                                                                onClick={() => handleSelectedIndex(index)}
                                                                 className={`flex flex-col flex-1 gap-y-1 bg-secondary_gray rounded p-1 cursor-pointer group`}>
                                                                 <div className={`flex justify-center gap-x-1 w-auto`}>
                                                                     <RadioGroupItem
@@ -382,8 +392,7 @@ const ProductPage = () => {
                                             }
                                             {isDone &&
                                                 <div className={`flex flex-col items-center justify-center`}>
-                                                    <p>Order successfully!</p>
-                                                    <p>Your order is being processed.</p>
+                                                   <p>{message ?? "error"}</p>
                                                 </div>
                                             }
                                         </div>
@@ -519,12 +528,12 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 <TableRow>
                     {/*ram*/}
                     <TableCell className="font-medium border-r">Ram</TableCell>
-                    <TableCell>{ram}GB</TableCell>
+                    <TableCell>{feature.memory[0].ram}GB</TableCell>
                 </TableRow>
                 <TableRow>
                     {/*rom*/}
                     <TableCell className="font-medium border-r">Rom</TableCell>
-                    <TableCell>{rom}GB</TableCell>
+                    <TableCell>{feature.memory[0].rom}GB</TableCell>
                 </TableRow>
                 <TableRow>
                     {/*chip*/}

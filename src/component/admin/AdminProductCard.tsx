@@ -13,7 +13,7 @@ const AdminProductCard :React.FC<Props> = ({product}) => {
                 <div className={`rounded flex shadow flex-col border gap-y-2 bg-gray-100 w-full p-3 ps-4`}>
                     <p className={`font-semibold truncate`}>{product.name}</p>
                     <p className={`font-semibold text-default_gray px-2`}>Quantity: <span
-                        className={`text-inner_blue`}>{product.available}</span></p>
+                        className={`text-inner_blue`}>{product.available ?? 0}</span></p>
                     <div className={`h-fit w-fit px-2 py-1  rounded `}>
                         <p className={`font-semibold text-default_gray`}>Ordering: <span
                             className={`text-default_red `}>{product.ordering}</span></p>

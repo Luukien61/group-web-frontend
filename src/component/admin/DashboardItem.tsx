@@ -38,14 +38,14 @@ const DashboardItem : React.FC<Props>= ({category}) => {
     productRange()
     return (
         <div className={`aspect-square w-1/2`}>
-            <div className={`px-2 w-full`}>
+            <div className={`px-2 w-full `}>
                 <Link
                     to={`${category.name.toLowerCase()}`}
-                    className={`w-full`}>
-                    <div className={`bg-white p-4 flex flex-col rounded-xl aspect-square w-[90%] shadow-xl`}>
+                    className={`w-full `}>
+                    <div className={`hover:border hover:border-red-600 bg-white p-4 flex flex-col rounded-xl aspect-square w-[90%] shadow-xl`}>
                         <div className={`w-full aspect-square flex flex-col gap-y-2`}>
                             <p className={`font-semibold`}>{category.name}</p>
-                            <hr className={`bg-black`}/>
+                            <hr className={`bg-black h-[2px]`}/>
                             <div className={`w-full h-full`}>
                                 <div className={`flex flex-wrap gap-x-1 w-full h-full items-center justify-center`}>
                                     <div className={`h-fit w-fit px-2 py-1 ${quantityColor.outerColor} rounded-xl `}>

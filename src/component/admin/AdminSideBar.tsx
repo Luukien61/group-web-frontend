@@ -75,11 +75,12 @@ const AdminSideBar = () => {
                             </div>
                             {/*Orders*/}
                             <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
-                                <a className={`cursor-pointer `}>
+                                <Link to={'/admin/order'}
+                                    className={`cursor-pointer `}>
                                     <p>
                                         Order
                                     </p>
-                                </a>
+                                </Link>
                             </div>
                             <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
                                 <a className={`cursor-pointer`}>

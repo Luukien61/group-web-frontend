@@ -5,7 +5,7 @@ import {
     categoryPath,
     findById,
     loginPath,
-    mailPath,
+    mailPath, orderPath,
     producerBasePath,
     productPath,
     quantityPath,
@@ -63,9 +63,9 @@ export const fetchProductsCategory = async ({category, producer, price, page, si
             params.producer = producer;
         }
         if (price && price.length > 0) {
-            params.minPrice = price[0]*1000000;
+            params.minPrice = price[0] * 1000000;
             if (price.length == 2) {
-                params.maxPrice = price[1]*1000000;
+                params.maxPrice = price[1] * 1000000;
             }
         }
         const response = await instance.get(productPath, {
@@ -156,7 +156,7 @@ export const postProduct = async (product: Product) => {
         throw error;
     }
 }
-export type Error = {
+export type CustomError = {
     "message": string,
     "statusCode": number,
     "timestamp": string
@@ -208,13 +208,17 @@ export type TokenResponse = {
     expires_in: Date
 }
 
+
 export const login = async (loginRequest: LoginProps) => {
+
+    // eslint-disable-next-line no-useless-catch
     try {
         return await instance.post(loginPath, loginRequest)
             .then(response => response.data)
     } catch (error) {
-        handleError(error)
+        throw error
     }
+
 }
 export const authenticateRequest = async () => {
     try {
@@ -229,14 +233,12 @@ export const authenticateRequest = async () => {
 }
 
 
-
 export const refreshTokenRequest = async (refreshToken: string) => {
     try {
-        const response = await adminInstance.post(refreshTokenPath, {
+        return await adminInstance.post(refreshTokenPath, {
             refreshToken: refreshToken
         })
             .then(response => response.data)
-        return response
     } catch (error) {
         handleError(error)
     }
@@ -251,10 +253,105 @@ export const getUserResponseById = async (userId: number) => {
         handleError(error)
     }
 }
+export type OrderDetail = {
+    "phone": string,
+    "email": string,
+    "done": boolean,
+    "orderId": string,
+    "productId": string,
+    "time": Date,
+    "productName"?: string,
+    "category"?: string
+}
+
+export const placeOrder = async (orderDetail: OrderDetail) => {
+    try {
+        return instance.post(orderPath, orderDetail)
+            .then(response => response.data.message)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const getOrderQuantityByState = async (state: boolean) => {
+    try {
+        return instance.get(`${orderPath}/quantity`, {
+            params: {
+                state: state
+            }
+        })
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const deleteOrderById = async (id: string) => {
+    try {
+        return await instance.delete(`${orderPath}/${id}`)
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const completeOrder = async (id: string) => {
+    try {
+        return await instance.patch(`${orderPath}/${id}`)
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const getAllOrderByState = async (state: boolean) => {
+    try {
+        return await instance.get(`${orderPath}`, {
+            params: {
+                state: state
+            }
+        })
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const getAllOrdersByStateAndDateAfter = async (state: boolean, month: number) => {
+    try {
+        return await adminInstance.get(`${orderPath}/complete`, {
+            params: {
+                state: state,
+                month: month
+            }
+        }).then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+
+export const getOrdersQuantityByStateAndDateAfter = async (state: boolean, month: number) => {
+    try {
+        return await adminInstance.get(`${orderPath}/quantity/complete`, {
+            params: {
+                state: state,
+                month: month
+            }
+        }).then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
 
 const handleError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response) {
         const customError: Error = error.response.data
         console.error(customError.message)
+        return customError.message
     }
 }
+
+
+

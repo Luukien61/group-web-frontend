@@ -14,6 +14,8 @@ import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
 import AdminAddProductPage from "@/page/admin/AdminAddProductPage.tsx";
 import ProductDetail from "@/page/admin/ProductDetail.tsx";
 import Test from "@/page/Test.tsx";
+import AdminOrder from "@/page/admin/AdminOrder.tsx";
+import AdminCompleteOrder from "@/page/admin/AdminCompleteOrder.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -61,6 +63,8 @@ const AppRouter = () => {
                 {/*admin*/}
                 <Route path='/admin' element={<AdminHome/>}>
                     <Route index element={<AdminMainContent/>}/>
+                    <Route path='order' element={<AdminOrder/>}/>
+                    <Route path='order/complete' element={<AdminCompleteOrder/>}/>
                     <Route path={`:category/new`} element={<AdminAddProductPage/>}/>
                     <Route path={`:category/:productId`} element={<ProductDetail/>}/>
                     <Route path={`:category`} element={<CategoryAdminPage/>}/>

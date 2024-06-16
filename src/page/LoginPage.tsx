@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {homeBackgroundimg} from "@/url/Urls.ts";
-import {authenticateRequest, login, TokenResponse} from "@/axios/Request.ts";
+import {authenticateRequest, CustomError, login, TokenResponse} from "@/axios/Request.ts";
 import {useNavigate} from "react-router-dom";
 import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
+import axios from "axios";
 
 export type UserResponse = {
     "staffID": number,
@@ -33,6 +34,7 @@ const LoginPage = () => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [isEmailValid, setIsEmailValid] = useState<boolean>(true)
+    const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true)
     const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.\w{3,4}$/
     const handleLogIn = async () => {
         const isEmailValid: boolean = emailPattern.test(email)
@@ -51,8 +53,16 @@ const LoginPage = () => {
                 setUser(loginResponse.user)
                 setIsLogin(true)
                 navigate("/admin")
-            } catch (e) {
-                console.error(e)
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                    const customError: CustomError = error.response.data
+                    if(customError.statusCode === 404){
+                        setIsPasswordValid(false)
+                        setTimeout(() => {
+                            setIsPasswordValid(true)
+                        }, 2000)
+                    }
+                }
             }
         } else {
             setIsEmailValid(false)
@@ -99,13 +109,15 @@ const LoginPage = () => {
                 <div className={`p-4`}>
                     <InputFormGoogle style={`${!isEmailValid && 'border-red-600 border-2'}`} label={`Email`}
                                      type={"email"} action={(value) => setEmail(value)}/>
-                    <InputFormGoogle label={`Password`} type={'password'} action={(value) => setPassword(value)}/>
-                    <div className={`w-full flex items-center justify-end `}>
+                    <InputFormGoogle style={`${!isPasswordValid && 'border-red-600 border-2'}`}
+                        label={`Password`} type={'password'} action={(value) => setPassword(value)}/>
+                    <div className={`w-full flex items-center justify-between `}>
+                        <p className={`text-red-600 text-[16px] ${isPasswordValid && 'invisible'}`}>Incorrect password !!!</p>
                         <p className={`italic text-[14px] hover:text-inner_blue cursor-pointer`}>Forgot password?</p>
                     </div>
                 </div>
                 <div className={`flex justify-center`}>
-                    <button
+                <button
                         onClick={handleLogIn}
                         className={`rounded bg-default_blue  text-white py-2 px-3 hover:bg-blue_other hover:font-semibold duration-300`}
                     >

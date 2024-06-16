@@ -100,6 +100,7 @@ const CategoryCard: React.FC<CategoryProp> = ({
             const products = response.content
             setLast(response.last)
             setProducts(products)
+            console.log("Products: ", products)
         }
         fetchProductByCategory()
     }, [category, size, priceFilter, page, producerFilter]);
