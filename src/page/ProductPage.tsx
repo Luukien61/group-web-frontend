@@ -62,8 +62,8 @@ const ProductPage = () => {
         setRom(newRom)
     }
     useEffect(() => {
-        if(product){
-            document.title= product.name
+        if (product) {
+            document.title = product.name
         }
     }, [product]);
     const orderInfor: OrderProp[] = [
@@ -98,10 +98,10 @@ const ProductPage = () => {
             const product = await getProductById(deviceId)
             setProduct(product)
         }
-        if(isRendered){
+        if (isRendered) {
             fetchProduct()
         }
-    }, [deviceId,isRendered]);
+    }, [deviceId, isRendered]);
 
     const handleOpenModal = useCallback(() => {
         setOpenModal((pre) => !pre)
@@ -140,12 +140,13 @@ const ProductPage = () => {
                 .catch(error => alert(error))
         }
     }
+    const now = new Date().toLocaleTimeString("vi-VN")
 
     const handleVerifyCode = useCallback(() => {
         if (userCode.length === 6 && !expired) {
             if (userCode === verificationCode && !expired) {
-                setTimeout(()=>setIsDone(true),2000)
-
+                setTimeout(() => setIsDone(true), 2000)
+                const orderId = makeId(10)
             } else {
                 alert("Error")
             }
@@ -154,11 +155,21 @@ const ProductPage = () => {
         }
     }, [verificationCode, userCode]);
 
+    const makeId =(length: number) : string =>{
+        let result : string=''
+        const characters : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        const characterLength = characters.length;
+        for(let i = 0; i < length; i++){
+            result += characters.charAt(Math.floor(Math.random() * characterLength));
+        }
+        return result;
+    }
+
     useEffect(() => {
         if (timer === 0 && intervalTimer.current) {
             setExpired(true)
             clearInterval(intervalTimer.current)
-            intervalTimer.current=null
+            intervalTimer.current = null
         }
     }, [timer]);
 
@@ -293,109 +304,119 @@ const ProductPage = () => {
                 <div onClick={handleCloseModel}
                      id="default-modal"
                      className={`backdrop-blur-sm bg-black bg-opacity-60 flex overflow-y-auto overflow-x-hidden fixed inset-0 z-50 justify-center items-center w-full h-full max-h-full ${openModal ? "block" : "hidden"}`}>
+
                     <div onClick={event => handleModalClicks(event)}
                          className="relative p-4 w-full max-w-[40%] max-h-full">
                         {/* modal */}
                         <div
-                            className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                            <div
-                                className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                    Order Information
-                                </h3>
-                                <button
-                                    onClick={handleOpenModal}
-                                    type="button"
-                                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                         fill="none"
-                                         viewBox="0 0 14 14">
-                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                              strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                    </svg>
-                                    <span className="sr-only">Close</span>
-                                </button>
-                            </div>
-                            {/*main content*/}
-                            <div className="p-4 md:p-5 space-y-4 flex flex-col">
-                                {!isDone && !isSent && orderInfor.map((value, index) => (
-                                    <div key={index}
-                                         className={`flex flex-col px-2`}>
-                                        <div className={`w-full flex items-center space-x-4 justify-between`}>
-                                            <div className={`w-1/4`}>
-                                                <div className={`bg-default_background w-fit p-1`}>
-                                                    <p>{value.title}</p>
-                                                </div>
-                                            </div>
-                                            <DefaultInput
-                                                className={`border rounded ${isDoneClicked && !value.value ? '!border-default_red' : ''}`}
-                                                required={true}
-                                                type={value.type}
-                                                value={value.value}
-                                                onChange={value.action}
-                                            />
+                            className="relative bg-white rounded-lg flex items-center justify-center min-h-60 shadow dark:bg-gray-700">
+                            {
+                                product.available == 0
+                                    ? <div className={`w-full h-full flex items-center justify-center`}>
+                                        <p className={`font-semibold`}>Sorry this product is sold out</p>
+                                    </div>
+                                    : <div className={`w-full`}>
+                                        <div
+                                            className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                Order Information
+                                            </h3>
+                                            <button
+                                                onClick={handleOpenModal}
+                                                type="button"
+                                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                                <svg className="w-3 h-3" aria-hidden="true"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none"
+                                                     viewBox="0 0 14 14">
+                                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                                          strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                </svg>
+                                                <span className="sr-only">Close</span>
+                                            </button>
                                         </div>
-                                        {
-                                            isDoneClicked && !value.value &&
-                                            <p className={`w-fit self-end text-[10px] text-default_red font-normal`}>
-                                                This field is required
-                                            </p>
-                                        }
-                                    </div>
+                                        {/*main content*/}
+                                        <div className="p-4 md:p-5 space-y-4 flex flex-col">
+                                            {!isDone && !isSent && orderInfor.map((value, index) => (
+                                                <div key={index}
+                                                     className={`flex flex-col px-2`}>
+                                                    <div className={`w-full flex items-center space-x-4 justify-between`}>
+                                                        <div className={`w-1/4`}>
+                                                            <div className={`bg-default_background w-fit p-1`}>
+                                                                <p>{value.title}</p>
+                                                            </div>
+                                                        </div>
+                                                        <DefaultInput
+                                                            className={`border rounded ${isDoneClicked && !value.value ? '!border-default_red' : ''}`}
+                                                            required={true}
+                                                            type={value.type}
+                                                            value={value.value}
+                                                            onChange={value.action}
+                                                        />
+                                                    </div>
+                                                    {
+                                                        isDoneClicked && !value.value &&
+                                                        <p className={`w-fit self-end text-[10px] text-default_red font-normal`}>
+                                                            This field is required
+                                                        </p>
+                                                    }
+                                                </div>
 
-                                ))}
-                                {!isDone && isSent &&
-                                    <div className={`flex flex-col items-center justify-center *:w-full`}>
-                                        <p className={`font-semibold`}>Check your email then enter the verification
-                                            code</p>
-                                        <input
-                                            onChange={(event) => setUserCode(event.target.value)}
-                                            placeholder={"Code"}
-                                            required={true}
-                                            value={userCode}
-                                            spellCheck={`false`}
-                                            type="text"
-                                            maxLength={6}
-                                            className={`border border-black rounded py-1 px-2 appearance-none`}
-                                        />
-                                        <p className={`mt-1 text-default_red `}>Valid timer: {timer}</p>
+                                            ))}
+                                            {!isDone && isSent &&
+                                                <div className={`flex flex-col items-center justify-center *:w-full`}>
+                                                    <p className={`font-semibold`}>
+                                                        Check your email then enter the verification code</p>
+                                                    <input
+                                                        onChange={(event) => setUserCode(event.target.value)}
+                                                        placeholder={"Code"}
+                                                        required={true}
+                                                        value={userCode}
+                                                        spellCheck={`false`}
+                                                        type="text"
+                                                        maxLength={6}
+                                                        className={`border border-black rounded py-1 px-2 appearance-none`}
+                                                    />
+                                                    <p className={`mt-1 text-default_red `}>Valid timer: {timer}</p>
+                                                </div>
+                                            }
+                                            {isDone &&
+                                                <div className={`flex flex-col items-center justify-center`}>
+                                                    <p>Order successfully!</p>
+                                                    <p>Your order is being processed.</p>
+                                                </div>
+                                            }
+                                        </div>
+                                        {/*bottom*/}
+                                        <div
+                                            className="flex items-center p-5 border-t border-gray-200 rounded-b justify-end">
+                                            {
+                                                !isDone && !isSent &&
+                                                <button
+                                                    onClick={handlePurchaseDoneClick}
+                                                    type="button"
+                                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                    Order
+                                                </button>
+                                            }
+                                            {
+                                                !isDone && isSent &&
+                                                <button
+                                                    onClick={handleVerifyCode}
+                                                    type="button"
+                                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">
+                                                    Verify
+                                                </button>
+                                            }
+                                            <button
+                                                onClick={handleOpenModal}
+                                                type="button"
+                                                className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100">
+                                                {isDone ? "Close" : "Cancel"}
+                                            </button>
+                                        </div>
                                     </div>
-                                }
-                                {isDone &&
-                                    <div className={`flex flex-col items-center justify-center`}>
-                                        <p>Order successfully!</p>
-                                        <p>Your order is being processed.</p>
-                                    </div>
-                                }
-                            </div>
-                            {/*bottom*/}
-                            <div
-                                className="flex items-center p-5 border-t border-gray-200 rounded-b justify-end">
-                                {
-                                    !isDone && !isSent &&
-                                    <button
-                                        onClick={handlePurchaseDoneClick}
-                                        type="button"
-                                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                        Order
-                                    </button>
-                                }
-                                {
-                                    !isDone && isSent &&
-                                    <button
-                                        onClick={handleVerifyCode}
-                                        type="button"
-                                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                        Verify
-                                    </button>
-                                }
-                                <button
-                                    onClick={handleOpenModal}
-                                    type="button"
-                                    className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100">
-                                    {isDone ? "Close" : "Cancel"}
-                                </button>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -523,7 +544,7 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 <TableRow>
                     {/*Time*/}
                     <TableCell className="font-medium border-r">Time</TableCell>
-                    <TableCell>T{feature.madeTime.getMonth()+1}/{feature.madeTime.getFullYear()}</TableCell>
+                    <TableCell>T{feature.madeTime.getMonth() + 1}/{feature.madeTime.getFullYear()}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

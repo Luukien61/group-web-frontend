@@ -6,6 +6,7 @@ import {Category} from "@/common/NavMenu.tsx";
 import {useCategoryItem} from "@/zustand/AppState.ts";
 import {UserResponse} from "@/page/LoginPage.tsx";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
+import {Link} from "react-router-dom";
 
 const AdminSideBar = () => {
     const logggedInUser = useCurrentUser()
@@ -41,11 +42,19 @@ const AdminSideBar = () => {
                 <nav className={`mt-6 mb-4`}>
                     <div className={`flex flex-1 w-full items-center justify-between`}>
                         <div className={`w-full *:w-full flex flex-col gap-y-2`}>
+                            <div className={`px-2 cursor-pointer`}>
+                                <a
+                                    href={'/admin'}
+                                    className={`w-full h-full`}>
+                                    <p>Home</p>
+                                </a>
+                            </div>
                             {/*category*/}
                             <div onClick={handleCategoryChange}
                                  className={`flex gap-x-1 items-center px-2 rounded py-2 hover:bg-admin_nav_bar_secondary cursor-pointer`}>
                                 <p>Category</p>
-                                <RiArrowDropDownLine className={`transform duration-300 ${categoryOpen ? 'rotate-180': ''}`} size={28}/>
+                                <RiArrowDropDownLine
+                                    className={`transform duration-300 ${categoryOpen ? 'rotate-180' : ''}`} size={28}/>
                             </div>
                             <div
                                 draggable={false}
@@ -53,13 +62,13 @@ const AdminSideBar = () => {
                                 <ul className={``}>
                                     {
                                         category.map((category, index) => (
-                                            <a className={`w-full cursor-pointer group`}
-                                               key={index}
-                                               href={`/admin/category/${category.id}`}>
+                                            <Link className={`w-full cursor-pointer group`}
+                                                  key={index}
+                                                  to={`/admin/${category.name.toLowerCase()}`}>
                                                 <li className={`px-2 py-2 group-hover:bg-admin_nav_bar_secondary rounded`}>
                                                     {category.name}
                                                 </li>
-                                            </a>
+                                            </Link>
                                         ))
                                     }
                                 </ul>

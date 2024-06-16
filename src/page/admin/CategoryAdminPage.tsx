@@ -53,9 +53,11 @@ const CategoryAdminPage = () => {
         page: 0,
         size: 10
     }
+    // const [fetchProps,seFetchProps]= useState<FetchProps>(fetchProp)
+
     useEffect(() => {
-        document.title="Admin Categories"
-    }, []);
+        document.title=`${category.charAt(0).toUpperCase()+category.substring(1).toLowerCase()} admin`
+    }, [locations]);
     const [fetchProps, setFetchProps] = useState<FetchProps>(fetchProp)
     useEffect(() => {
         const getProducers = async () => {
@@ -63,6 +65,8 @@ const CategoryAdminPage = () => {
             setProducers(response)
         }
         getProducers()
+        setFetchProps(prevState => ({...prevState,category: category}))
+
     }, [category])
     useEffect(() => {
         setProduct(products)
@@ -81,7 +85,6 @@ const CategoryAdminPage = () => {
             setAllProducts(products)
         }
         fetchAllProduct()
-
     }, [fetchProps]);
     const handleLoadMoreClick = useCallback(() => {
         setFetchProps(prevState => ({...prevState, size: prevState.size + 10}))
