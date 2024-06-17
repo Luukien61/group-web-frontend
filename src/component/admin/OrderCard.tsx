@@ -31,7 +31,7 @@ const OrderCard: React.FC<Props> = ({orderDetails, refreshAction}) => {
     return (
         <div className={`w-1/3 p-4 `}>
             <div
-                className={`w-full h-[260px] hover:border-red-600 hover:bg-gray-100 cursor-pointer duration-300 flex items-center bg-gray-200 rounded shadow-xl border p-4`}>
+                className={`w-full h-[260px] hover:border-red-600 bg-gray-100 cursor-pointer duration-300 flex items-center hover:bg-gray-200 rounded shadow-xl border p-4`}>
                 <div className={`w-full flex items-center `}>
                     {
                         deleteRequest

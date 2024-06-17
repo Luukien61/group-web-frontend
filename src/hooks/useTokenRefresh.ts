@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {ACCESS_TOKEN, EXPIRE_DATE, REFRESH_TOKEN} from "@/page/LoginPage.tsx";
 import {refreshTokenRequest, TokenResponse} from "@/axios/Request.ts";
+import {useLoginState} from "@/zustand/AppState.ts";
 
 const useTokenRefresh = () => {
     const navigate = useNavigate();
+    const {setIsLogin} = useLoginState()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
@@ -27,6 +29,7 @@ const useTokenRefresh = () => {
                     localStorage.setItem(REFRESH_TOKEN, newTokens.refresh_token);
                     localStorage.setItem(EXPIRE_DATE, newTokens.expires_in.toString());
                     setIsAuthenticated(true);
+                    setIsLogin(true)
                 } else {
                     navigate('/login', { replace: true });
                 }

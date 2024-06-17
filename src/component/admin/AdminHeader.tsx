@@ -72,7 +72,6 @@ const AdminHeader = () => {
                                     }
                                     <>{item.icon}</>
                                 </div>
-
                                 <p>{item.title}</p>
                             </div>
                         ))

@@ -9,7 +9,7 @@ import {useLocation} from "react-router-dom";
 
 export type ProductPageable = {
     content: Product[],
-    pageabel: {
+    pageable: {
         "pageNumber": number,
         "pageSize": number,
         "sort": {
@@ -69,11 +69,21 @@ const CategoryAdminPage = () => {
 
     }, [category])
     useEffect(() => {
+
         setProduct(products)
         if (!products) {
             setProduct(allProducts)
         }
     }, [products]);
+
+    const handleProducerClick=async (producer: string)=>{
+        const productPageables : ProductPageable = await fetchProductsCategory({
+            category: category,
+            producer : [producer],
+            size: 20
+        })
+        setProduct(productPageables.content)
+    }
 
     useEffect(() => {
         const fetchAllProduct = async () => {
@@ -100,6 +110,7 @@ const CategoryAdminPage = () => {
                         {
                             producers.map((producer, index) => (
                                 <div key={index}
+                                     onClick={()=>handleProducerClick(producer.name)}
                                      className={`font-medium hover:bg-third_green cursor-pointer rounded m-0 py-1 px-4`}>
                                     <p className={`font-semibold `}>{producer.name}</p>
                                 </div>
@@ -118,7 +129,7 @@ const CategoryAdminPage = () => {
             </div>
             {/*content*/}
             <div className={`w-[1200px] relative top-20 self-center py-6`}>
-                <div className={`w-full flex-col shadow flex flex-wrap bg-white rounded p-4`}>
+                <div className={`w-full flex-col  shadow flex flex-wrap bg-white rounded p-4`}>
                     {
                         product.length == 0 &&
                         <p className={`text-red-600 font-medium`}>No device found</p>
