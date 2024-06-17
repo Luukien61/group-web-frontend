@@ -4,6 +4,7 @@ import {authenticateRequest, CustomError, login, TokenResponse} from "@/axios/Re
 import {useNavigate} from "react-router-dom";
 import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
 import axios from "axios";
+import useTokenRefresh from "@/hooks/useTokenRefresh.ts";
 
 export type UserResponse = {
     "staffID": number,
@@ -30,6 +31,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const {setUserId} = useUserIdLogin()
     const {setUser}= useUserLogin()
+    const authenticateState= useTokenRefresh()
     const {isLogin, setIsLogin} = useLoginState()
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -80,8 +82,9 @@ const LoginPage = () => {
         if (token && !isLogin) {
             authenticate()
         }
-    }, []);
+    }, [isLogin]);
     const authenticate = async () => {
+        console.log("is refresh token :", authenticateState)
         const state = await authenticateRequest()
         if (state) {
             setIsLogin(true)
@@ -99,7 +102,7 @@ const LoginPage = () => {
                  backgroundRepeat: 'no-repeat',
              }}
         >
-            <div className={`w-1/3 gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
+            <div className={`w-1/3 min-h-[600px] gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
                 <div className={`w-full p-4 flex justify-center my-auto`}>
                     <img
                         className={`object-cover`}

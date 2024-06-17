@@ -235,7 +235,7 @@ export const authenticateRequest = async () => {
 
 export const refreshTokenRequest = async (refreshToken: string) => {
     try {
-        return await adminInstance.post(refreshTokenPath, {
+        return await instance.post(refreshTokenPath, {
             refreshToken: refreshToken
         })
             .then(response => response.data)

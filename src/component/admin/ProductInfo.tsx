@@ -19,7 +19,6 @@ import {IoIosAddCircleOutline} from "react-icons/io";
 import {DefaultInput} from "@/component/Input.tsx";
 import axios from "axios";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
-import {UserResponse} from "@/page/LoginPage.tsx";
 
 const readDocx = async (file: File): Promise<string> => {
     try {

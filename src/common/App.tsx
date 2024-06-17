@@ -6,7 +6,7 @@ import {Outlet} from "react-router-dom";
 const App = () => {
     return (
         <div>
-            <div>
+            <div className={`relative`}>
                 <Header/>
                 <div className="w-full flex px-4 mx-auto max-w-8xl "
                      style={{

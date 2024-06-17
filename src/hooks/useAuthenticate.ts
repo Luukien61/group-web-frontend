@@ -10,7 +10,9 @@ const useAuthenticate = () => {
         const authenticate = async () => {
             const state = await authenticateRequest();
             if (!state) {
-                navigate('/login', { replace: true });
+                if(!isAuthenticated) {
+                    navigate('/login', { replace: true });
+                }
             }
         };
         authenticate();

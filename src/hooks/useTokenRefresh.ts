@@ -14,6 +14,7 @@ const useTokenRefresh = () => {
             const expireTime = localStorage.getItem(EXPIRE_DATE);
 
             if (!accessToken || !refreshToken || !expireTime) {
+                console.log("Expiring token");
                 navigate('/login', { replace: true });
                 return;
             }
@@ -31,9 +32,11 @@ const useTokenRefresh = () => {
                 }
             }
             if (expiryDate <= now) {
+                console.log("Refreshing token")
                 // Access token expired, refresh it
                 const newTokens : TokenResponse = await refreshTokenRequest(refreshToken);
                 persistToken(newTokens)
+                console.log("refreshToken", newTokens)
             } else {
                 // Schedule refresh before token expiry
                 const timeout = expiryDate.getTime() - now.getTime() - 60000; // 1 minute before expiry
