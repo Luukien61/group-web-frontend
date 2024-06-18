@@ -209,7 +209,7 @@ const ProductPage = () => {
                     className={`w-full relative`}>
                     <div className={`relative grid w-full grid-cols-12 mt-4 mb-4`}>
                         {/*main content*/}
-                        <div className={`col-span-10 w-full rounded bg-default_background p-5 h-fit mb-4`}>
+                        <div className={`col-span-10 w-full rounded bg-default_background p-5 h-full mb-4`}>
                             <div className={`w-full border-b`}>
                                 <h1 className={`text-black pb-2 font-semibold`}>
                                     {product.name}
@@ -439,7 +439,7 @@ export default ProductPage;
 
 const SideBarADs = () => {
     return (
-        <div className={`col-span-2 w-full block static overflow-y-visible mb-4`}>
+        <div className={`col-span-2 w-full block static overflow-y-visible`}>
             <div
                 className={`mx-4 rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
                 <TrendingCard/>
@@ -502,7 +502,6 @@ type TableProps = {
 const TableDemo: React.FC<TableProps> = ({feature}) => {
     const date = feature.madeTime
     feature.madeTime = new Date(date)
-    const {ram, rom} = useCurrentDeviceMem()
     return (
         <Table>
             <TableBody>

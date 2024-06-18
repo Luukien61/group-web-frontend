@@ -52,7 +52,7 @@ const AppRouter = () => {
     return (
         <CleanUrlMiddleware>
             <Routes>
-                <Route path={'/test'} element={<Test/>}/>
+                <Route path={'/regex'} element={<Test/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>

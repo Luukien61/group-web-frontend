@@ -1,35 +1,47 @@
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DefaultInput} from "@/component/Input.tsx";
 import ProductSearch from "@/component/ProductSearch.tsx";
 import {Product} from "@/component/CategoryCard.tsx";
-import {debounce} from "lodash";
-import {searchProductsByName} from "@/axios/Request.ts";
 import {IoMdNotificationsOutline} from "react-icons/io";
-import {IoPersonCircleOutline} from "react-icons/io5";
+import {IoLogOutOutline} from "react-icons/io5";
 import useProductSearch from "@/hooks/useProductSearch.ts";
 import {useOrderPending} from "@/zustand/AppState.ts";
+import {useNavigate} from "react-router-dom";
 
 type HeaderItem = {
     title: string,
-    icon?: React.ReactNode
+    icon?: React.ReactNode,
+    action?: ()=>void
 }
 
 const AdminHeader = () => {
     const {orderPending}=useOrderPending()
+    const navigate= useNavigate()
     const [productSearch, setProductSearch] = useState<Product[]>([]);
     const { products, handleChange } = useProductSearch()
     useEffect(() => {
         setProductSearch(products)
     }, [products]);
 
+    const handleLogOut=()=>{
+        localStorage.clear()
+        navigate('/login')
+    }
+
+    const handleNotificationClick=()=>{
+        navigate('order')
+    }
+
     const menuItems: HeaderItem[] = [
         {
             title: "Notification",
             icon: <IoMdNotificationsOutline size={28}/>,
+            action: handleNotificationClick
         },
         {
-            title: "Profile",
-            icon: <IoPersonCircleOutline size={28}/>,
+            title: "Log out",
+            icon: <IoLogOutOutline size={28}/>,
+            action: handleLogOut
         }
     ]
     return (
@@ -61,6 +73,7 @@ const AdminHeader = () => {
                     {
                         menuItems.map((item) => (
                             <div key={item.title}
+                                 onClick={item.action}
                                  className={`flex text-default_gray flex-col items-center justify-center hover:text-default_blue gap-x-1 group`}>
                                 <div className={`relative w-fit`}>
                                     {

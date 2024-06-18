@@ -8,7 +8,7 @@ const useTokenRefresh = () => {
     const navigate = useNavigate();
     const {setIsLogin} = useLoginState()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
+    localStorage.setItem("expire-token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIlJPTEVfU1RBRkYiXSwiaWF0IjoxNzE4Njc1NDA3LCJzdWIiOiJjYmFlZkBnbWFpbC5jb20iLCJleHAiOjE3MTg2NzkwMDd9.fjXYb134_XZOl6Vx9BVcoy943tcdsbYFJrsqgX7VyQc")
     useEffect(() => {
         const checkTokenExpiry = async () => {
             const accessToken = localStorage.getItem(ACCESS_TOKEN);
@@ -16,7 +16,6 @@ const useTokenRefresh = () => {
             const expireTime = localStorage.getItem(EXPIRE_DATE);
 
             if (!accessToken || !refreshToken || !expireTime) {
-                console.log("Expiring token");
                 navigate('/login', { replace: true });
                 return;
             }
@@ -35,16 +34,12 @@ const useTokenRefresh = () => {
                 }
             }
             if (expiryDate <= now) {
-                console.log("Refreshing token")
-                // Access token expired, refresh it
                 const newTokens : TokenResponse = await refreshTokenRequest(refreshToken);
                 persistToken(newTokens)
-                console.log("refreshToken", newTokens)
             } else {
                 // Schedule refresh before token expiry
                 const timeout = expiryDate.getTime() - now.getTime() - 60000; // 1 minute before expiry
                 setInterval(async () => {
-                    console.log("refreshToken")
                     const newTokens : TokenResponse = await refreshTokenRequest(refreshToken);
                     persistToken(newTokens)
                 }, timeout);

@@ -16,7 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product,widthClass}) => {
         <div className={`${widthClass} flex justify-center items-center`}>
             <a href={`/${category}/${product.id}`}>
                 <div
-                    className="rounded bg-outer_green h-fit flex flex-col gap-y-1 py-1 px-2 group cursor-pointer max-w-[250px] ">
+                    className="rounded bg-gray-200 h-fit flex flex-col gap-y-1 py-2 px-2 group cursor-pointer max-w-[250px] ">
                     <img
                         className="object-fill h-[230px] h-max-[230px] group-hover:scale-105 rounded border border-default_green transform ease-in-out duration-300 "
                         alt={product.name}

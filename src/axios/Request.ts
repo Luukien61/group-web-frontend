@@ -152,7 +152,7 @@ export const postProduct = async (product: Product) => {
             .then(response => response.data)
     } catch (error) {
         handleError(error)
-        // console.log("Error posting producer: ", error);
+        console.log("Error posting producer: ", error);
         throw error;
     }
 }

@@ -62,8 +62,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageLoaded, setImageLoaded] = useState<number>(0);
     const [urlSourceClicked, setUrlSourceClicked] = useState<number>();
-    const [rom, setRom] = useState<number>()
-    const [OS, setOS] = useState<string>()
+    const [rom, setRom] = useState<number>(-1)
+    const [OS, setOS] = useState<string>('')
     const [openAddCategory, setOpenAddCategory] = useState<boolean>(false)
     const [processor, setProcessor] = useState<string>('');
     const [rawRam, setRawRam] = useState<string>('');
@@ -238,6 +238,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const newProduct = await assembleProduct(id, 0)
         if (newProduct) {
             await postProduct(newProduct);
+            setRawColors([])
+            setPreviews([])
             navigate(`/admin/${categoryPick.toLowerCase()}`)
         }
     }
@@ -267,16 +269,14 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const battery = parseInt(rawBattery)
         const madeTime = new Date(`01/${rawMadeTime}`)
         description.title = title
-        // const category = categoryPick
         const currentPrice = parseInt(rawCurrentPrice)
         const prePrice = parseInt(rawPrePrice)
         const totalQuantity = parseInt(rawTotalQuantity)
         const avaiQuantity = parseInt(rawAvaiQuantity)
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
-        setRawColors([])
         const imgs = (await uploadProductImgs())?.filter((img): img is string => img !== undefined);
-        setPreviews([])
-        if (colors && imgs && imgs.length > 0 && rom && OS) {
+        if (colors && imgs && imgs.length > 0) {
+
             const memory: Price = {
                 id: product?.features.memory[0].id,
                 ram: ram,
@@ -294,7 +294,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     frontCamera: frontCams || [],
                     rearCamera: rearCams || [],
                     memory: [memory],
-                    os: OS,
+                    os: OS ,
                     battery: battery,
                     madeTime: madeTime,
                     chip: processor
