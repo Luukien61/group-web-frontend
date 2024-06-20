@@ -29,7 +29,7 @@ const AdminHeader = () => {
     }
 
     const handleNotificationClick=()=>{
-        navigate('order')
+        navigate('/admin/order')
     }
 
     const menuItems: HeaderItem[] = [

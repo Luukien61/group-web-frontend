@@ -1064,7 +1064,7 @@ type FileUploadProps = {
     text?: boolean,
     style?: string
 }
-const FileUpload: React.FC<FileUploadProps> = ({input, text, style}) => {
+export const FileUpload: React.FC<FileUploadProps> = ({input, text, style}) => {
     return (
         <div className={`flex items-center justify-center ${style}`}>
             <label

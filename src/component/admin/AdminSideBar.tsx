@@ -42,7 +42,7 @@ const AdminSideBar = () => {
                 <nav className={`mt-6 mb-4`}>
                     <div className={`flex flex-1 w-full items-center justify-between`}>
                         <div className={`w-full *:w-full flex flex-col gap-y-2`}>
-                            <div className={`px-2 cursor-pointer`}>
+                            <div className={`p-2 rounded cursor-pointer hover:bg-admin_nav_bar_secondary`}>
                                 <a
                                     href={'/admin'}
                                     className={`w-full h-full`}>
@@ -83,9 +83,10 @@ const AdminSideBar = () => {
                                 </Link>
                             </div>
                             <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
-                                <a className={`cursor-pointer`}>
+                                <a href={'/admin/carousel'}
+                                   className={`cursor-pointer`}>
                                     <p>
-                                        Setting
+                                        Carousel
                                     </p>
                                 </a>
                             </div>

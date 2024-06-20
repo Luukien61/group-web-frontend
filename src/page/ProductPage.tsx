@@ -11,11 +11,11 @@ import {
     CarouselPrevious,
 } from "@/shadcn/ui/carousel"
 import {Table, TableBody, TableCell, TableRow,} from "@/shadcn/ui/table"
-import {useCurrentDeviceMem} from "@/zustand/AppState.ts";
 import {useLocation} from "react-router-dom";
-import {getProductById, OrderDetail, placeOrder, sendVerificationMail} from "@/axios/Request.ts";
+import {fetchProductsCategory, getProductById, OrderDetail, placeOrder, sendVerificationMail} from "@/axios/Request.ts";
 import {Feature, Product} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
+import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
 
 type OrderProp = {
     title: string,
@@ -50,6 +50,19 @@ const ProductPage = () => {
     const [product, setProduct] = useState<Product>()
     const [isDone, setIsDone] = useState<boolean>(false)
     const [message, setMessage]= useState<string>('')
+    const [outstandingProducts, setOutstandingProducts] = useState<Product[]>([])
+
+    useEffect(()=>{
+        getOutstandingProducts(4)
+    },[])
+    const getOutstandingProducts=async (quantity: number)=>{
+        const response : ProductPageable = await fetchProductsCategory({
+            category: "phone",
+            size: quantity
+        })
+        const content = response.content
+        setOutstandingProducts(content)
+    }
     const handleSelectedIndex = (index: number) => {
         setSelectedIndex(index)
     }
@@ -301,7 +314,7 @@ const ProductPage = () => {
                             </div>
                         </div>
                         {/*side ads*/}
-                        <SideBarADs/>
+                        <SideBarADs products={outstandingProducts}/>
                     </div>
                     {/*fixed button*/}
                     <div
@@ -436,16 +449,19 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-
-const SideBarADs = () => {
+type SidebarADsProps={
+    products: Product[]
+}
+const SideBarADs = ({products}: SidebarADsProps) => {
     return (
         <div className={`col-span-2 w-full block static overflow-y-visible`}>
             <div
                 className={`mx-4 rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
-                <TrendingCard/>
-                <TrendingCard/>
-                <TrendingCard/>
-                <TrendingCard/>
+                {
+                    products.map((value, index) => (
+                        <TrendingCard product={value} key={index} />
+                    ))
+                }
             </div>
         </div>
     )
@@ -558,15 +574,19 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
         </Table>
     )
 }
-
-const TrendingCard = () => {
+type TrendingProps={
+    product: Product
+}
+const TrendingCard = ({product}: TrendingProps) => {
     return (
         <div
-            className={`flex flex-col gap-y-1 round bg-default_background w-full p-2 hover:scale-105 transform duration-300`}>
-            <img className={`aspect-[9/10]`}
-                 src={"https://i.pinimg.com/564x/b4/88/ed/b488ed2aebddbaa17cc2192153b9ebb9.jpg"} alt={"image"}/>
-            <p>Xiaomi 14</p>
-            <p className={`text-default_red font-medium`}>14.000.000d</p>
+            className={`flex flex-col gap-y-1 round bg-outer_blue w-full p-2 hover:scale-105 transform duration-300`}>
+            <a href={`/${product.category.name.toLowerCase()}/${product.id}`}>
+                <img className={`aspect-[9/10]`}
+                     src={product.imgs[0]} alt={"image"}/>
+                <p>{product.name}</p>
+                <p className={`text-default_red font-medium`}>{product.price[0].currentPrice.toLocaleString("vi-VN")}d</p>
+            </a>
         </div>
     )
 }

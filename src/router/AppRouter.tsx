@@ -17,6 +17,7 @@ import Test from "@/page/Test.tsx";
 import AdminOrder from "@/page/admin/AdminOrder.tsx";
 import AdminCompleteOrder from "@/page/admin/AdminCompleteOrder.tsx";
 import NotFoundPage from "@/page/NotFoundPage.tsx";
+import AdminCarousel from "@/page/admin/AdminCarousel.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -53,6 +54,7 @@ const AppRouter = () => {
         <CleanUrlMiddleware>
             <Routes>
                 <Route path={'/regex'} element={<Test/>}/>
+                <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>
@@ -66,10 +68,12 @@ const AppRouter = () => {
                 <Route path='/admin' element={<AdminHome/>}>
                     <Route index element={<AdminMainContent/>}/>
                     <Route path='order' element={<AdminOrder/>}/>
+                    <Route path='carousel' element={<AdminCarousel/>}/>
                     <Route path='order/complete' element={<AdminCompleteOrder/>}/>
                     <Route path={`new-product`} element={<AdminAddProductPage/>}/>
                     <Route path={`:category/:productId`} element={<ProductDetail/>}/>
                     <Route path={`:category`} element={<CategoryAdminPage/>}/>
+
                     <Route path={`*`} element={<NotFoundPage/>}/>
                 </Route>
                 <Route path={`*`} element={<NotFoundPage/>}/>
