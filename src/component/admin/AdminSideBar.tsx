@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {IoPersonCircleOutline} from "react-icons/io5";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {getCategories} from "@/axios/Request.ts";
@@ -7,13 +7,28 @@ import {useCategoryItem} from "@/zustand/AppState.ts";
 import {UserResponse} from "@/page/LoginPage.tsx";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
 import {Link} from "react-router-dom";
-
+type AdminSidebarProps={
+    title: string,
+    path: string
+}
+const adminSideBarItems:AdminSidebarProps[] = [
+    {
+        title: "Order",
+        path: "order"
+    },
+    {
+        title: "Carousel",
+        path: "carousel"
+    }
+]
 const AdminSideBar = () => {
     const logggedInUser = useCurrentUser()
+    const [sideBarItems, setSideBarItems] = useState<AdminSidebarProps[]>(adminSideBarItems)
     const [currentUser, setCurrentUser] = useState<UserResponse>(logggedInUser)
     const [category, setCategory] = useState<Category[]>([])
     const {setCategoriesItem} = useCategoryItem()
     const [categoryOpen, setCategoryOpen] = useState<boolean>(false)
+
     useEffect(() => {
         const fetchCategory = async () => {
             const response: Category[] = await getCategories()
@@ -25,10 +40,14 @@ const AdminSideBar = () => {
     }, []);
     useEffect(() => {
         setCurrentUser(logggedInUser)
+        if(logggedInUser.role?.toLowerCase()==="admin"){
+            setSideBarItems(prevState => [...prevState, {title: "Users", path: "users"}])
+        }
     }, [logggedInUser]);
     const handleCategoryChange = useCallback(() => {
         setCategoryOpen(prev => !prev)
     }, [])
+
 
     return (
         <aside className={`block fixed z-50 w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
@@ -76,22 +95,26 @@ const AdminSideBar = () => {
                                 </ul>
                             </div>
                             {/*Orders*/}
-                            <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
-                                <Link to={'/admin/order'}
-                                    className={`cursor-pointer `}>
-                                    <p>
-                                        Order
-                                    </p>
-                                </Link>
-                            </div>
-                            <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
-                                <Link to={'/admin/carousel'}
-                                   className={`cursor-pointer`}>
-                                    <p>
-                                        Carousel
-                                    </p>
-                                </Link>
-                            </div>
+                            {
+                                sideBarItems.map((item, index) => (
+                                    <div key={index} className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
+                                        <Link to={`/admin/${item.path}`}
+                                              className={`cursor-pointer `}>
+                                            <p>
+                                                {item.title}
+                                            </p>
+                                        </Link>
+                                    </div>
+                                ))
+                            }
+                            {/*<div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>*/}
+                            {/*    <Link to={'/admin/carousel'}*/}
+                            {/*       className={`cursor-pointer`}>*/}
+                            {/*        <p>*/}
+                            {/*            Carousel*/}
+                            {/*        </p>*/}
+                            {/*    </Link>*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                 </nav>

@@ -56,7 +56,7 @@ const CategoryAdminPage = () => {
     // const [fetchProps,seFetchProps]= useState<FetchProps>(fetchProp)
 
     useEffect(() => {
-        document.title=`${category.charAt(0).toUpperCase()+category.substring(1).toLowerCase()} admin`
+        document.title=`Admin ${category.charAt(0).toUpperCase()+category.substring(1).toLowerCase()}`
     }, [locations]);
     const [fetchProps, setFetchProps] = useState<FetchProps>(fetchProp)
     useEffect(() => {
@@ -69,7 +69,7 @@ const CategoryAdminPage = () => {
 
     }, [category])
     useEffect(() => {
-
+        products.sort((a, b) => a.name.localeCompare(b.name))
         setProduct(products)
         if (!products) {
             setProduct(allProducts)
@@ -77,18 +77,19 @@ const CategoryAdminPage = () => {
     }, [products]);
 
     const handleProducerClick=async (producer: string)=>{
-        const productPageables : ProductPageable = await fetchProductsCategory({
+        const productPageable : ProductPageable = await fetchProductsCategory({
             category: category,
             producer : [producer],
             size: 20
         })
-        setProduct(productPageables.content)
+        setProduct(productPageable.content)
     }
 
     useEffect(() => {
         const fetchAllProduct = async () => {
             const response: ProductPageable = await fetchProductsCategory(fetchProps)
             const products = response.content
+            products.sort((a, b) => a.name.localeCompare(b.name))
             const last = response.last
             setLastPage(last)
             setProduct(products)

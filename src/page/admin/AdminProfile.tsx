@@ -3,7 +3,6 @@ import useCurrentUser from "@/hooks/useCurrentUser.ts";
 import {UserResponse} from "@/page/LoginPage.tsx";
 import {DefaultButton} from "@/component/admin/ProductInfo.tsx";
 import {updateProfile} from "@/axios/Request.ts";
-import {useNavigate} from "react-router-dom";
 
 const AdminProfile = () => {
     const loggedInUser = useCurrentUser()

@@ -10,7 +10,7 @@ import {
     productPath,
     quantityPath,
     refreshTokenPath,
-    searchPath,
+    searchPath, userPath,
     userResponsePath
 } from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
@@ -362,6 +362,27 @@ export const getOrdersQuantityByStateAndDateAfter = async (state: boolean, month
     }
 }
 
+export const getAllUsers=async (role: string)=>{
+    try{
+        return await adminInstance.get(`${userPath}`,{
+            params: {
+                role: role
+            }
+        })
+            .then(response => response.data)
+    }catch (e){
+        handleError(e)
+    }
+}
+
+export const inActiveUser=async (userId: number) => {
+    try{
+        return await adminInstance.patch(`${userPath}/inactive/${userId}`)
+            .then(response => response.data)
+    }catch(error){
+        handleError(error)
+    }
+}
 
 const handleError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response) {
