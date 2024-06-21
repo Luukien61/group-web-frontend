@@ -20,14 +20,14 @@ const OrderDashboard = () => {
     return (
         <div className={`w-1/2 p-5 pl-11 flex flex-col gap-y-7`}>
             <OrderCard
-                title={"Order"}
+                title={"Orders"}
                 target={'order'}
                 status={"request orders"}
                 number={pendingOrders}
                 color={"bg-outer_red"}
             />
             <OrderCard
-                title={"Complete orders by month"}  
+                title={"Completed orders within a month"}
                 target={'order/complete'}
                 status={"complete orders"}
                 number={completeOrderByMonth}

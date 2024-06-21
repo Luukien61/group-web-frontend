@@ -18,3 +18,4 @@ export const userPath: string = "/user"
 export const authenticatePath : string = "/auth/authenticate"
 export const userResponsePath : string= `${userPath}/user-id`
 export const orderPath : string = "/order"
+export const carouselPath : string = "/carousel"

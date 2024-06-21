@@ -18,6 +18,7 @@ import AdminOrder from "@/page/admin/AdminOrder.tsx";
 import AdminCompleteOrder from "@/page/admin/AdminCompleteOrder.tsx";
 import NotFoundPage from "@/page/NotFoundPage.tsx";
 import AdminCarousel from "@/page/admin/AdminCarousel.tsx";
+import AdminProfile from "@/page/admin/AdminProfile.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -69,11 +70,11 @@ const AppRouter = () => {
                     <Route index element={<AdminMainContent/>}/>
                     <Route path='order' element={<AdminOrder/>}/>
                     <Route path='carousel' element={<AdminCarousel/>}/>
+                    <Route path={'profile'} element={<AdminProfile/>}/>
                     <Route path='order/complete' element={<AdminCompleteOrder/>}/>
                     <Route path={`new-product`} element={<AdminAddProductPage/>}/>
                     <Route path={`:category/:productId`} element={<ProductDetail/>}/>
                     <Route path={`:category`} element={<CategoryAdminPage/>}/>
-
                     <Route path={`*`} element={<NotFoundPage/>}/>
                 </Route>
                 <Route path={`*`} element={<NotFoundPage/>}/>

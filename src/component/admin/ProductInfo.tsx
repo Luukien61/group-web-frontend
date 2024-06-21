@@ -956,14 +956,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
 type Button = {
     onclick: () => void,
     label: string,
-    style?: string
+    style?: string,
+    loading?: React.ReactNode
 }
 
-export const DefaultButton: React.FC<Button> = ({label, style, onclick}) => {
+export const DefaultButton: React.FC<Button> = ({label, style, onclick, loading}) => {
     return (
         <button
             onClick={onclick}
-            className={` py-1 px-1 rounded text-white font-medium ${style}`}>
+            className={`py-1 px-1 flex items-center gap-x-2 justify-center rounded text-white font-medium ${style}`}>
+            {loading ?? loading}
             {label}
         </button>
     )

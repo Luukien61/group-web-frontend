@@ -34,9 +34,11 @@ const AdminSideBar = () => {
         <aside className={`block fixed z-50 w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
             <div className={`overflow-y-auto z-20 max-w-2xs h-[100vh] block sticky top-0 lg:mr-0 p-4`}>
                 <div className={`py-2`}>
-                    <IoPersonCircleOutline size={32}/>
-                    <h1 className={`mt-2`}>{currentUser.fullName}</h1>
-                    <h4 className={`font-light opacity-50`}>{currentUser.role}</h4>
+                   <Link to={'/admin/profile'}>
+                       <IoPersonCircleOutline size={32}/>
+                       <h1 className={`mt-2`}>{currentUser.fullName}</h1>
+                       <h4 className={`font-light opacity-50`}>{currentUser.role}</h4>
+                   </Link>
                 </div>
                 <hr className={`bg-white`}/>
                 <nav className={`mt-6 mb-4`}>
@@ -83,12 +85,12 @@ const AdminSideBar = () => {
                                 </Link>
                             </div>
                             <div className={`hover:bg-admin_nav_bar_secondary py-2 px-2 rounded`}>
-                                <a href={'/admin/carousel'}
+                                <Link to={'/admin/carousel'}
                                    className={`cursor-pointer`}>
                                     <p>
                                         Carousel
                                     </p>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {adminInstance, instance, mailInstance} from "@/axios/Config.ts";
 import {
-    authenticatePath,
+    authenticatePath, carouselPath,
     categoryPath,
     findById,
     loginPath,
@@ -38,11 +38,20 @@ export const getCategories = async () => {
 }
 export const fetchCarouselImages = async (): Promise<Banner[]> => {
     try {
-        const response = await instance.get("/carousel")
+        const response = await instance.get(carouselPath)
         return response.data
     } catch (error) {
         console.log(error)
         return []
+    }
+}
+
+export const postCarouselImages=async (items: Banner[]) => {
+    try{
+        return await adminInstance.post(carouselPath, items)
+            .then(response => response.data)
+    }catch (e){
+        handleError(e)
     }
 }
 
@@ -250,6 +259,15 @@ export const getUserResponseById = async (userId: number) => {
             .then(response => response.data)
         return response
     } catch (error) {
+        handleError(error)
+    }
+}
+
+export const updateProfile =async (user: UserResponse)=>{
+    try{
+        return await adminInstance.put(`${userResponsePath}/${user.staffID}`, user)
+            .then(response => response.data)
+    }catch(error){
         handleError(error)
     }
 }

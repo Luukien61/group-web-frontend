@@ -11,7 +11,9 @@ export type UserResponse = {
     "fullName": string,
     "email": string,
     "phone": string,
-    "role": string
+    "role"?: string,
+    "password"?: string,
+    "activeState"? : boolean
 }
 export type LoginProps = {
     email: string,
