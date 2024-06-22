@@ -40,6 +40,15 @@ export type Description = {
     title: string,
     content: string
 }
+export type Rating = {
+    id?: number;
+    average: number;
+    fiveStarts: number;
+    fourStarts: number;
+    threeStarts: number;
+    twoStarts: number;
+    oneStart: number;
+}
 export type Product = {
     "id": string,
     "name": string,
@@ -53,6 +62,7 @@ export type Product = {
     "description": Description,
     "producer": Producer,
     "totalQuantity": number,
+    "rating"?: Rating
 }
 type CategoryProp = {
     producer?: string[],

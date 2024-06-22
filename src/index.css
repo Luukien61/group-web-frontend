@@ -17,8 +17,8 @@ select:-webkit-autofill {
   box-shadow: 0 0 0 1000px #ffffff inset;
   transition: background-color 5000s ease-in-out 0s;
   color: white;
-  border: 2px solid #9ecaed; /* Đặt độ dày và màu sắc của đường viền */
-  background-clip: padding-box; /* Đảm bảo đường viền hiển thị đúng cách */
+  /*border: 2px solid #9ecaed; !* Đặt độ dày và màu sắc của đường viền *!*/
+  /*background-clip: padding-box; !* Đảm bảo đường viền hiển thị đúng cách *!*/
 }
 
 /* width */
@@ -123,6 +123,39 @@ select:-webkit-autofill {
     outline: none;
     border: 4px #9ecaed;
     box-shadow: 0 0 10px 2px #9ecaed;
+  }
+  .background-position{
+    background-position: -25px -75px;
+    height: 17px;
+    width: 17px;
+  }
+  .image-rating{
+    background-image: url(//cdn.tgdd.vn/mwgcart/avacomment/images/icon_comment_2x.png?v=2);
+    background-repeat: no-repeat;
+    display: inline-block;
+    line-height: 30px;
+    vertical-align: middle;
+    background-size: 200px 150px;
+  }
+  .iconcmt-allstar {
+    background-position: 0 -75px;
+    height: 17px;
+    width: 18px;
+  }
+  .iconcmt-allhalfstar {
+    background-position: -25px -75px;
+    height: 17px;
+    width: 17px;
+  }
+  .iconcmt-allunstar {
+    background-position: -50px -75px;
+    height: 16px;
+    width: 17px;
+  }
+  .iconcmt-blackstar {
+    background-position: -160px -65px;
+    height: 11px;
+    width: 12px;
   }
 }
 

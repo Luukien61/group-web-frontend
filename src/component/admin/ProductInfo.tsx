@@ -259,10 +259,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
     const handleDeleteProduct = async () => {
         if (confirmText === product?.name) {
-            try{
+            try {
                 await deleteProduct(product.id)
                 navigate(`/admin/${categoryPick.toLowerCase()}`)
-            }catch (e){
+            } catch (e) {
                 console.log(e)
             }
         }
@@ -300,7 +300,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     frontCamera: frontCams || [],
                     rearCamera: rearCams || [],
                     memory: [memory],
-                    os: OS ,
+                    os: OS,
                     battery: battery,
                     madeTime: madeTime,
                     chip: processor
@@ -320,7 +320,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 },
                 totalQuantity: totalQuantity,
                 available: avaiQuantity,
-                ordering: ordering
+                ordering: ordering,
+                rating: product?.rating
             }
             return newProduct
         }
@@ -936,7 +937,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         <label className={`text-[16px] select-none flex flex-col items-center gap-y-2`}>
                                             To confirm, type "{product?.name}" in the box below
                                             <DefaultInput onChange={(e) => setConfirmText(e.target.value)}
-                                                          value={confirmText} type={'text'} className={`w-full border rounded`}/>
+                                                          value={confirmText} type={'text'}
+                                                          className={`w-full border rounded`}/>
                                         </label>
                                     </div>
                                     <div className={`flex gap-x-3 items-center mt-3 justify-center w-full`}>

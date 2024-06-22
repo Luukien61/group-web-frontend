@@ -20,9 +20,10 @@ import {
     placeOrder,
     sendVerificationMail
 } from "@/axios/Request.ts";
-import {Feature, Product} from "@/component/CategoryCard.tsx";
+import {Feature, Product, Rating} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
+import RatingComponent from "@/component/RatingComponent.tsx";
 
 type OrderProp = {
     title: string,
@@ -43,6 +44,15 @@ export const sendEmailCode = async (email: string, code: number, type:EmailType 
 // eslint-disable-next-line react-refresh/only-export-components
 export const createVerificationCode = (): number => {
     return Math.floor(Math.random() * 900000 + 100000)
+}
+
+const defaultRating :Rating={
+    oneStart:0,
+    twoStarts:0,
+    threeStarts:0,
+    fourStarts:0,
+    fiveStarts:0,
+    average: 0
 }
 
 const ProductPage = () => {
@@ -249,7 +259,7 @@ const ProductPage = () => {
                                         <div className={`flex flex-col py-3 pl-8 w-full`}>
                                             <div className={`flex gap-x-2 items-end justify-start`}>
                                                 <h1 className={`text-default_red text-[32px] leading-[40px] font-[500]`}>
-                                                    {product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ'}
+                                                    {product.price[0].currentPrice >0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ':'Contact' }
                                                 </h1>
                                                 <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
                                                     {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
@@ -275,7 +285,7 @@ const ProductPage = () => {
                                                                            htmlFor={index.toString()}>{price.rom}GB</Label>
                                                                 </div>
                                                                 <h1 className={`self-center`}>
-                                                                    {product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ'}
+                                                                    {product.price[0].currentPrice >0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ':'Contact' }
                                                                 </h1>
                                                             </div>
                                                         ))
@@ -315,6 +325,10 @@ const ProductPage = () => {
                                     </div>
                                 </div>
                                 <hr className={`w-full border`}/>
+                                <div className={`py-6 flex flex-col gap-y-3 px-7`}>
+                                    <p className={`font-semibold text-[28px]`}>{product.name} rating</p>
+                                    <RatingComponent productRating={product.rating ?? defaultRating} productId={product.id}/>
+                                </div>
                                 {/*device description*/}
                                 <div className={`pt-4 flex flex-col`}>
                                     <h1 className={`self-center font-bold py-3`}>

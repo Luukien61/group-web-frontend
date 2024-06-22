@@ -445,6 +445,16 @@ export const insertNewUser = async (user: UserResponse) => {
     }
 }
 
+export const ratingProduct=async (productId: string, rate: number)=>{
+    try{
+        return await instance.post(`${productPath}/rating/${productId}`, {
+            rate: rate
+        }).then(response => response.data)
+    }catch (error) {
+        handleError(error)
+    }
+}
+
 const handleError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response) {
         const customError: Error = error.response.data

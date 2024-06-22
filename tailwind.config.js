@@ -38,6 +38,7 @@ module.exports = {
         default_blue: "#316FF6",
         secondary_blue: "#A0DEFF",
         blue_other: "#004cff",
+        yellow_start: "#ff9f00",
         admin_nav_bar_default: "#222E3C",
         admin_nav_bar_secondary: "#364957",
         admin_nav_bar_third: "#496376",
