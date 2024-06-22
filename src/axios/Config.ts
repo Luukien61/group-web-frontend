@@ -1,6 +1,6 @@
 import axios from "axios";
 import {backEndPage, mailServerBaseUrl} from "@/url/Urls.ts";
-import {ACCESS_TOKEN} from "@/page/LoginPage.tsx";
+import {ACCESS_TOKEN} from "@/page/admin/LoginPage.tsx";
 
 export const instance = axios.create({
     baseURL: backEndPage

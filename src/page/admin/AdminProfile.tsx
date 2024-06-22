@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
-import {UserResponse} from "@/page/LoginPage.tsx";
+import {UserResponse} from "@/page/admin/LoginPage.tsx";
 import {DefaultButton} from "@/component/admin/ProductInfo.tsx";
 import {updateProfile} from "@/axios/Request.ts";
 
@@ -13,6 +13,9 @@ const AdminProfile = () => {
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
     const [isPasswordMatched, setIsPasswordMatched] = useState<boolean>(true)
+    useEffect(() => {
+        document.title="Admin Profile"
+    }, []);
     useEffect(() => {
         setCurrentUser(loggedInUser)
         setFullName(loggedInUser.fullName)
@@ -52,6 +55,13 @@ const AdminProfile = () => {
         }
     }
 
+    const handleCancel=()=>{
+        setEditRequest(false)
+        setFullName(currentUser.fullName)
+        setPhone(currentUser.phone)
+        setPassword('')
+        setConfirmPassword('')
+    }
     return (
         <div className={`w-full h-screen flex items-start justify-start p-6`}>
             <div className={`flex flex-col gap-y-2 w-1/2 p-6 rounded bg-white shadow-xl`}>
@@ -108,7 +118,12 @@ const AdminProfile = () => {
                             </>
                     }
                 </div>
-                <div className={`w-full mt-2 flex justify-end `}>
+                <div className={`w-full mt-2 flex gap-x-6 justify-end `}>
+                    {
+                        editRequest &&
+                        <DefaultButton style={'bg-red-500 px-4 py-1 hover:bg-inner_red'}
+                                       label={'Cancel'} onclick={handleCancel}/>
+                    }
                     <DefaultButton style={'bg-inner_blue px-4 py-1 hover:bg-blue_other'}
                                    label={editRequest ? 'Update' : 'Edit'} onclick={handleEditRequest}/>
                 </div>
@@ -118,7 +133,7 @@ const AdminProfile = () => {
     );
 };
 
-type InputProps = {
+export type InputProps = {
     style?: string
     value: string,
     // eslint-disable-next-line no-unused-vars
@@ -126,7 +141,7 @@ type InputProps = {
     type?: 'text' | 'password' | 'email' | 'password_confirmation' | "number"
 }
 
-const Input = ({value, onChange, type, style}: InputProps) => {
+export const Input = ({value, onChange, type, style}: InputProps) => {
     return (
         <input
             type={type ? type : 'text'}

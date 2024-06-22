@@ -1,21 +1,24 @@
 import {Banner} from "@/component/CarouselBanner.tsx";
 import {adminInstance, instance, mailInstance} from "@/axios/Config.ts";
 import {
-    authenticatePath, carouselPath,
+    authenticatePath,
+    carouselPath,
     categoryPath,
     findById,
     loginPath,
-    mailPath, orderPath,
+    mailPath,
+    orderPath,
     producerBasePath,
     productPath,
     quantityPath,
     refreshTokenPath,
-    searchPath, userPath,
+    searchPath,
+    userPath,
     userResponsePath
 } from "@/url/Urls.ts";
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
 import axios from "axios";
-import {LoginProps, UserResponse} from "@/page/LoginPage.tsx";
+import {LoginProps, UserResponse} from "@/page/admin/LoginPage.tsx";
 
 type Props = {
     category: string,
@@ -46,11 +49,11 @@ export const fetchCarouselImages = async (): Promise<Banner[]> => {
     }
 }
 
-export const postCarouselImages=async (items: Banner[]) => {
-    try{
+export const postCarouselImages = async (items: Banner[]) => {
+    try {
         return await adminInstance.post(carouselPath, items)
             .then(response => response.data)
-    }catch (e){
+    } catch (e) {
         handleError(e)
     }
 }
@@ -120,15 +123,45 @@ export const getProductById = async (id: string) => {
 type MailVerify = {
     "to": string,
     "subject": string,
-    "body": number
+    "body": number,
+    "message"?: string,
+    "footer"?: string
 }
 
-function createMailVerification(to: string, body: number, subject: string = "Order verification"): MailVerify {
-    return {to: to, subject: subject, body: body};
+function createMailVerification(to: string, body: number, type: EmailType): MailVerify {
+    let subject: string
+    let message: string
+    let footer: string
+
+    switch (type.event) {
+        case "order": {
+            subject = "Order verification"
+            message = "Use this code below to verify your order."
+            footer = "If you don't place this order, please ignore this email."
+            break
+        }
+        case "reset-password": {
+            subject = "Reset password"
+            message = "Use this code below to verify your reset-password request."
+            footer = "If that was not yours, please ignore this email."
+            break
+        }
+    }
+    return {
+        to: to,
+        subject: subject,
+        body: body,
+        message: message,
+        footer: footer
+    };
 }
 
-export const sendVerificationMail = async (email: string, code: number) => {
-    const data: MailVerify = createMailVerification(email, code)
+export type EmailType = {
+    event: "order" | 'reset-password'
+}
+
+export const sendVerificationMail = async (email: string, code: number, type: EmailType) => {
+    const data: MailVerify = createMailVerification(email, code, type)
     try {
         return await mailInstance.post(mailPath, data)
             .then(response => response)
@@ -136,6 +169,25 @@ export const sendVerificationMail = async (email: string, code: number) => {
         console.log("Error sending email:", error);
     }
 }
+
+export const getUserByEmail = async (user: LoginProps) => {
+    try {
+        return await instance.post(`${userPath}/email`, user)
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const resetUserPassword=async (user:LoginProps)=>{
+    try{
+        return await instance.post(`${userPath}/reset-password`, user)
+            .then(response => response.data)
+    }catch(error){
+        handleError(error)
+    }
+}
+
 
 export const getConnection = async () => {
     try {
@@ -203,7 +255,7 @@ export const updateProduct = async (product: Product, productId: string) => {
 
 export const deleteProduct = async (id: string) => {
     try {
-        return await instance.delete(`${productPath}/${id}`)
+        return await adminInstance.delete(`${productPath}/${id}`)
             .then(response => response.data)
     } catch (error) {
         handleError(error)
@@ -263,11 +315,11 @@ export const getUserResponseById = async (userId: number) => {
     }
 }
 
-export const updateProfile =async (user: UserResponse)=>{
-    try{
+export const updateProfile = async (user: UserResponse) => {
+    try {
         return await adminInstance.put(`${userResponsePath}/${user.staffID}`, user)
             .then(response => response.data)
-    }catch(error){
+    } catch (error) {
         handleError(error)
     }
 }
@@ -362,24 +414,33 @@ export const getOrdersQuantityByStateAndDateAfter = async (state: boolean, month
     }
 }
 
-export const getAllUsers=async (role: string)=>{
-    try{
-        return await adminInstance.get(`${userPath}`,{
+export const getAllUsers = async (role: string) => {
+    try {
+        return await adminInstance.get(`${userPath}`, {
             params: {
                 role: role
             }
         })
             .then(response => response.data)
-    }catch (e){
+    } catch (e) {
         handleError(e)
     }
 }
 
-export const inActiveUser=async (userId: number) => {
-    try{
+export const inActiveUser = async (userId: number) => {
+    try {
         return await adminInstance.patch(`${userPath}/inactive/${userId}`)
             .then(response => response.data)
-    }catch(error){
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+export const insertNewUser = async (user: UserResponse) => {
+    try {
+        return await adminInstance.post(`${userPath}`, user)
+            .then(response => response.data)
+    } catch (error) {
         handleError(error)
     }
 }

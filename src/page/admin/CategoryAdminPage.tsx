@@ -53,7 +53,6 @@ const CategoryAdminPage = () => {
         page: 0,
         size: 10
     }
-    // const [fetchProps,seFetchProps]= useState<FetchProps>(fetchProp)
 
     useEffect(() => {
         document.title=`Admin ${category.charAt(0).toUpperCase()+category.substring(1).toLowerCase()}`
@@ -94,6 +93,7 @@ const CategoryAdminPage = () => {
             setLastPage(last)
             setProduct(products)
             setAllProducts(products)
+            console.log("Is last: ", last)
         }
         fetchAllProduct()
     }, [fetchProps]);

@@ -3,6 +3,7 @@ import {CiImageOn} from "react-icons/ci";
 import {useCategory} from "@/zustand/AppState.ts";
 import {GrCaretNext, GrCaretPrevious} from "react-icons/gr";
 import {
+    deleteProduct,
     getCategories,
     getProducersByCategory,
     postNewCategory,
@@ -44,7 +45,7 @@ type ProductInfoProps = {
 
 const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const {categories, setCategories} = useCategory()
-    const logggedInUser = useCurrentUser()
+    const loggedInUser = useCurrentUser()
     const [isManager, setIsManager] = useState<boolean>(true)
     const navigate = useNavigate()
     const [productImageUrl, setProductImageUrl] = useState<string>();
@@ -174,10 +175,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         }
     }, []);
     useEffect(() => {
-        if (logggedInUser.staffID > 0) {
-            setIsManager(logggedInUser.role === "ADMIN")
+        if (loggedInUser.staffID > 0) {
+            setIsManager(loggedInUser.role === "ADMIN")
         }
-    }, [logggedInUser]);
+    }, [loggedInUser]);
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -256,9 +257,14 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleDeleteProductRequest = () => {
         setWarningDelete(true)
     }
-    const handleDeleteProduct = () => {
+    const handleDeleteProduct = async () => {
         if (confirmText === product?.name) {
-            alert("Deleted")
+            try{
+                await deleteProduct(product.id)
+                navigate(`/admin/${categoryPick.toLowerCase()}`)
+            }catch (e){
+                console.log(e)
+            }
         }
     }
     const assembleProduct = async (productId: string, ordering: number) => {
@@ -930,7 +936,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         <label className={`text-[16px] select-none flex flex-col items-center gap-y-2`}>
                                             To confirm, type "{product?.name}" in the box below
                                             <DefaultInput onChange={(e) => setConfirmText(e.target.value)}
-                                                          value={confirmText} type={'text'} className={`w-full`}/>
+                                                          value={confirmText} type={'text'} className={`w-full border rounded`}/>
                                         </label>
                                     </div>
                                     <div className={`flex gap-x-3 items-center mt-3 justify-center w-full`}>

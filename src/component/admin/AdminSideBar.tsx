@@ -4,7 +4,7 @@ import {RiArrowDropDownLine} from "react-icons/ri";
 import {getCategories} from "@/axios/Request.ts";
 import {Category} from "@/common/NavMenu.tsx";
 import {useCategoryItem} from "@/zustand/AppState.ts";
-import {UserResponse} from "@/page/LoginPage.tsx";
+import {UserResponse} from "@/page/admin/LoginPage.tsx";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
 import {Link} from "react-router-dom";
 type AdminSidebarProps={

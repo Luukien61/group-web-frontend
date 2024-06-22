@@ -5,7 +5,7 @@ import {Product} from "@/component/CategoryCard.tsx";
 import {IoMdNotificationsOutline} from "react-icons/io";
 import {IoLogOutOutline} from "react-icons/io5";
 import useProductSearch from "@/hooks/useProductSearch.ts";
-import {useOrderPending} from "@/zustand/AppState.ts";
+import {useLoginState, useOrderPending} from "@/zustand/AppState.ts";
 import {useNavigate} from "react-router-dom";
 
 type HeaderItem = {
@@ -16,6 +16,7 @@ type HeaderItem = {
 
 const AdminHeader = () => {
     const {orderPending}=useOrderPending()
+    const { setIsLogin} = useLoginState()
     const navigate= useNavigate()
     const [productSearch, setProductSearch] = useState<Product[]>([]);
     const { products, handleChange } = useProductSearch()
@@ -25,6 +26,7 @@ const AdminHeader = () => {
 
     const handleLogOut=()=>{
         localStorage.clear()
+        setIsLogin(false)
         navigate('/login')
     }
 

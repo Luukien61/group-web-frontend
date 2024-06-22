@@ -1,6 +1,7 @@
 import React from 'react';
 import {Product} from "@/component/CategoryCard.tsx";
 import {useLocation} from "react-router-dom";
+
 type Props ={
     product: Product
 }

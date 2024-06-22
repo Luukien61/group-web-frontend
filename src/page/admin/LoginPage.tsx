@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
 import axios from "axios";
 import useTokenRefresh from "@/hooks/useTokenRefresh.ts";
+import SetToken from "@/hooks/SetToken.tsx";
 
 export type UserResponse = {
     "staffID": number,
@@ -33,7 +34,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const {setUserId} = useUserIdLogin()
     const {setUser} = useUserLogin()
-    const authenticateState = useTokenRefresh()
+    useTokenRefresh();
     const {isLogin, setIsLogin} = useLoginState()
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -49,10 +50,7 @@ const LoginPage = () => {
             }
             try {
                 const loginResponse: LoginResponse = await login(loginRequest)
-                const tokenResponse: TokenResponse = loginResponse.tokenResponse;
-                localStorage.setItem(ACCESS_TOKEN, tokenResponse.access_token)
-                localStorage.setItem(REFRESH_TOKEN, tokenResponse.refresh_token)
-                localStorage.setItem(EXPIRE_DATE, tokenResponse.expires_in.toString())
+                SetToken(loginResponse)
                 setUserId(loginResponse.user.staffID)
                 setUser(loginResponse.user)
                 setIsLogin(true)
@@ -86,12 +84,14 @@ const LoginPage = () => {
         }
     }, [isLogin]);
     const authenticate = async () => {
-        console.log("is refresh token :", authenticateState)
         const state = await authenticateRequest()
         if (state) {
             setIsLogin(true)
             navigate("/admin", {replace: true});
         }
+    }
+    const handleRedirectForgotPass=()=>{
+        navigate('/reset-password',{replace: true})
     }
     useEffect(() => {
         document.title = "Login"
@@ -119,7 +119,9 @@ const LoginPage = () => {
                     <div className={`w-full flex items-center justify-between `}>
                         <p className={`text-red-600 text-[16px] ${isPasswordValid && 'invisible'}`}>Incorrect password
                             !!!</p>
-                        <p className={`italic text-[14px] hover:text-inner_blue cursor-pointer`}>Forgot password?</p>
+                        <p
+                            onClick={handleRedirectForgotPass}
+                            className={`italic text-[14px] hover:text-inner_blue cursor-pointer`}>Forgot password?</p>
                     </div>
                 </div>
                 <div className={`flex justify-center`}>
@@ -147,7 +149,7 @@ interface InputProps {
     action: (value: string) => void;
 }
 
-const InputFormGoogle: React.FC<InputProps> = ({type, label, action, style}) => {
+export const InputFormGoogle: React.FC<InputProps> = ({type, label, action, style}) => {
     return (
         <div className="relative z-0 w-full mb-5 ">
             <input

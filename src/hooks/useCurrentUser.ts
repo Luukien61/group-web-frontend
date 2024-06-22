@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {getUserResponseById} from "@/axios/Request.ts";
-import {UserResponse} from "@/page/LoginPage.tsx";
+import {UserResponse} from "@/page/admin/LoginPage.tsx";
 import {useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
 
 const useCurrentUser = () => {

@@ -3,7 +3,7 @@ import App from "../common/App.tsx";
 import HomePage from "@/page/HomePage.tsx";
 import ProductCategoryPage from "@/page/ProductCategoryPage.tsx";
 import ProductPage from "@/page/ProductPage.tsx";
-import LoginPage from "@/page/LoginPage.tsx";
+import LoginPage from "@/page/admin/LoginPage.tsx";
 import AdminHome from "@/page/admin/AdminHome.tsx";
 import React, {useEffect} from "react";
 import {Category} from "@/common/NavMenu.tsx";
@@ -20,6 +20,7 @@ import NotFoundPage from "@/page/NotFoundPage.tsx";
 import AdminCarousel from "@/page/admin/AdminCarousel.tsx";
 import AdminProfile from "@/page/admin/AdminProfile.tsx";
 import AdminUser from "@/component/admin/AdminUser.tsx";
+import AdminForgotPass from "@/page/admin/AdminForgotPass.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -66,6 +67,7 @@ const AppRouter = () => {
                 </Route>
                 {/*login*/}
                 <Route path={'/login'} element={<LoginPage/>}/>
+                <Route path={'reset-password'} element={<AdminForgotPass/>}/>
                 {/*admin*/}
                 <Route path='/admin' element={<AdminHome/>}>
                     <Route index element={<AdminMainContent/>}/>

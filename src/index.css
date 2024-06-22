@@ -17,6 +17,8 @@ select:-webkit-autofill {
   box-shadow: 0 0 0 1000px #ffffff inset;
   transition: background-color 5000s ease-in-out 0s;
   color: white;
+  border: 2px solid #9ecaed; /* Đặt độ dày và màu sắc của đường viền */
+  background-clip: padding-box; /* Đảm bảo đường viền hiển thị đúng cách */
 }
 
 /* width */

@@ -12,7 +12,14 @@ import {
 } from "@/shadcn/ui/carousel"
 import {Table, TableBody, TableCell, TableRow,} from "@/shadcn/ui/table"
 import {useLocation} from "react-router-dom";
-import {fetchProductsCategory, getProductById, OrderDetail, placeOrder, sendVerificationMail} from "@/axios/Request.ts";
+import {
+    EmailType,
+    fetchProductsCategory,
+    getProductById,
+    OrderDetail,
+    placeOrder,
+    sendVerificationMail
+} from "@/axios/Request.ts";
 import {Feature, Product} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
@@ -21,15 +28,21 @@ type OrderProp = {
     title: string,
     value: string,
     type: "text" | "number" | "email",
+    // eslint-disable-next-line no-unused-vars
     action: (event: React.ChangeEvent<HTMLInputElement>) => void
 
 }
 
-const sendEmailCode = async (email: string, code: number) => {
-    const res = await sendVerificationMail(email, code)
+// eslint-disable-next-line react-refresh/only-export-components
+export const sendEmailCode = async (email: string, code: number, type:EmailType ) => {
+    const res = await sendVerificationMail(email, code, type)
     if (!res || res.status !== 200) {
         throw Error("An error occurred while sending")
     }
+}
+// eslint-disable-next-line react-refresh/only-export-components
+export const createVerificationCode = (): number => {
+    return Math.floor(Math.random() * 900000 + 100000)
 }
 
 const ProductPage = () => {
@@ -124,16 +137,14 @@ const ProductPage = () => {
         };
     }, []);
 
-    const createVerificationCode = useCallback((): number => {
-        return Math.floor(Math.random() * 900000 + 100000)
-    }, [])
+
     // eslint-disable-next-line no-undef
     const intervalTimer = useRef<NodeJS.Timeout | null>(null);
     const handlePurchaseDoneClick = () => {
         setIsDoneClicked(true)
         if (fullName !== "" && phone !== "" && address !== "" && email !== "") {
             const code = createVerificationCode()
-            sendEmailCode(email, code)
+            sendEmailCode(email, code, {event: "order"})
                 .then(() => {
                     setIsSent(true)
                     const codeText = code.toString().trim()

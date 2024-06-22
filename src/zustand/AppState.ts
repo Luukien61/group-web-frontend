@@ -2,7 +2,7 @@ import {create} from 'zustand'
 import {persist} from 'zustand/middleware'
 import {Category} from "@/common/NavMenu.tsx";
 import {Product} from "@/component/CategoryCard.tsx";
-import {UserResponse} from "@/page/LoginPage.tsx";
+import {UserResponse} from "@/page/admin/LoginPage.tsx";
 
 interface BearState {
     bears: number
