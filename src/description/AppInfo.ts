@@ -38,7 +38,7 @@ export const footerContent: footerProps[] = [
             },
             {
                 name: "knv@gmail.com",
-                link: "/"
+                link: "mailto:kienluu61@gmail.com"
             }
         ]
     },

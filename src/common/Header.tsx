@@ -18,7 +18,7 @@ export type MenuItem = {
     children?: MenuItem[];
 };
 
-export function getItem(
+function getItem(
     label: string,
     url: string,
     key: string,
