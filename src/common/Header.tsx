@@ -76,8 +76,15 @@ const Header = () => {
                                 <p className="text-black font-semibold">App</p>
                             </a>
                         </div>
-                        <div className='relative flex flex-col'>
-                            <Input className={`border rounded-xl`} onChange={handleChange} placeholder={'Search productions here...'}/>
+                        <div className='relative flex flex-1 flex-col'>
+                           <div className={`flex justify-evenly`}>
+                               <Input className={`border rounded-xl w-full`}
+                                      onChange={handleChange}
+                                      placeholder={'Search here...'}/>
+                               <div className={`w-fit flex justify-center`}>
+                                   <img className={`max-h-[64px]`} src={headerImage} alt={'Home Sale'}/>
+                               </div>
+                           </div>
                             {
                                 products && (
                                     <div className={`relative mt-1 z-[100]`}>
@@ -95,11 +102,9 @@ const Header = () => {
                                     </div>
                                 )
                             }
+
                         </div>
-                        <div className={`flex-1 flex items-center`}>
-                            <div className={`w-fit flex-1 flex justify-center`}>
-                                <img className={`max-h-[64px]`} src={headerImage} alt={'Home Sale'}/>
-                            </div>
+                        <div className={`flex items-center`}>
                             {/*account field*/}
                             <div className="flex flex-row  items-center justify-end">
                                 <nav className="text-sm leading-6">

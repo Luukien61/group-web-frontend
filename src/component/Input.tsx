@@ -10,18 +10,21 @@ type InputProps = {
     className?: string;
     required?: boolean;
     disabled?: boolean;
+    divStyle?: string;
 }
 const Input = (input: InputProps) => {
     return (
-        <div className="flex items-center relative">
-            <DefaultInput
-                value={input.value}
-                onChange={input.onChange}
-                className={input.className}
-                placeholder={input.placeholder}
-                type={input.type} />
-            <div className={`absolute end-2`}>
-                <FaSearch />
+        <div className= {`flex items-center w-1/3 max-w-[360px] ${input.divStyle ? input.divStyle : ''}`}>
+            <div className={`w-full relative flex items-center justify-center`}>
+                <DefaultInput
+                    value={input.value}
+                    onChange={input.onChange}
+                    className={input.className}
+                    placeholder={input.placeholder}
+                    type={input.type} />
+                <div className={`absolute end-2`}>
+                    <FaSearch />
+                </div>
             </div>
         </div>
     );
@@ -34,7 +37,7 @@ export const DefaultInput : React.FC<InputProps> = (inputProps) => {
             value={inputProps.value}
             onChange={inputProps.onChange}
             spellCheck={'false'}
-            className={` bg-white text-black h-8 md:h-10 px-3 py-3 border-gray-600 focus:outline-0 focus:ring-0 placeholder:italic ${inputProps.className ? inputProps.className :"" }`}
+            className={`bg-white text-black h-8 md:h-10 px-3 py-3 border-gray-600 focus:outline-0 focus:ring-0 placeholder:italic ${inputProps.className ? inputProps.className :"" }`}
             type={inputProps.type}
             placeholder={inputProps.placeholder}/>
     )
