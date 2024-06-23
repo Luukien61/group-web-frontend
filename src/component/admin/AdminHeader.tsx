@@ -60,7 +60,9 @@ const AdminHeader = () => {
                                 {
                                     productSearch.map((item, index) => (
                                         <>
-                                            <ProductSearch product={item}/>
+                                            <ProductSearch
+                                                path={'/admin'}
+                                                product={item}/>
                                             {index < products.length - 1 && <hr/>}
                                         </>
                                     ))
