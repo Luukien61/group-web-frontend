@@ -23,7 +23,7 @@ import {
 import {Feature, Product, Rating} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
-import RatingComponent from "@/component/RatingComponent.tsx";
+import RatingComponent, {RatingCount} from "@/component/RatingComponent.tsx";
 
 type OrderProp = {
     title: string,
@@ -81,7 +81,8 @@ const ProductPage = () => {
     const getOutstandingProducts=async (quantity: number)=>{
         const response : ProductPageable = await fetchProductsCategory({
             category: "phone",
-            size: quantity
+            size: quantity,
+            sort: "rating"
         })
         const content = response.content
         setOutstandingProducts(content)
@@ -298,7 +299,7 @@ const ProductPage = () => {
                                                 {
                                                     product.color.map((color, index) => (
                                                         <div key={index} className={`flex flex-col`}>
-                                                            <img className={`aspect-square w-[50px]`} src={color.link}
+                                                            <img className={`aspect-square w-[50px] rounded`} src={color.link}
                                                                  alt={index.toString()}/>
                                                             <h3 className={`text-[15px] self-center`}>
                                                                 {color.color}
@@ -318,8 +319,8 @@ const ProductPage = () => {
                                             {/*Purchase button*/}
                                             <div
                                                 onClick={handleOpenModal}
-                                                className={`w-full h-[64px] bg-default_blue rounded flex justify-center items-center hover:bg-blue_other cursor-pointer`}>
-                                                <p className={`text-white font-medium`}>Order</p>
+                                                className={`w-full h-[64px] bg-default_blue rounded flex justify-center items-center hover:bg-white border border-blue-600 cursor-pointer group`}>
+                                                <p className={`text-white font-medium group-hover:text-blue-600 duration-300`}>Order</p>
                                             </div>
                                         </div>
                                     </div>
@@ -327,7 +328,7 @@ const ProductPage = () => {
                                 <hr className={`w-full border`}/>
                                 <div className={`py-6 flex flex-col gap-y-3 px-7`}>
                                     <p className={`font-semibold text-[28px]`}>{product.name} rating</p>
-                                    <RatingComponent productRating={product.rating ?? defaultRating} productId={product.id}/>
+                                    <RatingComponent imgUrl={product.imgs[0]} productRating={product.rating ?? defaultRating} productId={product.id}/>
                                 </div>
                                 {/*device description*/}
                                 <div className={`pt-4 flex flex-col`}>
@@ -605,12 +606,13 @@ type TrendingProps={
 const TrendingCard = ({product}: TrendingProps) => {
     return (
         <div
-            className={`flex flex-col gap-y-1 round bg-outer_blue w-full p-2 hover:scale-105 transform duration-300`}>
+            className={`flex flex-col gap-y-2 round bg-outer_blue w-full p-2 hover:scale-105 transform duration-300`}>
             <a href={`/${product.category.name.toLowerCase()}/${product.id}`}>
                 <img className={`aspect-[9/10]`}
                      src={product.imgs[0]} alt={"image"}/>
                 <p>{product.name}</p>
-                <p className={`text-default_red font-medium`}>{product.price[0].currentPrice.toLocaleString("vi-VN")}d</p>
+                <p className={`text-default_red font-medium`}> {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}</p>
+                <RatingCount rating={product.rating?.average ?? 0} numSize={`text-[18px]`} startSize={`scale-90`}/>
             </a>
         </div>
     )

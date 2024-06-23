@@ -1,4 +1,4 @@
-import {homePage} from "../url/Urls.ts";
+import {headerImage, homePage} from "../url/Urls.ts";
 import {CgProfile} from "react-icons/cg";
 import React, {ChangeEvent, useCallback, useRef, useState} from "react";
 import Input from "../component/Input.tsx";
@@ -77,7 +77,7 @@ const Header = () => {
                             </a>
                         </div>
                         <div className='relative flex flex-col'>
-                            <Input className={`border-t border-b border-l rounded-l`} onChange={handleChange} placeholder={'Search productions here...'}/>
+                            <Input className={`border rounded-xl`} onChange={handleChange} placeholder={'Search productions here...'}/>
                             {
                                 products && (
                                     <div className={`relative mt-1 z-[100]`}>
@@ -96,24 +96,29 @@ const Header = () => {
                                 )
                             }
                         </div>
-                        {/*account field*/}
-                        <div className="flex flex-row flex-1 items-center justify-end">
-                            <nav className="text-sm leading-6">
-                                <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
-                                    {headerItems.map((item) => (
-                                        <li
-                                            onClick={() => handleHeaderItemClick(item.key)}
-                                            key={item.key}
-                                            className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center ${
-                                                activeHeaderItem === item.key && "text-default_green"
-                                            }`}
-                                        >
-                                            {item.icon}
-                                            {item.label}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </nav>
+                        <div className={`flex-1 flex items-center`}>
+                            <div className={`w-fit flex-1 flex justify-center`}>
+                                <img className={`max-h-[64px]`} src={headerImage} alt={'Home Sale'}/>
+                            </div>
+                            {/*account field*/}
+                            <div className="flex flex-row  items-center justify-end">
+                                <nav className="text-sm leading-6">
+                                    <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
+                                        {headerItems.map((item) => (
+                                            <li
+                                                onClick={() => handleHeaderItemClick(item.key)}
+                                                key={item.key}
+                                                className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center ${
+                                                    activeHeaderItem === item.key && "text-default_green"
+                                                }`}
+                                            >
+                                                {item.icon}
+                                                {item.label}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                     <hr className="border-black "/>

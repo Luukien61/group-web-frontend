@@ -56,7 +56,6 @@ const AppRouter = () => {
     return (
         <CleanUrlMiddleware>
             <Routes>
-                <Route path={'/regex'} element={<Test/>}/>
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>

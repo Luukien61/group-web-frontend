@@ -36,10 +36,11 @@ const ratingStart: RatingStarts[] = [
 ]
 type RatingProps = {
     productRating: Rating,
-    productId: string
+    productId: string,
+    imgUrl: string,
 }
 
-const RatingComponent: React.FC<RatingProps> = ({productRating, productId}) => {
+const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl}) => {
     const [ratingPick, setRatingPick] = useState<number>(-1)
     const [email, setEmail] = useState<string>('')
     const [rating, setRating] = useState<number>(productRating.average)
@@ -73,18 +74,11 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId}) => {
     return (
         <div className={`flex w-full`}>
             <div className={`w-1/2 flex flex-col max-w-[400px] `}>
-                <div className={`flex gap-x-4 items-center`}>
-                    <p className={`text-yellow_start text-[28px] font-semibold`}>{rating}</p>
-                    <div className={`flex gap-x-2`}>
-                        {
-                            [...Array(5)].map((_, i) =>
-                                <i key={i}
-                                   className={`scale-125 image-rating ${rating - i - 1 >= 0 ? 'iconcmt-allstar' : (rating - i > 0 && rating - 1 - i < 1) ? 'iconcmt-allhalfstar' : 'iconcmt-allunstar'}`}></i>
-                            )
-                        }
-                    </div>
-                    <p className={`text-blue-500 text-[16px]`}>{totalRating} ratings</p>
-                </div>
+                <RatingCount
+                    numSize={`text-[28px]`}
+                    rating={rating}
+                    totalRating={totalRating}
+                    startSize={`scale-125`}/>
                 <div className={`flex flex-col`}>
                     {ratingInstance.map((item, index) => (
                         <div key={index}
@@ -108,7 +102,7 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId}) => {
                     <div className={`flex items-center justify-center`}>
                         <img
                             className={`h-[100px]`}
-                            src={'https://cdn.hoanghamobile.com/i/preview/Uploads/2023/09/13/iphone-15-blue-pure-back-iphone-15-blue-pure-front-2up-screen-usen.png'}
+                            src={imgUrl}
                             alt={'product images'}/>
                     </div>
                 </div>
@@ -150,3 +144,29 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId}) => {
 };
 
 export default RatingComponent;
+type RatingNums={
+    rating: number,
+    totalRating?: number,
+    startSize?: string,
+    numSize?: string
+}
+export const RatingCount: React.FC<RatingNums> =({totalRating,rating, startSize,numSize})=>{
+    return (
+        <div className={`flex gap-x-4 items-center`}>
+            {
+                totalRating && <p className={`text-yellow_start h-fit ${numSize} font-semibold`}>{rating}</p>
+            }
+            <div className={`flex gap-x-2`}>
+                {
+                    [...Array(5)].map((_, i) =>
+                        <i key={i}
+                           className={`image-rating ${startSize} ${rating - i - 1 >= 0 ? 'iconcmt-allstar' : (rating - i > 0 && rating - 1 - i < 1) ? 'iconcmt-allhalfstar' : 'iconcmt-allunstar'}`}></i>
+                    )
+                }
+            </div>
+            {
+                totalRating && <p className={`text-blue-500 text-[16px]`}>{totalRating} ratings</p>
+            }
+        </div>
+    )
+}

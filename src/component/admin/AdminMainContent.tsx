@@ -21,7 +21,7 @@ const AdminMainContent = () => {
                     <p className={`font-semibold flex-1 text-[30px] ml-3`}>Dashboard</p>
                     <button
                         onClick={handleAddProduct}
-                        className={`h-2/3 p-2 rounded px-3 text-white flex gap-x-2 items-center hover:bg-blue_other bg-inner_blue font-medium`}>
+                        className={`h-2/3 p-2 rounded px-3 text-white flex gap-x-2 items-center bg-blue_other hover:bg-white hover:text-blue_other border border-blue_other font-medium`}>
                         <IoMdAddCircleOutline size={24}/>
                         Add
                     </button>

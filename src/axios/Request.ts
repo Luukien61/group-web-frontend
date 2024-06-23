@@ -25,7 +25,8 @@ type Props = {
     producer?: string[],
     price?: number[],
     page?: number,
-    size: number
+    size: number,
+    sort?: string
 }
 type ParamsProps = {
     category: string,
@@ -33,7 +34,8 @@ type ParamsProps = {
     minPrice?: number,
     maxPrice?: number,
     page?: number,
-    size: number
+    size: number,
+    sort?: string
 }
 export const getCategories = async () => {
     const result = await instance.get(categoryPath)
@@ -67,10 +69,10 @@ export const getProducersByCategory = async (category: string) => {
     }
 }
 
-export const fetchProductsCategory = async ({category, producer, price, page, size}: Props) => {
+export const fetchProductsCategory = async ({category, producer, price, page, size,sort}: Props) => {
     if (!category) return
     try {
-        const params: ParamsProps = {category: category, page: page ?? 0, size: size ?? 20};
+        const params: ParamsProps = {category: category, page: page ?? 0, size: size ?? 20, sort: sort ?? "madeTime"};
         if (producer) {
             params.producer = producer;
         }

@@ -40,7 +40,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState<string>("")
     const [isEmailValid, setIsEmailValid] = useState<boolean>(true)
     const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true)
-    const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.\w{3,4}$/
+    const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.\w{2,4}$/
     const handleLogIn = async () => {
         const isEmailValid: boolean = emailPattern.test(email)
         if (isEmailValid) {

@@ -14,7 +14,7 @@ const AdminDashboard = () => {
             <div className={`w-full flex flex-wrap py-5`}>
                 {
                     categoriesItem.map((item: Category) => (
-                        <DashboardItem key={item.id} category={item }></DashboardItem>
+                        <DashboardItem key={item.id} category={item }/>
                     ))
                 }
             </div>
