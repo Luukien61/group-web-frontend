@@ -108,9 +108,7 @@ const Header = () => {
                                             <li
                                                 onClick={() => handleHeaderItemClick(item.key)}
                                                 key={item.key}
-                                                className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center ${
-                                                    activeHeaderItem === item.key && "text-default_green"
-                                                }`}
+                                                className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center`}
                                             >
                                                 {item.icon}
                                                 {item.label}
