@@ -110,7 +110,6 @@ const CategoryCard: React.FC<CategoryProp> = ({
             const products = response.content
             setLast(response.last)
             setProducts(products)
-            console.log("Products: ", products)
         }
         fetchProductByCategory()
     }, [category, size, priceFilter, page, producerFilter]);
@@ -118,7 +117,7 @@ const CategoryCard: React.FC<CategoryProp> = ({
         <>
             {
                 (renderWhenEmpty || products.length > 0) && (
-                    <div className={`rounded drop-shadow h-fit  bg-gray-50 p-2 max-w-screen-2xl ${heightClass}`}>
+                    <div className={`rounded drop-shadow h-fit w-full bg-gray-50 p-2 ${heightClass}`}>
                         <div className="flex items-center px-2 py-1">
                             <p className={`text-default_red font-medium text-[24px]`}>{name}</p>
                             <div className="flex items-center justify-end flex-1">

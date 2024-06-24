@@ -20,7 +20,7 @@ module.exports = {
       colors: {
         primary: "#099309",
         secondary: "#A8CD9F",
-        default_red: "#cb1c22",
+        default_red: "#D00223",
         red_default: "#AE1427",
         default_background: "#F8F9FA",
         search_background: "#e6ebf3",

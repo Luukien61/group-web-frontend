@@ -40,7 +40,7 @@ const headerItems: MenuItem[] = [
 ];
 
 const Header = () => {
-    const [activeHeaderItem, setActiveHeaderItem] = useState<string>("cart");
+    const [, setActiveHeaderItem] = useState<string>("cart");
     const [products, setProducts] = useState<Product[]>([]);
     const handleHeaderItemClick = useCallback((key: string) => {
         setActiveHeaderItem(key);
@@ -53,10 +53,6 @@ const Header = () => {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         debouncedHandleSearching(event.target.value);
     };
-    // const handleInputChange =async (event: ChangeEvent<HTMLInputElement>) => {
-    //     const response = await searchProdutsByName(event.target.value);
-    //     setProducts(response)
-    // }
     return (
         <>
             <header className="sticky top-0 z-40 flex-none w-full mx-auto bg-white border-b border-gray-200">

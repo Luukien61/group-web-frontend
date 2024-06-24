@@ -115,8 +115,8 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl
                                         key={index}
                                         onClick={() => handleRating(item.value)}
                                         className={`flex flex-col items-center gap-y-1 cursor-pointer`}>
-                                        <i className={`scale-150 image-rating ${item.value <= ratingPick ? 'iconcmt-allstar' : 'iconcmt-allunstar'}`}></i>
-                                        <p className={`text-[14px]`}>{item.description}</p>
+                                        <i className={`scale-[1.6] image-rating ${item.value <= ratingPick ? 'iconcmt-allstar' : 'iconcmt-allunstar'}`}></i>
+                                        <p className={`text-[13px] whitespace-nowrap`}>{item.description}</p>
                                     </div>
                                 )
                             }

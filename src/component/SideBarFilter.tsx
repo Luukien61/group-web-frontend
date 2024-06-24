@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
 import {useFilter} from "@/zustand/AppState.ts";
-import {laptopPrice, MenuLink, phonePrice} from "@/description/MenuLink.tsx";
+import {laptopPrice, MenuLink, phonePrice, price} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
@@ -27,7 +27,7 @@ const SideBarFilter = () => {
                     break;
                 }
                 case "laptop" : {
-                    priceItemsRef.current = laptopPrice;
+                    priceItemsRef.current = phonePrice;
                     break;
                 }
                 default: {
@@ -39,6 +39,7 @@ const SideBarFilter = () => {
         const getProducers = async (category: string) => {
             const producers: Producer[] = await getProducersByCategory(category)
             const producerNames = producers.map((value) => value.name)
+            producerNames.sort((a, b) => a.localeCompare(b))
             setProducersName(producerNames)
         }
         const priceItemsRef = useRef<MenuLink[]>([]);
@@ -122,9 +123,9 @@ const SideBarFilter = () => {
             }
         }, [search]);
         return (
-            <aside className={`lg:static lg:h-auto lg:overflow-y-visible lg:pt-0 lg:block col-span-2`}>
+            <aside className={`h-full overflow-y-visible pt-0 block col-span-3`}>
                 <div
-                    className=" flex-col items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch h-[calc(100vh-3rem)] block top-24 mr-0">
+                    className="flex-col h-fit items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch h-[calc(100vh-3rem)] block top-24 mr-0">
                     {/*Producer*/}
                     <div
                         className="flex flex-col py-2 px-2 items-start space-x-2"
@@ -179,7 +180,7 @@ const SideBarFilter = () => {
                                 onValueChange={value => handlePriceFilter(value)}>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem
-                                        checked={priceSort.length===0}
+                                        checked={priceSort.length === 0}
                                         className={`text-default_red rounded-sm`}
                                         value="all"/>
                                     <Label className={`px-2 text-[14px] font-normal`}>All</Label>
@@ -188,7 +189,7 @@ const SideBarFilter = () => {
                                     priceItemsRef.current.map((value, index1) => (
                                         <div key={index1} className="flex items-center space-x-2">
                                             <RadioGroupItem
-                                                checked={arraysEqual(priceSort,value.key)}
+                                                checked={arraysEqual(priceSort, value.key)}
                                                 className={`text-default_red rounded-sm`}
                                                 value={index1.toString()}/>
                                             <Label className={`px-2 font-normal text-[16px]`}>{value.name}</Label>

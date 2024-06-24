@@ -21,6 +21,7 @@ import AdminCarousel from "@/page/admin/AdminCarousel.tsx";
 import AdminProfile from "@/page/admin/AdminProfile.tsx";
 import AdminUser from "@/component/admin/AdminUser.tsx";
 import AdminForgotPass from "@/page/admin/AdminForgotPass.tsx";
+import ProductHomePage from "@/page/ProductHomePage.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -57,11 +58,11 @@ const AppRouter = () => {
         <CleanUrlMiddleware>
             <Routes>
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
+                <Route path={`:category/:productId`} element={<ProductHomePage/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>
                     <Route path={`:category/filter`} element={<ProductCategoryPage/>}/>
-                    <Route path={`:category/:productId`} element={<ProductPage/>}/>
                     <Route path={`*`} element={<NotFoundPage/>}/>
                 </Route>
                 {/*login*/}

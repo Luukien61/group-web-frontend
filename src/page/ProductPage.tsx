@@ -241,10 +241,10 @@ const ProductPage = () => {
         product && (
             <>
                 <div
-                    className={`w-full relative`}>
-                    <div className={`relative grid w-full grid-cols-12 mt-4 mb-4`}>
+                    className={`relative `}>
+                    <div className={`relative grid grid-cols-12 w-full mt-4 mb-4`}>
                         {/*main content*/}
-                        <div className={`col-span-10 w-full rounded bg-default_background p-5 h-full mb-4`}>
+                        <div className={`max-w-[1200px] bg-white col-span-10 rounded  p-5 h-full mb-4`}>
                             <div className={`w-full border-b`}>
                                 <h1 className={`text-black pb-2 font-semibold`}>
                                     {product.name}
@@ -482,7 +482,7 @@ const SideBarADs = ({products}: SidebarADsProps) => {
     return (
         <div className={`col-span-2 w-full block static overflow-y-visible`}>
             <div
-                className={`mx-4 rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
+                className={`rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
                 {
                     products.map((value, index) => (
                         <TrendingCard product={value} key={index} />

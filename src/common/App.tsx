@@ -1,6 +1,5 @@
 import Header from "./Header.tsx";
 import Footer from "./Footer.tsx";
-import {homeBackgroundimg} from "../url/Urls.ts";
 import {Outlet} from "react-router-dom";
 
 const App = () => {
@@ -8,12 +7,12 @@ const App = () => {
         <div>
             <div className={`relative`}>
                 <Header/>
-                <div className="w-full flex px-4 mx-auto max-w-8xl "
-                     style={{
-                         backgroundImage: `url(${homeBackgroundimg})`,
-                         backgroundSize: '100% 100%',
-                         backgroundRepeat: 'no-repeat',
-                     }}
+                <div className="w-[1200px] flex px-4 mx-auto max-w-7xl "
+                     // style={{
+                     //     backgroundImage: `url(${homeBackgroundimg})`,
+                     //     backgroundSize: '100% 100%',
+                     //     backgroundRepeat: 'no-repeat',
+                     // }}
                 >
                     <Outlet/>
                 </div>

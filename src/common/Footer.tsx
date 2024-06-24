@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <footer className="py-6 bg-gray-50 ">
             <div className="w-full px-4 mx-auto max-w-8xl">
-                <div className="grid gap-12 xl:grid-cols-5 xl:gap-18">
+                <div className="grid grid-cols-5 *:px-5">
                     <div className="col-span-2">
                         <a href="" className="flex mb-5">
                             <img
@@ -13,11 +13,11 @@ const Footer = () => {
                                 className="mr-3 w-[98px] h-[98px] rounded-[100%]"
                                 alt="Flowbite Logo"
                             />
-                            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                            <span className="self-center text-2xl font-semibold whitespace-nowrap">
                                 {AppInfo.appName}
                             </span>
                         </a>
-                        <p className="max-w-lg mb-3 text-gray-600 dark:text-gray-400">
+                        <p className="max-w-lg mb-3 text-gray-600">
                             {AppInfo.description}
                         </p>
                     </div>

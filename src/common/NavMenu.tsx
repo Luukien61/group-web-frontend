@@ -17,7 +17,6 @@ type ProducerFilterProps = {
     producer: string,
     category: string
 }
-
 type PriceFilterProps = {
     category: string,
     priceRange: number[]
@@ -86,12 +85,6 @@ const NavMenu = () => {
                                                        className="cursor-pointer hover:text-default_green">
                                                         {producer.name}
                                                     </a>
-                                                    // <div
-                                                    //     onClick={()=>handleProducerFilter({producer: producer.name, category: category.name})}
-                                                    //     className="cursor-pointer hover:text-default_green bg-inherit outline-none ring-0"
-                                                    //     key={sublinkIndex}>
-                                                    //     <p>{producer.name}</p>
-                                                    // </div>
                                                 ))
                                         }
                                     </div>
