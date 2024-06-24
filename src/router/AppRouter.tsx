@@ -59,10 +59,11 @@ const AppRouter = () => {
             <Routes>
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 <Route path={`:category/:productId`} element={<ProductHomePage/>}/>
+                <Route path={`:category/filter`} element={<ProductCategoryPage/>}/>
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>
-                    <Route path={`:category/filter`} element={<ProductCategoryPage/>}/>
+
                     <Route path={`*`} element={<NotFoundPage/>}/>
                 </Route>
                 {/*login*/}

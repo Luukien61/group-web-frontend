@@ -16,7 +16,7 @@ type CarouselProps = {
 
 export const CarouselBanner : React.FC<CarouselProps> = ({imgSource}) => {
     const plugin = React.useRef(
-        Autoplay({ delay: 2000, stopOnInteraction: false })
+        Autoplay({ delay: 4000, stopOnInteraction: false })
     )
 
     return (

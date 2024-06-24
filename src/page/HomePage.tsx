@@ -8,7 +8,7 @@ import {useCategoryItem} from "@/zustand/AppState.ts";
 const HomePage = () => {
     const [imageSource, setImageSource] = useState<Banner[]>([])
     const [, setPhone] = useState<Product[]>([])
-    const {categoriesItem}= useCategoryItem()
+    const {categoriesItem} = useCategoryItem()
     useEffect(() => {
         const fetchImages = async () => {
             const images = await fetchCarouselImages();

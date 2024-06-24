@@ -7,7 +7,7 @@ const DeviceList = () => {
     const category = pathname.charAt(0).toUpperCase() + pathname.slice(1)
     const path =category.split("/")[0]
     return (
-        <div className={`col-span-9 pl-4 w-full`}>
+        <div className={`col-span-10 pl-4 w-full`}>
             {
                 path && (
                     <CategoryCard
@@ -16,7 +16,7 @@ const DeviceList = () => {
                         heightClass={'min-h-full'}
                         category={path}
                         initialSize={12}
-                        widthClass={`w-1/3`}
+                        widthClass={`w-1/4`}
                         pageable={true} />
                 )
             }

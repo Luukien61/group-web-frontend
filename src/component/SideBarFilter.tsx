@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
 import {useFilter} from "@/zustand/AppState.ts";
-import {laptopPrice, MenuLink, phonePrice, price} from "@/description/MenuLink.tsx";
+import {MenuLink, phonePrice} from "@/description/MenuLink.tsx";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
@@ -123,9 +123,9 @@ const SideBarFilter = () => {
             }
         }, [search]);
         return (
-            <aside className={`h-full overflow-y-visible pt-0 block col-span-3`}>
+            <aside className={` overflow-y-visible pt-0 block col-span-2`}>
                 <div
-                    className="flex-col h-fit items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch h-[calc(100vh-3rem)] block top-24 mr-0">
+                    className="flex-col items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch  block top-24 mr-0">
                     {/*Producer*/}
                     <div
                         className="flex flex-col py-2 px-2 items-start space-x-2"

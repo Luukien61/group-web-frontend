@@ -55,9 +55,9 @@ const Header = () => {
     };
     return (
         <>
-            <header className="sticky top-0 z-40 flex-none w-full mx-auto bg-white border-b border-gray-200">
+            <header className="sticky top-0 z-40 h-30 w-full  bg-white border-b border-gray-200">
                 <div className=" flex flex-col">
-                    <div className="px-3 lg:px-8 lg:mx-0 flex items-center w-full h-16 gap-0 md:gap-3">
+                    <div className="px-8 mx-0 flex items-center w-full h-16 gap-3">
                         <div>
                             <a
                                 href="/"
@@ -85,7 +85,7 @@ const Header = () => {
                                 products && (
                                     <div className={`relative w-2/3 ml-10 mt-1 z-[100]`}>
                                         <div
-                                            className={`absolute inset-0 calc(100% + 4px) space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
+                                            className={`absolute inset-0 max-h-96 overflow-y-auto space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
                                             {
                                                 products.map((item, index) => (
                                                     <>

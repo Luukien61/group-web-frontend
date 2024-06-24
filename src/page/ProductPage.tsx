@@ -283,7 +283,7 @@ const ProductPage = () => {
                                                                         checked={selectedIndex === index}
                                                                     />
                                                                     <Label className={`text-[14px]`}
-                                                                           htmlFor={index.toString()}>{price.rom}GB</Label>
+                                                                           htmlFor={index.toString()}>{price.rom > 1000 ? `${Math.floor(price.rom/1000)}TB`: `${price.rom}GB`}</Label>
                                                                 </div>
                                                                 <h1 className={`self-center`}>
                                                                     {product.price[0].currentPrice >0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ':'Contact' }

@@ -549,8 +549,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     };
 
     return (
-        <div className={`flex justify-center items-center`}>
-            <div className={`w-[1250px] flex rounded bg-inherit p-6 `}>
+        <div className={`flex relative justify-center items-center`}>
+            <div className={`w-[1250px] h-auto relative flex rounded bg-inherit p-6 `}>
                 <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
                     {/*Category*/}
                     <div className={`flex flex-col`}>
@@ -746,7 +746,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     </div>
                 </div>
                 {/**/}
-                <div className={`w-1/3 p-3 flex-col flex gap-y-4`}>
+                <div className={`w-1/3 p-3 sticky h-auto top-[140px] flex-col flex gap-y-4`}>
                     {/*images*/}
                     <div className={`bg-white w-full rounded shadow-2xl flex flex-col `}>
                         <Title title={"Product images"}/>

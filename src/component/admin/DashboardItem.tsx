@@ -47,7 +47,7 @@ const DashboardItem : React.FC<Props>= ({category}) => {
                             <p className={`font-semibold`}>{category.name}</p>
                             <hr className={`bg-black h-[2px]`}/>
                             <div className={`w-full h-full`}>
-                                <div className={`flex flex-wrap gap-x-1 w-full h-full items-center justify-center`}>
+                                <div className={`flex flex-col flex-wrap w-full h-full items-center justify-center`}>
                                     <div className={`h-fit w-fit px-2 py-1 ${quantityColor.outerColor} rounded-xl `}>
                                         <p className={` text-[45px]  ${quantityColor.mainColor}`}>{productQuantity} </p>
                                     </div>

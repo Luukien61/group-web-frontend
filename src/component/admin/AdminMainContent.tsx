@@ -8,7 +8,7 @@ import {useNavigate} from "react-router-dom";
 const AdminMainContent = () => {
     const navigate = useNavigate();
     useEffect(() => {
-        document.title="Admin Home";
+        document.title = "Admin Home";
     }, []);
     const handleAddProduct = () => {
         navigate('new-product', {preventScrollReset: false})
@@ -27,7 +27,7 @@ const AdminMainContent = () => {
                     </button>
                 </div>
                 <div className={`flex w-full`}>
-                <AdminDashboard/>
+                    <AdminDashboard/>
                     <OrderDashboard/>
                 </div>
             </div>

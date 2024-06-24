@@ -3,6 +3,8 @@ import SideBarFilter from "@/component/SideBarFilter.tsx";
 import {useLocation} from "react-router-dom";
 import {useLocationStore} from "@/zustand/AppState.ts";
 import DeviceList from "@/component/DeviceList.tsx";
+import Header from "@/common/Header.tsx";
+import Footer from "@/common/Footer.tsx";
 
 const ProductCategoryPage = () => {
     //const [currentLocation, setCurrentLocation] = useState<string>("");
@@ -16,11 +18,21 @@ const ProductCategoryPage = () => {
         document.title="Categories";
     }, []);
     return (
-        <div className={`py-4 grid grid-cols-12 w-full `}>
-            <SideBarFilter/>
-            <DeviceList/>
+        <div>
+            <div className={`relative w-full`}>
+                <Header/>
+                <div className="w-[1500px] flex px-4 mx-auto ">
+                    <div className={`py-4 grid grid-cols-12 w-full `}>
+                        <SideBarFilter/>
+                        <DeviceList/>
+                    </div>
+                </div>
+            </div>
+            <Footer/>
         </div>
-    );
+
+)
+    ;
 };
 
 export default ProductCategoryPage;

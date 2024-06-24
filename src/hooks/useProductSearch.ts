@@ -8,8 +8,10 @@ const useProductSearch = () => {
 
     const debouncedHandleSearching = useRef(debounce(
         async (value: string) => {
-            const response = await searchProductsByName(value);
-            setProducts(response);
+            if(value){
+                const response = await searchProductsByName(value);
+                setProducts(response);
+            }
         }, 500)).current;
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

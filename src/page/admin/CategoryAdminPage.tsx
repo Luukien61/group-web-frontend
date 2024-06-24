@@ -93,7 +93,6 @@ const CategoryAdminPage = () => {
             setLastPage(last)
             setProduct(products)
             setAllProducts(products)
-            console.log("Is last: ", last)
         }
         fetchAllProduct()
     }, [fetchProps]);
@@ -101,7 +100,7 @@ const CategoryAdminPage = () => {
         setFetchProps(prevState => ({...prevState, size: prevState.size + 10}))
     }, [])
     return (
-        <div className={`flex flex-col  w-full `}>
+        <div className={`flex flex-col w-full `}>
             {/*head filter*/}
             <div className={`flex fixed w-full h-20 z-20 shadow-xl bg-white rounded p-2 pt-0`}>
                 {/*producer*/}
@@ -129,8 +128,8 @@ const CategoryAdminPage = () => {
 
             </div>
             {/*content*/}
-            <div className={`w-[1200px] relative top-20 self-center py-6`}>
-                <div className={`w-full flex-col  shadow flex flex-wrap bg-white rounded p-4`}>
+            <div className={`relative top-20 self-center py-6`}>
+                <div className={`w-full flex-col shadow flex flex-wrap bg-white rounded p-4`}>
                     {
                         product.length == 0 &&
                         <p className={`text-red-600 font-medium`}>No device found</p>

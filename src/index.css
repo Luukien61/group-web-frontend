@@ -157,6 +157,9 @@ select:-webkit-autofill {
     height: 11px;
     width: 12px;
   }
+  .w-1200{
+    width: 1200px;
+  }
 }
 
 

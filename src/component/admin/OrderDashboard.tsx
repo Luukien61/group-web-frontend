@@ -57,7 +57,7 @@ const OrderCard : React.FC<Order>=({target,number, status, title,color,textColor
                 <div className={`w-full h-full flex flex-col p-4 gap-y-2`}>
                     <p className={`font-semibold`}>{title}</p>
                     <hr className={`bg-black h-[2px]`}/>
-                    <div className={`w-full h-full flex flex-wrap items-center gap-x-1 justify-center`}>
+                    <div className={`w-full h-full flex  flex-col items-center gap-x-1 justify-center`}>
                         <div className={`h-fit w-fit px-2 py-1 rounded-xl ${color}`}>
                             <p className={` text-[45px] ${textColor ?? "text-inner_red"}`}>{number}</p>
                         </div>
