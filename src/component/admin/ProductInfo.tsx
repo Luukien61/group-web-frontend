@@ -58,7 +58,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [productName, setProductName] = useState<string>('')
     const [producer, setProducer] = useState<string>('')
     const [colorName, setColorName] = useState<string>('')
-    const [colorImg, setColorImg] = useState<string | null>(null)
+    const [colorImg, setColorImg] = useState<string>('')
     const [categoryPick, setCategoryPick] = useState<string>('')
     const [previews, setPreviews] = useState<string[]>([]);
     const [imageLoaded, setImageLoaded] = useState<number>(0);
@@ -219,7 +219,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             reader.readAsDataURL(file)
             e.target.files = null
         } else {
-            setColorImg(null)
+            setColorImg('')
         }
 
     }
@@ -409,6 +409,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             }
             setRawColors(prevState => [...prevState, color])
             setColorName('')
+            setColorImg('')
         }
     }
     const handleRemoveColor = (colorName: string) => {
@@ -550,7 +551,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
 
     return (
         <div className={`flex relative justify-center items-center`}>
-            <div className={`w-1200 h-auto relative flex rounded bg-inherit p-6 `}>
+            <div className={`w-1200 h-auto relative flex rounded bg-inherit p-6 overflow-y-visible `}>
                 <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
                     {/*Category*/}
                     <div className={`flex flex-col`}>
@@ -568,14 +569,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                             <div className={`flex `}>
                                 <div className={`flex-1 overflow-hidden relative`}>
                                     <div className={``}>
-                                        <div className={`absolute flex items-center inset-0 left-1  w-fit z-20`}>
+                                        <div
+                                            className={`absolute flex items-center inset-0 left-1 w-fit ${openAddCategory ? '-z-0' : 'z-10'}`}>
                                             <div
                                                 onClick={() => scroll('left')}
                                                 className={`rounded-[100%] flex items-center justify-center bg-white p-1 cursor-pointer hover:bg-outer_green duration-300`}>
                                                 <GrCaretPrevious/>
                                             </div>
                                         </div>
-                                        <div className={`absolute flex items-center inset-0 left-[95%] w-fit z-20`}>
+                                        <div
+                                            className={`absolute flex items-center inset-0 left-[95%] w-fit ${openAddCategory ? '-z-0' : 'z-10'}`}>
                                             <div
                                                 onClick={() => scroll('right')}
                                                 className={`rounded-[100%] flex items-center justify-center bg-white p-1 cursor-pointer hover:bg-outer_green duration-300`}>
@@ -694,7 +697,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                         <div className={`flex px-4 gap-x-3  py-3`}>
                             {/*color add*/}
                             <div className={`flex border-r w-2/3 border-gray-600`}>
-                                <div className={`flex flex-col gap-y-4 w-2/3`}>
+                                <div className={`flex flex-col gap-y-4 w-4/5`}>
                                     <Input input={{
                                         require: false,
                                         label: "Name",
@@ -706,7 +709,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         <label className={`text-sm font-medium text-gray-900`}>Image </label>
                                         <FileUpload
                                             text={false}
-                                            style={`w-full aspect-[5/1]`}
+                                            style={`w-1/3`}
                                             input={
                                                 <input
                                                     onChange={handleColorImageSource}
@@ -714,6 +717,12 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                                     type="file"
                                                     accept="image/*"/>
                                             }
+                                        />
+                                        <input
+                                            value={colorImg}
+                                            onChange={e=>setColorImg(e.target.value)}
+                                            className={`outline-none border w-1/2 rounded h-full border-gray-600 placeholder:italic px-2 truncate`}
+                                            placeholder={'Or url'}
                                         />
                                     </div>
                                 </div>
@@ -729,13 +738,17 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                             <div className={`w-1/3 flex flex-wrap gap-y-1 *:w-1/2`}>
                                 {
                                     rawColors.map((value, index) => (
-                                        <div key={index} className={`px-2 `}>
+                                        <div key={index} className={`px-2 relative`}>
                                             <div
-                                                className={`bg-gray-300 relative flex items-center justify-center rounded py-1`}>
+                                                className={`bg-gray-300  flex items-center justify-center rounded py-1 group`}>
                                                 <p className={`cursor-default`}>{value.color}</p>
                                                 <IoCloseCircleOutline
                                                     onClick={() => handleRemoveColor(value.color)}
                                                     className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                                                <div className={`absolute hidden -top-1/2 group-hover:block  `}>
+                                                    <img className={`border rounded`} src={value.link}
+                                                         alt={value.color}/>
+                                                </div>
                                             </div>
                                         </div>
                                     ))
@@ -746,7 +759,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     </div>
                 </div>
                 {/**/}
-                <div className={`w-1/3 p-3 sticky h-auto top-[140px] flex-col flex gap-y-4`}>
+                <div className={`w-1/3 p-3 sticky h-auto top-0  flex-col flex gap-y-4`}>
                     {/*images*/}
                     <div className={`bg-white w-full rounded shadow-2xl flex flex-col `}>
                         <Title title={"Product images"}/>
@@ -928,9 +941,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                         {
                             warningDelete &&
                             <div
-                                className={`w-screen h-screen flex fixed backdrop-blur-sm bg-black bg-opacity-10 inset-0 z-50 items-center justify-center `}>
+                                className={`w-screen h-screen flex fixed backdrop-blur-sm bg-black bg-opacity-60 inset-0 z-[100] items-center justify-center `}>
                                 <div
-                                    className={`w-[500px] h-fit max-h-[550px] bg-white drop-shadow rounded-xl flex flex-col items-center p-10`}>
+                                    className={`w-[500px] h-fit max-h-[550px] z-50  bg-white drop-shadow rounded-xl flex flex-col items-center p-10`}>
                                     <p className={`font-bold`}>Are you sure to delete this product?</p>
                                     <p className={`text-red-600`}>This action can not be undo!!!</p>
                                     <div className={`w-full flex items-center justify-center flex-col mt-4`}>
@@ -1187,12 +1200,13 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
     }
     return (
         <div
-            className={`w-screen h-screen flex fixed backdrop-blur-sm bg-black bg-opacity-10 inset-0 z-50 items-center justify-center `}>
+            className={`w-screen h-screen flex  fixed backdrop-blur-sm bg-black bg-opacity-60 inset-0 z-50 items-center justify-center `}>
             <div className={`w-[500px] h-fit max-h-[550px] bg-white drop-shadow rounded-xl flex flex-col p-10`}>
                 <div className={`flex flex-col gap-y-10`}>
                     <label className={`flex flex-col gap-y-2`}>
                         <p>Category name</p>
                         <DefaultInput
+                            className={'border rounded'}
                             disabled={disable}
                             value={categoryName}
                             placeholder={"Category name"}
@@ -1203,6 +1217,7 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
                         <label className={`flex flex-col gap-y-2 flex-1`}>
                             <p>Producer</p>
                             <DefaultInput
+                                className={'border rounded'}
                                 value={producer}
                                 placeholder={"Category name"}
                                 onChange={(e) => setProducer(e.target.value)}

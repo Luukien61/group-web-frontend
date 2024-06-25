@@ -299,7 +299,7 @@ const ProductPage = () => {
                                                 {
                                                     product.color.map((color, index) => (
                                                         <div key={index} className={`flex flex-col`}>
-                                                            <img className={`aspect-square w-[50px] rounded`} src={color.link}
+                                                            <img className={`aspect-square w-[50px] rounded border`} src={color.link}
                                                                  alt={index.toString()}/>
                                                             <h3 className={`text-[15px] self-center`}>
                                                                 {color.color}

@@ -226,7 +226,7 @@ export type CustomError = {
 }
 export const postNewCategory = async (category: Category) => {
     try {
-        return await instance.post(categoryPath, category)
+        return await adminInstance.post(categoryPath, category)
             .then(response => response.data)
     } catch (error) {
         handleError(error)
@@ -237,7 +237,7 @@ export const postNewCategory = async (category: Category) => {
 
 export const postNewProducer = async (producer: Producer[], category: string) => {
     try {
-        return await instance.post(`${producerBasePath}/many/${category}`, producer)
+        return await adminInstance.post(`${producerBasePath}/many/${category}`, producer)
             .then(response => response.data)
     } catch (error) {
         handleError(error)
