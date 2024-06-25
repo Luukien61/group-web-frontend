@@ -550,7 +550,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
 
     return (
         <div className={`flex relative justify-center items-center`}>
-            <div className={`w-[1250px] h-auto relative flex rounded bg-inherit p-6 `}>
+            <div className={`w-1200 h-auto relative flex rounded bg-inherit p-6 `}>
                 <div className={`w-2/3 p-3 flex flex-col gap-y-5 *:w-full *:bg-white *:rounded *:shadow-2xl`}>
                     {/*Category*/}
                     <div className={`flex flex-col`}>

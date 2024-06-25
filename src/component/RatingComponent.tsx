@@ -101,7 +101,7 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl
                     </div>
                     <div className={`flex items-center justify-center`}>
                         <img
-                            className={`h-[100px]`}
+                            className={``}
                             src={imgUrl}
                             alt={'product images'}/>
                     </div>
@@ -122,7 +122,7 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl
                             }
                         </div>
                     </div>
-                    <div className={`flex h-1/2 justify-evenly items-center`}>
+                    <div className={`flex h-1/2 justify-evenly gap-x-1 items-center`}>
                         <input
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}

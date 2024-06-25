@@ -242,9 +242,9 @@ const ProductPage = () => {
             <>
                 <div
                     className={`relative `}>
-                    <div className={`relative grid grid-cols-12 w-full mt-4 mb-4`}>
+                    <div className={`relative overflow-y-visible grid grid-cols-12 w-full mt-4 mb-4`}>
                         {/*main content*/}
-                        <div className={`max-w-[1200px] bg-white col-span-10 rounded  p-5 h-full mb-4`}>
+                        <div className={`h-auto bg-white col-span-10 border rounded p-5  mb-4`}>
                             <div className={`w-full border-b`}>
                                 <h1 className={`text-black pb-2 font-semibold`}>
                                     {product.name}
@@ -480,15 +480,15 @@ type SidebarADsProps={
 }
 const SideBarADs = ({products}: SidebarADsProps) => {
     return (
-        <div className={`col-span-2 w-full block static overflow-y-visible`}>
-            <div
-                className={`rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-[140px]`}>
-                {
-                    products.map((value, index) => (
-                        <TrendingCard product={value} key={index} />
-                    ))
-                }
-            </div>
+        <div className={`col-span-2 px-2 h-auto pb-5 w-full block static`}>
+                <div
+                    className={`rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-0`}>
+                    {
+                        products.map((value, index) => (
+                            <TrendingCard product={value} key={index}/>
+                        ))
+                    }
+                </div>
         </div>
     )
 }
@@ -515,9 +515,9 @@ const CarouselApiDemo: React.FC<CarouselProps> = ({links}) => {
     }, [api])
 
     return (
-        <div className={`sticky top-20 flex flex-col items-center  h-fit pt-5`}>
-            <Carousel setApi={setApi} className=" max-w-xs ">
-                <CarouselPrevious/>
+        <div className={`sticky top-20 flex flex-col  items-center h-fit pt-5`}>
+            <Carousel setApi={setApi} className="relative max-w-xs ">
+                <CarouselPrevious className={`-left-10`}/>
                 <CarouselContent>
                     {links.map((link, index) => (
                         <CarouselItem key={index}>
@@ -529,7 +529,7 @@ const CarouselApiDemo: React.FC<CarouselProps> = ({links}) => {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselNext/>
+                <CarouselNext className={`-right-10`}/>
             </Carousel>
             <div className="py-2 text-center text-sm text-muted-foreground">
                 {current} of {count}
@@ -606,9 +606,9 @@ type TrendingProps={
 const TrendingCard = ({product}: TrendingProps) => {
     return (
         <div
-            className={`flex flex-col gap-y-2 round bg-outer_blue w-full p-2 hover:scale-105 transform duration-300`}>
+            className={`flex flex-col rounded-xl gap-y-2 round bg-outer_blue w-full p-2 hover:scale-105 transform duration-300`}>
             <a href={`/${product.category.name.toLowerCase()}/${product.id}`}>
-                <img className={`aspect-[9/10]`}
+                <img className={`aspect-[9/10] w-3/4 `}
                      src={product.imgs[0]} alt={"image"}/>
                 <p>{product.name}</p>
                 <p className={`text-default_red font-medium`}> {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}</p>

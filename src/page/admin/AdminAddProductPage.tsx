@@ -6,9 +6,7 @@ const AdminAddProductPage = () => {
         document.title = "New Product";
     }, []);
     return (
-        <div>
-            <ProductInfo product={null}/>
-        </div>
+        <ProductInfo product={null}/>
     );
 };
 

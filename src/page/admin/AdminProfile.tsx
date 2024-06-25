@@ -64,7 +64,7 @@ const AdminProfile = () => {
     }
     return (
         <div className={`w-full h-screen flex items-start justify-start p-6`}>
-            <div className={`flex flex-col gap-y-2 w-1/2 p-6 rounded bg-white shadow-xl`}>
+            <div className={`flex flex-col gap-y-2 w-[600px] p-6 rounded bg-white shadow-xl`}>
                 <div className={` gap-x-10 gap-y-7 grid grid-cols-[auto_1fr]`}>
                     {
                         editRequest

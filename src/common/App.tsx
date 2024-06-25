@@ -7,14 +7,16 @@ const App = () => {
         <div>
             <div className={`relative`}>
                 <Header/>
-                <div className="w-[1200px] flex px-4 mx-auto max-w-7xl "
-                     // style={{
-                     //     backgroundImage: `url(${homeBackgroundimg})`,
-                     //     backgroundSize: '100% 100%',
-                     //     backgroundRepeat: 'no-repeat',
-                     // }}
-                >
-                    <Outlet/>
+                <div className={`w-full relative`}>
+                    <div className="w-[1200px] flex px-4 mx-auto max-w-7xl "
+                        // style={{
+                        //     backgroundImage: `url(${homeBackgroundimg})`,
+                        //     backgroundSize: '100% 100%',
+                        //     backgroundRepeat: 'no-repeat',
+                        // }}
+                    >
+                        <Outlet/>
+                    </div>
                 </div>
 
             </div>

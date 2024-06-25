@@ -18,12 +18,17 @@ const AdminUser = () => {
     const [newUser, setNewUser] = useState<UserResponse>(dummy);
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [addNewUserRequest, setAddNewUserRequest] = useState<boolean>(false);
+    const [userRole, setUserRole]= useState<string>('staff');
     useEffect(() => {
-        fetchUsers()
+        fetchUsers(userRole)
         document.title = "Admin User"
     }, []);
-    const fetchUsers = async () => {
-        const allUsers: UserResponse[] = await getAllUsers("staff")
+    useEffect(() => {
+        fetchUsers(userRole)
+    }, [userRole]);
+
+    const fetchUsers = async (role: string) => {
+        const allUsers: UserResponse[] = await getAllUsers(role)
         allUsers.sort((a, b) => a.fullName.localeCompare(b.fullName));
         setUsers(allUsers)
     }
@@ -85,11 +90,23 @@ const AdminUser = () => {
             }
         }
     }
+    const handleUserRoleChange=(role: string)=>{
+
+
+    }
     return (
         <div className={`w-full py-10 h-screen max-h-screen overflow-hidden`}>
             <div className={`flex justify-between`}>
+                {/*<div className={`ms-6 mb-4 flex items-center`}>*/}
+                {/*    <p className={`font-medium`}>Users</p>*/}
+                {/*</div>*/}
                 <div className={`ms-6 mb-4 flex items-center`}>
-                    <p className={`font-medium`}>Users</p>
+                    <select
+                        onChange={(e) => setUserRole(e.target.value)}
+                        className={`p-2 outline-none border bg-white text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block`}>
+                        <option value={'staff'}>User</option>
+                        <option value={'admin'}>Admin</option>
+                    </select>
                 </div>
                 <div className={`w-full flex flex-1 justify-end mb-4 px-4`}>
                     <div
@@ -146,7 +163,7 @@ const AdminUser = () => {
                     onClick={()=>setAddNewUserRequest(false)}
                     className={`w-screen h-screen fixed inset-0 backdrop-blur-sm bg-black bg-opacity-60 z-50 flex items-center justify-center`}>
                     <div onClick={(e)=>e.stopPropagation()}
-                        className={`rounded shadow-xl bg-white w-1/3 p-6 pb-2`}>
+                        className={`rounded shadow-xl bg-white w-[500px] p-6 pb-2`}>
                         <div className={`gap-x-10 gap-y-7 grid grid-cols-[auto_1fr]`}>
                             {
                                 newUserFields.map((value, index) => (

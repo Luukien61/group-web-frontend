@@ -9,7 +9,7 @@ const AdminHome = () => {
         <div className={`w-full mx-auto`}>
             <div className={`flex bg-[#F4F6FA] w-full`}>
                 <AdminSideBar/>
-                <div className={`w-full ml-52 flex justify-end`}>
+                <div className={`w-full ml-52 flex justify-center`}>
                     <Outlet/>
                 </div>
             </div>

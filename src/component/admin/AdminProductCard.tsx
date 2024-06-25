@@ -5,6 +5,7 @@ import {useLocation} from "react-router-dom";
 type Props ={
     product: Product
 }
+
 const AdminProductCard :React.FC<Props> = ({product}) => {
     const location = useLocation().pathname
     return (

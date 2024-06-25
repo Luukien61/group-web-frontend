@@ -128,7 +128,7 @@ const CategoryAdminPage = () => {
 
             </div>
             {/*content*/}
-            <div className={`relative top-20 self-center py-6`}>
+            <div className={`relative top-20 w-full self-center py-6`}>
                 <div className={`w-full flex-col shadow flex flex-wrap bg-white rounded p-4`}>
                     {
                         product.length == 0 &&

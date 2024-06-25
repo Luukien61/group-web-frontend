@@ -8,7 +8,7 @@ const ProductHomePage = () => {
         <div>
             <div className={`relative`}>
                 <Header/>
-                <div className="w-[1500px] flex px-4 mx-auto ">
+                <div className="w-1200 relative overflow-y-visible flex px-4 mx-auto ">
                     <ProductPage/>
                 </div>
             </div>

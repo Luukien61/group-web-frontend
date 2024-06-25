@@ -21,8 +21,8 @@ const ProductCategoryPage = () => {
         <div>
             <div className={`relative w-full`}>
                 <Header/>
-                <div className="w-[1500px] flex px-4 mx-auto ">
-                    <div className={`py-4 grid grid-cols-12 w-full `}>
+                <div className="w-1200 flex px-4 mx-auto ">
+                    <div className={`py-4 grid grid-cols-11 w-full `}>
                         <SideBarFilter/>
                         <DeviceList/>
                     </div>

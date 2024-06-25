@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {price} from "../description/MenuLink.tsx";
+import {price} from "../description/MenuLink.ts";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {useCategory, useCategoryItem, useFilter} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
@@ -69,7 +69,7 @@ const NavMenu = () => {
                                 <div
                                     className="bg-default_background p-5 grid grid-cols-3 gap-10 px-4 mt-2 cursor-default">
                                     <div className="flex flex-col gap-3">
-                                        <h1 className="font-semibold items-start ">
+                                        <h1 className="font-medium items-start ">
                                             Producer
                                         </h1>
                                         {

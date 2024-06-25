@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Checkbox} from "@/shadcn/ui/checkbox.tsx";
 import {useFilter} from "@/zustand/AppState.ts";
-import {MenuLink, phonePrice} from "@/description/MenuLink.tsx";
+import {MenuLink, phonePrice} from "@/description/MenuLink.ts";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group.tsx";
 import {Label} from "@/shadcn/ui/label.tsx";
@@ -19,7 +19,7 @@ const SideBarFilter = () => {
         const [producerSort, setProducerSort] = useState<string[]>([]);
         const [producersName, setProducersName] = useState<string[]>([]);
         const [priceSort, setPriceSort] = useState<number[]>([]);
-        const {producerFilter, setProducerFilter, setPriceFilter} = useFilter()
+        const {setPriceFilter} = useFilter()
         useEffect(() => {
             switch (path) {
                 case "phone" : {
@@ -47,7 +47,7 @@ const SideBarFilter = () => {
             if (checkedState) {
                 if (value == "all") {
                     setProducerSort([])
-                    setProducerFilter([])
+                   // setProducerFilter([])
                     setCheckAllProducer(true)
                 } else {
                     setProducerSort([...producerSort, value.toLowerCase()])
@@ -80,8 +80,8 @@ const SideBarFilter = () => {
         }
 
         useEffect(() => {
-            const newProductFilter = [...producerSort, ...producerFilter]
-            setProducerFilter(newProductFilter)
+            // const newProductFilter = [...producerSort, ...producerFilter]
+            // setProducerFilter(newProductFilter)
             setPriceFilter(priceSort)
             const params = handleParams()
             navigate(`${params}`)
@@ -111,21 +111,21 @@ const SideBarFilter = () => {
                 const equalIndex = producerList.indexOf("=")
                 const producers = producerList.slice(equalIndex + 1).split(",")
                 setProducerChecked(producers)
-                setProducerFilter(producers)
+                //setProducerFilter(producers)
                 setProducerSort(producers)
                 setCheckAllProducer(false)
             }
             if (priceParams.length > 0) {
                 //[min-price=2000000', 'max-price=4000000]
                 const priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
-                setPriceFilter(priceFilter)
+                //setPriceFilter(priceFilter)
                 setPriceSort(priceFilter)
             }
         }, [search]);
         return (
-            <aside className={` overflow-y-visible pt-0 block col-span-2`}>
+            <aside className={`overflow-y-visible pt-0 block col-span-2 `}>
                 <div
-                    className="flex-col items-start sticky bg-default_background overflow-y-auto z-20 scrolling-touch  block top-24 mr-0">
+                    className="flex-col items-start sticky bg-default_background overflow-y-auto z-20 overflow-x-hidden scrolling-touch block top-24 ">
                     {/*Producer*/}
                     <div
                         className="flex flex-col py-2 px-2 items-start space-x-2"
@@ -152,7 +152,7 @@ const SideBarFilter = () => {
                             {
                                 producersName?.map((value, index1) => (
                                     <div key={index1 + 1}
-                                         className={`flex w-1/2 py-2  `}
+                                         className={`flex w-1/2 py-2`}
                                     >
                                         <Checkbox
                                             checked={!checkAllProducer && producerChecked.includes(value.toLowerCase())}

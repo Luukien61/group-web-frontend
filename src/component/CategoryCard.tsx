@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ProductCard from "./ProductCard.tsx";
 import {fetchProductsCategory} from "@/axios/Request.ts";
-import {useFilter} from "@/zustand/AppState.ts";
+import {useLocation} from "react-router-dom";
 
 export type Producer = {
     id?: number,
@@ -92,18 +92,43 @@ const CategoryCard: React.FC<CategoryProp> = ({
     const [size, setSize] = useState<number>(initialSize)
     const [last, setLast] = useState<boolean>(false)
     const [products, setProducts] = useState<Product[]>([])
-    const {producerFilter, priceFilter} = useFilter()
+    const [producerSort, setProducerSort] = useState<string[]>([])
+    const [priceSort, setPriceSort] = useState<number[]>([])
+    // const {producerFilter, priceFilter} = useFilter()
+    const search = useLocation().search
     const handleViewMoreClick = useCallback(() => {
         setSize(pre => pre + initialSize);
     }, [initialSize]);
+
+    useEffect(() => {
+        const params = search.slice(1).split("&")
+        const producersParam = params.filter((value) => value.includes("producer"))
+        const priceParams = params.filter((value) => value.includes("price"))
+        if (producersParam.length > 0) {
+            const producerList = producersParam[0]
+            const equalIndex = producerList.indexOf("=")
+            const producers = producerList.slice(equalIndex + 1).split(",")
+            setProducerSort(producers)
+        }else {
+            setProducerSort([])
+        }
+        if (priceParams.length > 0) {
+            //[min-price=2000000', 'max-price=4000000]
+            const priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
+            setPriceSort(priceFilter)
+        } else {
+            setPriceSort([])
+        }
+
+    }, [search]);
 
     useEffect(() => {
         const fetchProductByCategory = async () => {
             const response = await fetchProductsCategory({
                 category: category,
                 size: size,
-                producer: producerFilter,
-                price: priceFilter,
+                producer: producerSort,
+                price: priceSort,
                 page: page
             })
                 .then((response) => response)
@@ -112,7 +137,7 @@ const CategoryCard: React.FC<CategoryProp> = ({
             setProducts(products)
         }
         fetchProductByCategory()
-    }, [category, size, priceFilter, page, producerFilter]);
+    }, [category, size, page, producerSort, priceSort]);
     return (
         <>
             {
