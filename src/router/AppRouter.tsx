@@ -2,7 +2,6 @@ import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import App from "../common/App.tsx";
 import HomePage from "@/page/HomePage.tsx";
 import ProductCategoryPage from "@/page/ProductCategoryPage.tsx";
-import ProductPage from "@/page/ProductPage.tsx";
 import LoginPage from "@/page/admin/LoginPage.tsx";
 import AdminHome from "@/page/admin/AdminHome.tsx";
 import React, {useEffect} from "react";
@@ -13,7 +12,6 @@ import CategoryAdminPage from "@/page/admin/CategoryAdminPage.tsx";
 import AdminMainContent from "@/component/admin/AdminMainContent.tsx";
 import AdminAddProductPage from "@/page/admin/AdminAddProductPage.tsx";
 import ProductDetail from "@/page/admin/ProductDetail.tsx";
-import Test from "@/page/Test.tsx";
 import AdminOrder from "@/page/admin/AdminOrder.tsx";
 import AdminCompleteOrder from "@/page/admin/AdminCompleteOrder.tsx";
 import NotFoundPage from "@/page/NotFoundPage.tsx";
@@ -57,6 +55,7 @@ const AppRouter = () => {
     return (
         <CleanUrlMiddleware>
             <Routes>
+                {/*<Route path={'/mail/auth'} element={<AuthUrlRedirect/>}/>*/}
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 <Route path={`:category/:productId`} element={<ProductHomePage/>}/>
                 <Route path={`:category/filter`} element={<ProductCategoryPage/>}/>

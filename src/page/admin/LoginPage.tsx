@@ -14,7 +14,7 @@ export type UserResponse = {
     "phone": string,
     "role"?: string,
     "password"?: string,
-    "activeState"? : boolean
+    "activeState"?: boolean
 }
 export type LoginProps = {
     email: string,
@@ -90,8 +90,8 @@ const LoginPage = () => {
             navigate("/admin", {replace: true});
         }
     }
-    const handleRedirectForgotPass=()=>{
-        navigate('/reset-password',{replace: true})
+    const handleRedirectForgotPass = () => {
+        navigate('/reset-password', {replace: true})
     }
     useEffect(() => {
         document.title = "Login"

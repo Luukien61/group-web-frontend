@@ -34,7 +34,7 @@ export const footerContent: footerProps[] = [
         child: [
             {
                 name: "0386888888",
-                link: "/"
+                link: "tel:+8453795729"
             },
             {
                 name: "knv@gmail.com",

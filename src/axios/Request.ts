@@ -5,7 +5,7 @@ import {
     carouselPath,
     categoryPath,
     findById,
-    loginPath,
+    loginPath, mailCodePath,
     mailPath,
     orderPath,
     producerBasePath,
@@ -165,10 +165,19 @@ export type EmailType = {
 export const sendVerificationMail = async (email: string, code: number, type: EmailType) => {
     const data: MailVerify = createMailVerification(email, code, type)
     try {
-        return await mailInstance.post(mailPath, data)
+        return await mailInstance.post(mailCodePath, data)
             .then(response => response)
     } catch (error) {
         console.log("Error sending email:", error);
+    }
+}
+
+export const getAuthUrlMail=async ()=>{
+    try{
+        return await mailInstance.get(`${mailPath}/auth`)
+            .then(response=>response.data)
+    }catch (e){
+        handleError(e)
     }
 }
 

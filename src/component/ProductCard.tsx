@@ -57,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
                     className="rounded bg-white *:text-[0.875rem] hover:shadow-xl h-fit flex flex-col border-r border-b border-t gap-y-1 py-2 px-2 group cursor-pointer max-w-[260px] ">
                     <div className={`h-[230px] p-2`}>
                         <img
-                            className="object-fill h-[200px] group-hover:scale-105 rounded transform ease-in-out duration-300 "
+                            className="object-cover h-[200px] group-hover:scale-105 rounded transform ease-in-out duration-300 "
                             alt={product.name}
                             src={product.imgs[0]}
                         />
