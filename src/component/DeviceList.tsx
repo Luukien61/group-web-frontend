@@ -1,13 +1,11 @@
 import React from 'react';
 import CategoryCard from "@/component/CategoryCard.tsx";
 import {useLocationStore} from "@/zustand/AppState.ts";
-import {useLocation} from "react-router-dom";
 
 const DeviceList = () => {
     const {pathname} = useLocationStore()
-    const location = useLocation().pathname
     const category = pathname.charAt(0).toUpperCase() + pathname.slice(1)
-    const path =category.split("/")[0]
+    const path = category.split("/")[0]
     return (
         <div className={`col-span-9 pl-4 w-full`}>
             {
@@ -19,7 +17,7 @@ const DeviceList = () => {
                         category={path}
                         initialSize={9}
                         widthClass={`w-1/3`}
-                        pageable={true} />
+                        pageable={true}/>
                 )
             }
         </div>

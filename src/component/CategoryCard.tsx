@@ -129,21 +129,23 @@ const CategoryCard: React.FC<CategoryProp> = ({
     }, [search]);
 
     useEffect(() => {
-        const fetchProductByCategory = async () => {
-            const response = await fetchProductsCategory({
-                category: category,
-                size: size,
-                producer: producerSort,
-                price: priceSort,
-                page: page
-            })
-                .then((response) => response)
-            const products = response.content
-            setLast(response.last)
-            setProducts(products)
-        }
+        setProducts([])
         fetchProductByCategory()
     }, [category, size, page, producerSort, priceSort]);
+
+    const fetchProductByCategory = async () => {
+        const response = await fetchProductsCategory({
+            category: category,
+            size: size,
+            producer: producerSort,
+            price: priceSort,
+            page: page
+        })
+            .then((response) => response)
+        const products = response.content
+        setLast(response.last)
+        setProducts(products)
+    }
     return (
         <>
             {

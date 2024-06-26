@@ -279,7 +279,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     };
     const handleAddProduct = async () => {
         const id = productName.toLocaleLowerCase().trim().replace(/\s+/g, '-')
-        const newProduct = await assembleProduct(id, 0)
+        const newProduct = await assembleProduct(id, 0, false)
+
         if (newProduct) {
             await postProduct(newProduct);
             setRawColors([])
@@ -290,7 +291,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleUpdateProduct = async () => {
         if (product) {
             const productId: string = product.id
-            const newProduct = await assembleProduct(productId, product.ordering)
+            const newProduct = await assembleProduct(productId, product.ordering, true)
             if (newProduct) {
                 await updateProduct(newProduct, productId);
                 navigate(`/admin/${categoryPick.toLowerCase()}`)
@@ -310,7 +311,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             }
         }
     }
-    const assembleProduct = async (productId: string, ordering: number) => {
+    const assembleProduct = async (productId: string, ordering: number, contentId: boolean) => {
         checkFillInput()
         const ram = parseInt(rawRam)
         const frontCams = convertTextToArrayInt(frontCamera)
@@ -324,6 +325,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const avaiQuantity = parseInt(rawAvaiQuantity)
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
         const imgs = (await uploadProductImgs())?.filter((img): img is string => img !== undefined);
+        if(!contentId){
+            contentChildren.forEach(value => value.id=undefined)
+        }
         if (colors && imgs && imgs.length > 0) {
 
             const memory: Price = {

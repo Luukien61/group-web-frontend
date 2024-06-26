@@ -50,11 +50,11 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
     }, [product]);
     return (
         <div draggable={false}
-             className={`${widthClass} flex justify-center items-center `}>
+             className={`${widthClass} block justify-center items-center  `}>
             <a draggable={false}
                href={`/${category}/${product.id}`}>
                 <div
-                    className="rounded bg-white *:text-[0.875rem] hover:shadow-xl h-fit flex flex-col border-r border-b border-t gap-y-1 py-2 px-2 group cursor-pointer max-w-[260px] ">
+                    className="rounded bg-white *:text-[0.875rem] overflow-hidden hover:shadow-xl h-fit flex flex-col border-r border-b border-t gap-y-1 py-2 px-2 group cursor-pointer max-w-[260px] ">
                     <div className={`h-[230px] p-2`}>
                         <img
                             className="object-cover h-[200px] group-hover:scale-105 rounded transform ease-in-out duration-300 "
@@ -62,7 +62,9 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
                             src={product.imgs[0]}
                         />
                     </div>
-                    <p className="text-gray-600 font-medium pl-2 pt-1 hover:text-default_blue whitespace-nowrap">{product.name}</p>
+                    <div className={`leading-6 h-[3rem]`}>
+                        <h3 className="text-gray-600 max-w-full overflow-hidden font-medium pl-2 pt-1 hover:text-default_blue ">{product.name}</h3>
+                    </div>
                     <div className="rounded border p-1">
                         <p className="text-default_red font-semibold px-2">
                             {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}

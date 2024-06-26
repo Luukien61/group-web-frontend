@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {IoPersonCircleOutline} from "react-icons/io5";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {getCategories} from "@/axios/Request.ts";
@@ -7,6 +7,7 @@ import {useCategoryItem} from "@/zustand/AppState.ts";
 import {UserResponse} from "@/page/admin/LoginPage.tsx";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
 import {Link} from "react-router-dom";
+
 type AdminSidebarProps={
     title: string,
     path: string
@@ -50,7 +51,7 @@ const AdminSideBar = () => {
 
 
     return (
-        <aside className={`block fixed z-50 w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
+        <aside className={`hidden lg:block lg:fixed z-50 w-52 bg-admin_nav_bar_default h-auto text-white overflow-y-visible`}>
             <div className={`overflow-y-auto z-20 max-w-2xs h-[100vh] block sticky top-0 mr-0 p-4 px-6`}>
                 <div className={`py-2`}>
                    <Link to={'/admin/profile'}>
