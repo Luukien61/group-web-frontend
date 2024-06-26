@@ -35,7 +35,7 @@ type OrderProp = {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const sendEmailCode = async (email: string, code: number, type:EmailType ) => {
+export const sendEmailCode = async (email: string, code: number, type: EmailType) => {
     const res = await sendVerificationMail(email, code, type)
     if (!res || res.status !== 200) {
         throw Error("An error occurred while sending")
@@ -46,12 +46,12 @@ export const createVerificationCode = (): number => {
     return Math.floor(Math.random() * 900000 + 100000)
 }
 
-const defaultRating :Rating={
-    oneStart:0,
-    twoStarts:0,
-    threeStarts:0,
-    fourStarts:0,
-    fiveStarts:0,
+const defaultRating: Rating = {
+    oneStart: 0,
+    twoStarts: 0,
+    threeStarts: 0,
+    fourStarts: 0,
+    fiveStarts: 0,
     average: 0
 }
 
@@ -72,14 +72,14 @@ const ProductPage = () => {
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
     const [product, setProduct] = useState<Product>()
     const [isDone, setIsDone] = useState<boolean>(false)
-    const [message, setMessage]= useState<string>('')
+    const [message, setMessage] = useState<string>('')
     const [outstandingProducts, setOutstandingProducts] = useState<Product[]>([])
 
-    useEffect(()=>{
+    useEffect(() => {
         getOutstandingProducts(4)
-    },[])
-    const getOutstandingProducts=async (quantity: number)=>{
-        const response : ProductPageable = await fetchProductsCategory({
+    }, [])
+    const getOutstandingProducts = async (quantity: number) => {
+        const response: ProductPageable = await fetchProductsCategory({
             category: "phone",
             size: quantity,
             sort: "rating"
@@ -180,34 +180,34 @@ const ProductPage = () => {
         }
     };
 
-    const order = async ()=>{
-       if(product){
-           const orderId = makeId(10)
-           const orderDetail : OrderDetail ={
-               orderId: orderId,
-               productId: product.id,
-               email: email,
-               phone: phone,
-               done: false,
-               time: new Date()
-           }
-           const message : string = await placeOrder(orderDetail)
-           setMessage(message)
-       }
+    const order = async () => {
+        if (product) {
+            const orderId = makeId(10)
+            const orderDetail: OrderDetail = {
+                orderId: orderId,
+                productId: product.id,
+                email: email,
+                phone: phone,
+                done: false,
+                time: new Date()
+            }
+            const message: string = await placeOrder(orderDetail)
+            setMessage(message)
+        }
     }
 
-    const makeId =(length: number) : string =>{
-        let result : string=''
-        const characters : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const makeId = (length: number): string => {
+        let result: string = ''
+        const characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
         const characterLength = characters.length;
-        for(let i = 0; i < length; i++){
+        for (let i = 0; i < length; i++) {
             result += characters.charAt(Math.floor(Math.random() * characterLength));
         }
         return result;
     }
 
     useEffect(() => {
-        if ( timer === 0&& intervalTimer.current) {
+        if (timer === 0 && intervalTimer.current) {
             setExpired(true)
             clearInterval(intervalTimer.current)
             intervalTimer.current = null
@@ -230,7 +230,7 @@ const ProductPage = () => {
             setIsSent(false)
             setTimer(60)
             setExpired(false)
-            if(intervalTimer.current){
+            if (intervalTimer.current) {
                 clearInterval(intervalTimer.current)
                 intervalTimer.current = null
             }
@@ -260,7 +260,7 @@ const ProductPage = () => {
                                         <div className={`flex flex-col py-3 pl-8 w-full`}>
                                             <div className={`flex gap-x-2 items-end justify-start`}>
                                                 <h1 className={`text-default_red text-[32px] leading-[40px] font-[500]`}>
-                                                    {product.price[0].currentPrice >0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ':'Contact' }
+                                                    {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ' : 'Contact'}
                                                 </h1>
                                                 <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
                                                     {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
@@ -283,10 +283,10 @@ const ProductPage = () => {
                                                                         checked={selectedIndex === index}
                                                                     />
                                                                     <Label className={`text-[14px]`}
-                                                                           htmlFor={index.toString()}>{price.rom > 1000 ? `${Math.floor(price.rom/1000)}TB`: `${price.rom}GB`}</Label>
+                                                                           htmlFor={index.toString()}>{price.rom > 1000 ? `${Math.floor(price.rom / 1000)}TB` : `${price.rom}GB`}</Label>
                                                                 </div>
                                                                 <h1 className={`self-center`}>
-                                                                    {product.price[0].currentPrice >0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ':'Contact' }
+                                                                    {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ' : 'Contact'}
                                                                 </h1>
                                                             </div>
                                                         ))
@@ -299,7 +299,8 @@ const ProductPage = () => {
                                                 {
                                                     product.color.map((color, index) => (
                                                         <div key={index} className={`flex flex-col`}>
-                                                            <img className={`aspect-square w-[50px] rounded border`} src={color.link}
+                                                            <img className={`aspect-square w-[50px] rounded border`}
+                                                                 src={color.link}
                                                                  alt={index.toString()}/>
                                                             <h3 className={`text-[15px] self-center`}>
                                                                 {color.color}
@@ -328,14 +329,27 @@ const ProductPage = () => {
                                 <hr className={`w-full border`}/>
                                 <div className={`py-6 flex flex-col gap-y-3 px-7`}>
                                     <p className={`font-semibold text-[28px]`}>{product.name} rating</p>
-                                    <RatingComponent imgUrl={product.imgs[0]} productRating={product.rating ?? defaultRating} productId={product.id}/>
+                                    <RatingComponent imgUrl={product.imgs[0]}
+                                                     productRating={product.rating ?? defaultRating}
+                                                     productId={product.id}/>
                                 </div>
                                 {/*device description*/}
                                 <div className={`pt-4 flex flex-col`}>
-                                    <h1 className={`self-center font-bold py-3`}>
+                                    <h1 className={`self-center font-bold text-[1.25rem] py-3`}>
                                         Detailed Review of the {product.name}</h1>
                                     <h2 className={`font-medium pb-4 text-justify`}>{product.description.title}</h2>
-                                    <p className={`text-justify`}>{product.description.content}</p>
+                                    {
+                                        product.description.contentChild.map((value, index) => (
+                                                <div key={index} className={`flex flex-col gap-y-4 mt-4`}>
+                                                    <p className={`font-medium`}>{value.title}</p>
+                                                    <div className={`flex flex-col gap-y-4`}>
+                                                        <p>{value.content}</p>
+                                                        <img src={value.image} alt={value.image} />
+                                                    </div>
+                                                </div>
+                                            )
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -431,7 +445,7 @@ const ProductPage = () => {
                                             }
                                             {isDone &&
                                                 <div className={`flex flex-col items-center justify-center`}>
-                                                   <p>{message ?? "error"}</p>
+                                                    <p>{message ?? "error"}</p>
                                                 </div>
                                             }
                                         </div>
@@ -475,20 +489,20 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-type SidebarADsProps={
+type SidebarADsProps = {
     products: Product[]
 }
 const SideBarADs = ({products}: SidebarADsProps) => {
     return (
         <div className={`col-span-2 px-2 h-auto pb-5 w-full block static`}>
-                <div
-                    className={`rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-0`}>
-                    {
-                        products.map((value, index) => (
-                            <TrendingCard product={value} key={index}/>
-                        ))
-                    }
-                </div>
+            <div
+                className={`rounded overflow-y-auto bg-white p-2 w-full flex flex-col text-[16px] gap-y-2 sticky top-0`}>
+                {
+                    products.map((value, index) => (
+                        <TrendingCard product={value} key={index}/>
+                    ))
+                }
+            </div>
         </div>
     )
 }
@@ -600,7 +614,7 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
         </Table>
     )
 }
-type TrendingProps={
+type TrendingProps = {
     product: Product
 }
 const TrendingCard = ({product}: TrendingProps) => {

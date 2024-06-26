@@ -35,10 +35,16 @@ export type Feature = {
     memory: Price[],
     madeTime: Date,
 }
+export type ContentChild={
+    id?:number,
+    title?: string,
+    content?: string,
+    image?: string,
+}
 export type Description = {
     id?: number,
     title: string,
-    content: string
+    contentChild: ContentChild[]
 }
 export type Rating = {
     id?: number;

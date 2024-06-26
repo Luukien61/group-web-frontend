@@ -12,7 +12,7 @@ import {
     updateProduct
 } from "@/axios/Request.ts";
 import {IoCloseCircleOutline} from "react-icons/io5";
-import {Category, Color, Description, Price, Producer, Product} from "@/component/CategoryCard.tsx";
+import {Category, Color, ContentChild, Description, Price, Producer, Product} from "@/component/CategoryCard.tsx";
 import mammoth from 'mammoth';
 import imageUpload from "@/cloudinary/ImageUpload.ts";
 import {useNavigate} from "react-router-dom";
@@ -78,15 +78,20 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [rawPrePrice, setRawPrePrice] = useState<string>('')
     const [rawTotalQuantity, setRawTotalQuantity] = useState<string>('')
     const [rawAvaiQuantity, setRawAvaiQuantity] = useState<string>('')
-    const maxImages: number = 5
+    const maxImages: number = 8
+    const [contentChildrenIndex, setContentChildrenIndex] = useState<number>(0)
     const [warningDelete, setWarningDelete] = useState<boolean>(false)
     const [confirmText, setConfirmText] = useState<string>('')
     const [addCategory, setAddCategory] = useState<boolean>(false)
     const innerDiv = useRef<HTMLDivElement>(null);
+    const [contentChildren, setContentChildren] = useState<ContentChild[]>([])
+    const [heading, setHeading]= useState<string>('')
+    const [contentImage, setContentImage] = useState<string>('')
     const description: Description = {
         title: '',
-        content: ''
+        contentChild: [],
     }
+
     const defaultDetail: SelectInput[] = [
         {
             id: "rom",
@@ -148,6 +153,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     useEffect(() => {
 
         if (product) {
+            console.log("Product:" , product)
             const categoryName = product.category.name.toLowerCase()
             const feature = product.features
             const madeTime = feature.madeTime
@@ -161,7 +167,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             setRawBattery(feature.battery.toString())
             setRawMadeTime(`${feature.madeTime.getMonth() + 1}/${feature.madeTime.getFullYear()}`)
             setTitle(product.description.title)
-            setContent(product.description.content)
+            setContentChildren(product.description.contentChild)
             setRawCurrentPrice(product.price[0].currentPrice.toString())
             setRawPrePrice(product.price[0].previousPrice.toString())
             setRawTotalQuantity(product.totalQuantity?.toString())
@@ -209,6 +215,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleImageSource = (index: number) => {
         setUrlSourceClicked(index)
     }
+
     const handleColorImageSource = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
@@ -222,6 +229,42 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             setColorImg('')
         }
 
+    }
+    const handleAddContentChild=()=>{
+        try{
+            const contentChild :ContentChild= {
+                id: contentChildrenIndex,
+                title:heading,
+                content:content,
+                image:contentImage
+            }
+            console.log("children: ", contentChild)
+            setContentChildren(prevState => [...prevState, contentChild])
+            setHeading('')
+            setContent('')
+            setContentImage('')
+            setContentChildrenIndex(prevState => prevState+1)
+        }catch (e){
+            console.log(e)
+        }
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    const handleImageUpload =(e:ChangeEvent<HTMLInputElement>,action:(value: string)=>void)=>{
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                action(reader.result as string);
+            }
+            reader.readAsDataURL(file)
+            e.target.files = null
+        } else {
+            action('')
+        }
+    }
+    const handleContentImage=(e:ChangeEvent<HTMLInputElement>)=>{
+        handleImageUpload(e, setContentImage)
     }
     const handleContentDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -308,7 +351,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 description: {
                     id: product?.description.id,
                     title: title,
-                    content: content
+                    contentChild: contentChildren
                 },
                 color: colors,
                 imgs: imgs,
@@ -414,6 +457,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
     const handleRemoveColor = (colorName: string) => {
         setRawColors(prevState => prevState.filter(value => value.color !== colorName))
+    }
+    const handleRemoveContentChild=(id: number )=>{
+        setContentChildren(prevState => prevState.filter(value => value.id !== id))
     }
     useEffect(() => {
         function handleClickOutsite(event: MouseEvent) {
@@ -664,30 +710,76 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     {/*Description*/}
                     <div className={`flex flex-col`}>
                         <Title title={"Description"}/>
-                        <div className={`flex flex-col px-4`}>
-                            <div className={`w-full py-3 flex flex-col gap-y-2`}>
-                                <Input input={{
-                                    require: true,
-                                    label: "Title",
-                                    placeholder: "Enter title",
-                                    value: title,
-                                    onChange: (e) => setTitle(e.target.value),
-                                }}/>
-                            </div>
-                            <div className={`flex gap-x-3 items-center pb-4`}>
-                                <label className={`text-sm font-medium text-gray-900`}>Content </label>
-                                <FileUpload
-                                    text={false}
-                                    style={`w-1/6 aspect-[3/1]`}
-                                    input={
-                                        <input
-                                            onChange={handleContentDocUpload}
-                                            className={`hidden`}
-                                            type="file"
-                                            accept="application/msword, .docx, .doc"/>
-                                    }
-                                />
+                        <div className={`flex w-full`}>
+                            <div className={`flex w-2/3 flex-col px-4`}>
+                                <div className={`w-full py-3 flex flex-col gap-y-2`}>
+                                    <Input input={{
+                                        require: true,
+                                        label: "Title",
+                                        placeholder: "Enter title",
+                                        value: title,
+                                        onChange: (e) => setTitle(e.target.value),
+                                    }}/>
+                                </div>
+                                <div className={`flex flex-col gap-y-2 pb-4`}>
+                                    <label className={`text-sm font-medium text-gray-900`}>Content </label>
+                                    <Input input={{
+                                        require: true,
+                                        label: "Heading",
+                                        placeholder: "Heading...",
+                                        value: heading,
+                                        onChange: (e) => setHeading(e.target.value),
+                                    }}/>
+                                    <Input input={{
+                                        require: true,
+                                        label: "Content",
+                                        placeholder: "Content...",
+                                        value: content,
+                                        onChange: (e) => setContent(e.target.value),
+                                    }}/>
+                                    <div className={`flex gap-x-3`}>
 
+                                        <FileUpload
+                                            text={false}
+                                            style={`w-1/2`}
+                                            input={
+                                                <input
+                                                    onChange={handleContentImage}
+                                                    className={`hidden`}
+                                                    type="file"
+                                                    accept="image/*"/>
+                                            }
+                                        />
+                                        <input
+                                            value={contentImage}
+                                            onChange={e=>setContentImage(e.target.value)}
+                                            className={`outline-none border w-1/2 rounded h-full border-gray-600 placeholder:italic px-2 truncate`}
+                                            placeholder={'Or url'}
+                                        />
+                                    </div>
+                                    <div>
+
+                                    </div>
+                                    <DefaultButton
+                                        onclick={handleAddContentChild}
+                                        label={"Add"}
+                                        style={'rounded bg-inner_blue p-2 w-full'} />
+                                </div>
+                            </div>
+                            <div className={`w-1/3 border-l-2 flex-col flex gap-y-2 pt-2`}>
+                                {
+                                    contentChildren.map((_value, index) => (
+                                        <div key={index} className={`px-2 relative max-w-[80%]` }>
+                                            <div
+                                                className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
+                                                <p className={`cursor-default`}>Para {index}</p>
+                                                <IoCloseCircleOutline
+                                                    onClick={() => handleRemoveContentChild(_value.id || -1)}
+                                                    className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
@@ -759,7 +851,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     </div>
                 </div>
                 {/**/}
-                <div className={`w-1/3 p-3 sticky h-auto top-0  flex-col flex gap-y-4`}>
+                <div className={`w-1/3 p-3 sticky h-[calc(100vh-1rem)] top-0 overflow-y-auto flex-col flex gap-y-4`}>
                     {/*images*/}
                     <div className={`bg-white w-full rounded shadow-2xl flex flex-col `}>
                         <Title title={"Product images"}/>

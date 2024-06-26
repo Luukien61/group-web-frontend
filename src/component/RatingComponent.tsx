@@ -107,7 +107,7 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl
                     </div>
                 </div>
                 <div className={`flex flex-col w-full`}>
-                    <div className={`flex h-1/2 justify-center py-3`}>
+                    <div className={`flex h-1/2 justify-center`}>
                         <div className={`flex gap-x-7`}>
                             {
                                 ratingStart.map((item, index) =>
