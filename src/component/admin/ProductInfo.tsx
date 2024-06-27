@@ -2,6 +2,7 @@ import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {CiImageOn} from "react-icons/ci";
 import {useCategory} from "@/zustand/AppState.ts";
 import {GrCaretNext, GrCaretPrevious} from "react-icons/gr";
+import {parse, startOfMonth} from 'date-fns';
 import {
     deleteProduct,
     getCategories,
@@ -297,9 +298,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 await deleteProduct(product.id)
                 navigate(`/admin/${categoryPick.toLowerCase()}`)
             } catch (e) {
-                console.log(e)
+                toast.error("An error occurred while deleting product")
             }
-        }
+        }else toast.error("Incorrect product name")
     }
     const assembleProduct = async (productId: string, ordering: number, contentId: boolean) => {
         checkFillInput()
@@ -307,7 +308,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const frontCams = convertTextToArrayInt(frontCamera)
         const rearCams = convertTextToArrayInt(rearCamera)
         const battery = parseInt(rawBattery)
-        const madeTime = new Date(`01/${rawMadeTime}`)
+        const [month, year] = rawMadeTime.split('/');
+        const madeTime = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
+        //const madeTime =  startOfMonth(parse(rawMadeTime, 'MM/yyyy', new Date()));
         description.title = title
         const currentPrice = parseInt(rawCurrentPrice)
         const prePrice = parseInt(rawPrePrice)
@@ -779,7 +782,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         style={'rounded bg-inner_blue p-2 w-full'}/>
                                 </div>
                             </div>
-                            <div className={`w-1/3 border-l-2 flex-col flex gap-y-2 pt-2`}>
+                            <div className={`w-1/3 border-l-2 flex-col flex gap-y-2 pt-2 h-[90%] overflow-y-auto`}>
                                 {
                                     contentChildren.map((_value, index) => (
                                         <div key={index} className={`px-2 relative max-w-[80%]`}>
