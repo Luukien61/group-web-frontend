@@ -8,6 +8,7 @@ import {searchProductsByName} from "@/axios/Request.ts";
 import {Product} from "@/component/CategoryCard.tsx";
 import {debounce} from "lodash";
 import ProductSearch from "@/component/ProductSearch.tsx";
+import {AppInfo} from "@/description/AppInfo.ts";
 
 
 export type MenuItem = {
@@ -69,7 +70,7 @@ const Header = () => {
                                     alt="App Home page"
                                     className="object-cover w-[45%] rounded-[100%] "
                                 />
-                                <p className="text-black font-semibold">Meiii</p>
+                                <p className="text-black font-semibold">{AppInfo.appName}</p>
                             </a>
                         </div>
                         <div className='relative flex flex-1 flex-col'>

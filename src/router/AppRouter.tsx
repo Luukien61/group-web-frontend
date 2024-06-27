@@ -22,7 +22,6 @@ import AdminForgotPass from "@/page/admin/AdminForgotPass.tsx";
 import ProductHomePage from "@/page/ProductHomePage.tsx";
 import Test from "@/page/Test.tsx";
 import AuthUrlRedirect from "@/page/AuthUrlRedirect.tsx";
-import {Toaster} from "react-hot-toast";
 
 type CleanProps = {
     children: React.ReactElement | null

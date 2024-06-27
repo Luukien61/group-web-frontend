@@ -13,7 +13,7 @@ type appDes = {
 }
 
 export const AppInfo: appDes = {
-    appName: "KNV",
+    appName: "KNV Shop",
     description: "We take pride in offering you top-notch technology products such as mobile phones, computers, and cameras.",
 
 }
