@@ -20,6 +20,7 @@ import {IoIosAddCircleOutline} from "react-icons/io";
 import {DefaultInput} from "@/component/Input.tsx";
 import axios from "axios";
 import useCurrentUser from "@/hooks/useCurrentUser.ts";
+import toast, {Toaster} from "react-hot-toast";
 
 const readDocx = async (file: File): Promise<string> => {
     try {
@@ -86,7 +87,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const [addCategory, setAddCategory] = useState<boolean>(false)
     const innerDiv = useRef<HTMLDivElement>(null);
     const [contentChildren, setContentChildren] = useState<ContentChild[]>([])
-    const [heading, setHeading]= useState<string>('')
+    const [heading, setHeading] = useState<string>('')
     const [contentImage, setContentImage] = useState<string>('')
     const description: Description = {
         title: '',
@@ -219,27 +220,27 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleColorImageSource = (e: ChangeEvent<HTMLInputElement>) => {
         handleImageUpload(e, setColorImg)
     }
-    const handleAddContentChild=()=>{
-        try{
-            const contentChild :ContentChild= {
+    const handleAddContentChild = () => {
+        try {
+            const contentChild: ContentChild = {
                 id: contentChildrenIndex,
-                title:heading,
-                content:content,
-                image:contentImage
+                title: heading,
+                content: content,
+                image: contentImage
             }
             console.log("children: ", contentChild)
             setContentChildren(prevState => [...prevState, contentChild])
             setHeading('')
             setContent('')
             setContentImage('')
-            setContentChildrenIndex(prevState => prevState+1)
-        }catch (e){
+            setContentChildrenIndex(prevState => prevState + 1)
+        } catch (e) {
             console.log(e)
         }
     }
 
     // eslint-disable-next-line no-unused-vars
-    const handleImageUpload =(e:ChangeEvent<HTMLInputElement>,action:(value: string)=>void)=>{
+    const handleImageUpload = (e: ChangeEvent<HTMLInputElement>, action: (value: string) => void) => {
         const file = e.target.files?.[0]
         if (file) {
             const reader = new FileReader();
@@ -252,7 +253,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             action('')
         }
     }
-    const handleContentImage=(e:ChangeEvent<HTMLInputElement>)=>{
+    const handleContentImage = (e: ChangeEvent<HTMLInputElement>) => {
         handleImageUpload(e, setContentImage)
     }
     const handleContentDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,8 +316,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
         const imgs = (await uploadProductImgs())?.filter((img): img is string => img !== undefined);
         const contentChildren = (await uploadContentImages())
-        if(!contentId){
-            contentChildren.forEach(value => value.id=undefined)
+        if (!contentId) {
+            contentChildren.forEach(value => value.id = undefined)
         }
         if (colors && imgs && imgs.length > 0 && producer && categoryPick) {
 
@@ -361,14 +362,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 rating: product?.rating
             }
             return newProduct
-        }
-        else if(!producer){
-            alert("Please choose a producer.")
-        }else if(!categoryPick) alert("Please choose a category")
+        } else if (!producer) {
+            toast.error("Please choose a producer.")
+        } else if (!categoryPick) toast.error("Please choose a category")
     }
     const uploadColorImages = async () => {
         if (rawColors.length == 0) {
-            alert("Please select a color")
+            toast.error("Please select a color")
             return
         }
         setColorImagesLoadState({loading: true, loaded: false})
@@ -387,17 +387,17 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         setColorImagesLoadState({loading: false, loaded: true})
         return results
     }
-    const uploadContentImages =async ()=>{
+    const uploadContentImages = async () => {
         setContentImageState({loading: true, loaded: false})
         const promise = contentChildren.map(async (value) => {
             const contentImage = value.image
-            if(contentImage!=undefined && contentImage != ''){
+            if (contentImage != undefined && contentImage != '') {
                 const url = await imageUpload({image: contentImage})
-                if(url){
-                    const contentChild : ContentChild={...value, image: url}
+                if (url) {
+                    const contentChild: ContentChild = {...value, image: url}
                     return contentChild
-                }else return {...value, imageUrl: ''} as ContentChild
-            }else return value
+                } else return {...value, imageUrl: ''} as ContentChild
+            } else return value
         })
         const results = await Promise.all(promise)
         setContentImageState({loading: false, loaded: true})
@@ -405,7 +405,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
     const uploadProductImgs = async () => {
         if (previews.length == 0) {
-            alert("Please upload an image")
+            toast.error("Please upload an image")
             return
         }
         setImagesLoadState({loading: true, loaded: false})
@@ -455,7 +455,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
     const handleColorAdd = async () => {
         if (!colorName || !colorImg) {
-            alert("Please fill required fields")
+            toast.error("Please fill the required fields")
             return
         }
         if (colorImg && colorName) {
@@ -471,7 +471,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleRemoveColor = (colorName: string) => {
         setRawColors(prevState => prevState.filter(value => value.color !== colorName))
     }
-    const handleRemoveContentChild=(id: number )=>{
+    const handleRemoveContentChild = (id: number) => {
         setContentChildren(prevState => prevState.filter(value => value.id !== id))
     }
     useEffect(() => {
@@ -765,7 +765,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         />
                                         <input
                                             value={contentImage}
-                                            onChange={e=>setContentImage(e.target.value)}
+                                            onChange={e => setContentImage(e.target.value)}
                                             className={`outline-none border w-1/2 rounded h-full border-gray-600 placeholder:italic px-2 truncate`}
                                             placeholder={'Or url'}
                                         />
@@ -776,13 +776,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                     <DefaultButton
                                         onclick={handleAddContentChild}
                                         label={"Add"}
-                                        style={'rounded bg-inner_blue p-2 w-full'} />
+                                        style={'rounded bg-inner_blue p-2 w-full'}/>
                                 </div>
                             </div>
                             <div className={`w-1/3 border-l-2 flex-col flex gap-y-2 pt-2`}>
                                 {
                                     contentChildren.map((_value, index) => (
-                                        <div key={index} className={`px-2 relative max-w-[80%]` }>
+                                        <div key={index} className={`px-2 relative max-w-[80%]`}>
                                             <div
                                                 className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
                                                 <p className={`cursor-default`}>Para {index}</p>
@@ -825,7 +825,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         />
                                         <input
                                             value={colorImg}
-                                            onChange={e=>setColorImg(e.target.value)}
+                                            onChange={e => setColorImg(e.target.value)}
                                             className={`outline-none border w-1/2 rounded h-full border-gray-600 placeholder:italic px-2 truncate`}
                                             placeholder={'Or url'}
                                         />
@@ -1076,6 +1076,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     </div>
                 </div>
             </div>
+            <Toaster toastOptions={
+                {
+                    duration: 1500
+                }
+            }/>
         </div>
     );
 };
@@ -1256,7 +1261,7 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
     const disable = !!category
     const handleAddProducer = () => {
         if (producer === '') {
-            alert("Please enter a producer name")
+            toast.error("Please enter a producer name")
             return
         }
         setProducers(prevState => [...prevState, {name: producer}])
@@ -1279,7 +1284,7 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category}) =
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 const customError: Error = error.response.data
-                alert(customError.message)
+                toast.error(customError.message)
             }
             setSuccess(false)
             setIsLoading(false)

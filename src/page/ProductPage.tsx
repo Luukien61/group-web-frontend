@@ -173,10 +173,10 @@ const ProductPage = () => {
                 setTimeout(() => setIsDone(true), 1000)
                 order()
             } else {
-                alert("Error 1")
+                alert("Either verification code or expired")
             }
         } else {
-            alert("Error 2")
+            alert("Either verification code or expired")
         }
     };
 
