@@ -20,6 +20,8 @@ import AdminProfile from "@/page/admin/AdminProfile.tsx";
 import AdminUser from "@/component/admin/AdminUser.tsx";
 import AdminForgotPass from "@/page/admin/AdminForgotPass.tsx";
 import ProductHomePage from "@/page/ProductHomePage.tsx";
+import Test from "@/page/Test.tsx";
+import AuthUrlRedirect from "@/page/AuthUrlRedirect.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -55,7 +57,8 @@ const AppRouter = () => {
     return (
         <CleanUrlMiddleware>
             <Routes>
-                {/*<Route path={'/mail/auth'} element={<AuthUrlRedirect/>}/>*/}
+                <Route path={'/mail/auth'} element={<AuthUrlRedirect/>}/>
+                <Route path={"/test"} element={<Test/>}/>
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 <Route path={`:category/:productId`} element={<ProductHomePage/>}/>
                 <Route path={`:category/filter`} element={<ProductCategoryPage/>}/>

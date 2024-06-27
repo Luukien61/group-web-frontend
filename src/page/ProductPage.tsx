@@ -295,14 +295,14 @@ const ProductPage = () => {
                                             </div>
                                             {/*color*/}
                                             <div
-                                                className={`flex flex-wrap gap-x-1 pt-3 `}>
+                                                className={`flex flex-wrap gap-x-2 pt-3 `}>
                                                 {
                                                     product.color.map((color, index) => (
-                                                        <div key={index} className={`flex flex-col`}>
+                                                        <div key={index} className={`flex flex-col max-w-[60px]`}>
                                                             <img className={`aspect-square w-[50px] rounded border`}
                                                                  src={color.link}
                                                                  alt={index.toString()}/>
-                                                            <h3 className={`text-[15px] self-center`}>
+                                                            <h3 className={`text-[12px] self-center leading-6 h-[3rem] max-w-full`}>
                                                                 {color.color}
                                                             </h3>
                                                         </div>

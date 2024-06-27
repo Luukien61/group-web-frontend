@@ -12,6 +12,7 @@ const imageUpload = async ({image}: Props): Promise<string | null> => {
     let url: string | null = null;
 
     if (!image) return url;
+
     if(!rawImageRegex.test(image)){
         return image;
     }

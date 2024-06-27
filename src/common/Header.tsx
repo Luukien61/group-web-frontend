@@ -69,7 +69,7 @@ const Header = () => {
                                     alt="App Home page"
                                     className="object-cover w-[45%] rounded-[100%] "
                                 />
-                                <p className="text-black font-semibold">App</p>
+                                <p className="text-black font-semibold">Meiii</p>
                             </a>
                         </div>
                         <div className='relative flex flex-1 flex-col'>

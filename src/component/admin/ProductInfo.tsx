@@ -53,6 +53,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const fetchedProducers = useRef(new Map())
     const [imagesLoadState, setImagesLoadState] = useState<LoadState>(initialState)
     const [colorImagesLoadState, setColorImagesLoadState] = useState<LoadState>(initialState)
+    const [contentImageState, setContentImageState] = useState<LoadState>(initialState)
     const [producers, setProducers] = useState<Producer[]>([])
     const [rawColors, setRawColors] = useState<Color[]>([])
     const [productName, setProductName] = useState<string>('')
@@ -153,7 +154,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     useEffect(() => {
 
         if (product) {
-            console.log("Product:" , product)
             const categoryName = product.category.name.toLowerCase()
             const feature = product.features
             const madeTime = feature.madeTime
@@ -217,18 +217,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     }
 
     const handleColorImageSource = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setColorImg(reader.result as string);
-            }
-            reader.readAsDataURL(file)
-            e.target.files = null
-        } else {
-            setColorImg('')
-        }
-
+        handleImageUpload(e, setColorImg)
     }
     const handleAddContentChild=()=>{
         try{
@@ -325,10 +314,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         const avaiQuantity = parseInt(rawAvaiQuantity)
         const colors = (await uploadColorImages())?.filter((color): color is Color => color !== undefined);
         const imgs = (await uploadProductImgs())?.filter((img): img is string => img !== undefined);
+        const contentChildren = (await uploadContentImages())
         if(!contentId){
             contentChildren.forEach(value => value.id=undefined)
         }
-        if (colors && imgs && imgs.length > 0) {
+        if (colors && imgs && imgs.length > 0 && producer && categoryPick) {
 
             const memory: Price = {
                 id: product?.features.memory[0].id,
@@ -372,6 +362,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             }
             return newProduct
         }
+        else if(!producer){
+            alert("Please choose a producer.")
+        }else if(!categoryPick) alert("Please choose a category")
     }
     const uploadColorImages = async () => {
         if (rawColors.length == 0) {
@@ -392,6 +385,22 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         })
         const results = await Promise.all(promise)
         setColorImagesLoadState({loading: false, loaded: true})
+        return results
+    }
+    const uploadContentImages =async ()=>{
+        setContentImageState({loading: true, loaded: false})
+        const promise = contentChildren.map(async (value) => {
+            const contentImage = value.image
+            if(contentImage!=undefined && contentImage != ''){
+                const url = await imageUpload({image: contentImage})
+                if(url){
+                    const contentChild : ContentChild={...value, image: url}
+                    return contentChild
+                }else return {...value, imageUrl: ''} as ContentChild
+            }else return value
+        })
+        const results = await Promise.all(promise)
+        setContentImageState({loading: false, loaded: true})
         return results
     }
     const uploadProductImgs = async () => {
@@ -1025,7 +1034,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                             }
                         </div>
                         {
-                            imagesLoadState.loading || colorImagesLoadState.loading && (
+                            imagesLoadState.loading || colorImagesLoadState.loading || contentImageState.loading && (
                                 <Loading/>
                             )
                         }
