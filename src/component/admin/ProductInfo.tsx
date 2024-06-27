@@ -782,20 +782,22 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                         style={'rounded bg-inner_blue p-2 w-full'}/>
                                 </div>
                             </div>
-                            <div className={`w-1/3 border-l-2 flex-col flex gap-y-2 pt-2 h-[90%] overflow-y-auto`}>
-                                {
-                                    contentChildren.map((_value, index) => (
-                                        <div key={index} className={`px-2 relative max-w-[80%]`}>
-                                            <div
-                                                className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
-                                                <p className={`cursor-default`}>Para {index}</p>
-                                                <IoCloseCircleOutline
-                                                    onClick={() => handleRemoveContentChild(_value.id || -1)}
-                                                    className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                            <div className={`h-[90%] overflow-y-auto border-l-2 w-1/3`}>
+                                <div className={`w-full  flex-col flex gap-y-2 pt-2 max-h-[450px]`}>
+                                    {
+                                        contentChildren.map((_value, index) => (
+                                            <div key={index} className={`px-2 relative max-w-[80%]`}>
+                                                <div
+                                                    className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
+                                                    <p className={`cursor-default`}>Para {index}</p>
+                                                    <IoCloseCircleOutline
+                                                        onClick={() => handleRemoveContentChild(_value.id || -1)}
+                                                        className={`cursor-pointer absolute -top-2 -right-2 `}/>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
-                                }
+                                        ))
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
