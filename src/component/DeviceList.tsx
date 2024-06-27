@@ -9,7 +9,6 @@ const DeviceList = () => {
     return (
         <div className={`col-span-9 pl-4 w-full`}>
             {
-                path && (
                     <CategoryCard
                         renderWhenEmpty={true}
                         name={path}
@@ -18,7 +17,7 @@ const DeviceList = () => {
                         initialSize={9}
                         widthClass={`w-1/3`}
                         pageable={true}/>
-                )
+
             }
         </div>
     );

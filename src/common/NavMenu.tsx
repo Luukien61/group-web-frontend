@@ -3,6 +3,7 @@ import {price} from "../description/MenuLink.ts";
 import {RiArrowDropDownLine} from "react-icons/ri";
 import {useCategory, useCategoryItem, useFilter} from "@/zustand/AppState.ts";
 import {getCategories} from "@/axios/Request.ts";
+import {Link} from "react-router-dom";
 
 export type Producer = {
     id: number,
@@ -76,15 +77,12 @@ const NavMenu = () => {
                                             category.producers
                                                 .sort((a, b) => a.name.localeCompare(b.name))
                                                 .map((producer, sublinkIndex) => (
-                                                    <a onClick={() => handleProducerFilter({
-                                                        producer: producer.name,
-                                                        category: category.name
-                                                    })}
+                                                    <Link
                                                        key={sublinkIndex}
-                                                       href={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
+                                                       to={`/${category.name.toLowerCase()}/filter?producer=${producer.name.toLowerCase()}`}
                                                        className="cursor-pointer hover:text-default_green">
                                                         {producer.name}
-                                                    </a>
+                                                    </Link>
                                                 ))
                                         }
                                     </div>

@@ -2,6 +2,9 @@ import React, {useCallback, useEffect, useState} from 'react';
 import ProductCard from "./ProductCard.tsx";
 import {fetchProductsCategory} from "@/axios/Request.ts";
 import {useLocation} from "react-router-dom";
+import {debounce} from "lodash";
+import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
+import {cat} from "@cloudinary/url-gen/qualifiers/focusOn";
 
 export type Producer = {
     id?: number,
@@ -35,8 +38,8 @@ export type Feature = {
     memory: Price[],
     madeTime: Date,
 }
-export type ContentChild={
-    id?:number,
+export type ContentChild = {
+    id?: number,
     title?: string,
     content?: string,
     image?: string,
@@ -98,47 +101,51 @@ const CategoryCard: React.FC<CategoryProp> = ({
     const [size, setSize] = useState<number>(initialSize)
     const [last, setLast] = useState<boolean>(false)
     const [products, setProducts] = useState<Product[]>([])
-    const [producerSort, setProducerSort] = useState<string[]>([])
-    const [priceSort, setPriceSort] = useState<number[]>([])
     // const {producerFilter, priceFilter} = useFilter()
     const search = useLocation().search
     const handleViewMoreClick = useCallback(() => {
         setSize(pre => pre + initialSize);
     }, [initialSize]);
 
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedFetchProducts = useCallback(
+        debounce((search: string, category: string) => {
+            initFetch(search, category)
+        }, 200), []
+    )
     useEffect(() => {
+        debouncedFetchProducts(search, category)
+        window.scrollTo(0, 0)
+        return () => {
+            debouncedFetchProducts.cancel();
+        };
+    }, [debouncedFetchProducts, search, category]);
+    const initFetch = async (search: string, category: string) => {
         const params = search.slice(1).split("&")
         const producersParam = params.filter((value) => value.includes("producer"))
         const priceParams = params.filter((value) => value.includes("price"))
+        let producers: string[] = []
+        let priceFilter: number[] = []
         if (producersParam.length > 0) {
             const producerList = producersParam[0]
             const equalIndex = producerList.indexOf("=")
-            const producers = producerList.slice(equalIndex + 1).split(",")
-            setProducerSort(producers)
-        }else {
-            setProducerSort([])
+            producers = producerList.slice(equalIndex + 1).split(",")
         }
         if (priceParams.length > 0) {
             //[min-price=2000000', 'max-price=4000000]
-            const priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
-            setPriceSort(priceFilter)
-        } else {
-            setPriceSort([])
+            priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
         }
+        await fetchProductByCategory(producers, priceFilter, category)
+    }
 
-    }, [search]);
 
-    useEffect(() => {
-        setProducts([])
-        fetchProductByCategory()
-    }, [category, size, page, producerSort, priceSort]);
-
-    const fetchProductByCategory = async () => {
-        const response = await fetchProductsCategory({
+    const fetchProductByCategory = async (producerFilter: string[], priceFilter: number[], category: string) => {
+        const response: ProductPageable = await fetchProductsCategory({
             category: category,
             size: size,
-            producer: producerSort,
-            price: priceSort,
+            producer: producerFilter,
+            price: priceFilter,
             page: page
         })
             .then((response) => response)
