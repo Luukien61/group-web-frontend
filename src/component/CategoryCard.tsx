@@ -100,6 +100,8 @@ const CategoryCard: React.FC<CategoryProp> = ({
                                               }) => {
     const [size, setSize] = useState<number>(initialSize)
     const [last, setLast] = useState<boolean>(false)
+    const [producerSort, setProducerSort]= useState<string[]>([])
+    const [priceSort, setPriceSort] = useState<number[]>([])
     const [products, setProducts] = useState<Product[]>([])
     // const {producerFilter, priceFilter} = useFilter()
     const search = useLocation().search
@@ -116,11 +118,13 @@ const CategoryCard: React.FC<CategoryProp> = ({
     )
     useEffect(() => {
         debouncedFetchProducts(search, category)
-        window.scrollTo(0, 0)
         return () => {
             debouncedFetchProducts.cancel();
         };
     }, [debouncedFetchProducts, search, category]);
+    useEffect(() => {
+        fetchProductByCategory(producerSort,priceSort,category)
+    }, [size]);
     const initFetch = async (search: string, category: string) => {
         const params = search.slice(1).split("&")
         const producersParam = params.filter((value) => value.includes("producer"))
@@ -131,10 +135,12 @@ const CategoryCard: React.FC<CategoryProp> = ({
             const producerList = producersParam[0]
             const equalIndex = producerList.indexOf("=")
             producers = producerList.slice(equalIndex + 1).split(",")
+            setProducerSort(producers)
         }
         if (priceParams.length > 0) {
             //[min-price=2000000', 'max-price=4000000]
             priceFilter = priceParams.map((value) => parseInt(value.split("=")[1]))
+            setPriceSort(priceFilter)
         }
         await fetchProductByCategory(producers, priceFilter, category)
     }

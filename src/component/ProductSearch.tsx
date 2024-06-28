@@ -14,7 +14,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({product,path}) => {
                     <img className={`object-cover`} src={product.imgs[0]} alt={product.name}/>
                 </div>
                 <div className={`text-[16px] group-hover:scale-110`}>
-                    <p className={`text-default_blue `}>
+                    <p className={`text-default_blue group-hover:underline`}>
                         {product.name}
                     </p>
                     <p className={`text-default_red font-medium`}>

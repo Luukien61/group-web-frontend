@@ -56,7 +56,7 @@ const AdminHeader = () => {
                     products && (
                         <div className={`relative mt-1 z-[100]`}>
                             <div
-                                className={`absolute inset-0 calc(100% + 4px) space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
+                                className={`absolute inset-0 space-y-3 rounded bg-default_background h-96 overflow-y-auto p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
                                 {
                                     productSearch.map((item, index) => (
                                         <>

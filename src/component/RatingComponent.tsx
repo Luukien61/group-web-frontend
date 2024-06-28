@@ -165,7 +165,7 @@ export const RatingCount: React.FC<RatingNums> =({totalRating,rating, startSize,
                 }
             </div>
             {
-                totalRating && <p className={`text-blue-500 text-[16px]`}>{totalRating} ratings</p>
+                totalRating && <p className={`text-blue-500 text-[16px]`}>{totalRating} rating{totalRating > 1 ? 's' : ''}</p>
             }
         </div>
     )

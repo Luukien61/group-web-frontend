@@ -12,7 +12,8 @@ const useProductSearch = () => {
                 const response = await searchProductsByName(value);
                 setProducts(response);
             }
-        }, 500)).current;
+            else setProducts([])
+        }, 300)).current;
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         debouncedHandleSearching(event.target.value);

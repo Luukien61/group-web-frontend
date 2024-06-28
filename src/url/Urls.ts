@@ -20,3 +20,4 @@ export const authenticatePath : string = "/auth/authenticate"
 export const userResponsePath : string= `${userPath}/user-id`
 export const orderPath : string = "/order"
 export const carouselPath : string = "/carousel"
+export const zalo : string = 'https://zalo.me/g/mqdwdj391'

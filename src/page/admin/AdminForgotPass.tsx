@@ -7,6 +7,7 @@ import {getUserByEmail, resetUserPassword} from "@/axios/Request.ts";
 import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts";
 import {useNavigate} from "react-router-dom";
 import SetToken from "@/hooks/SetToken.tsx";
+import toast, {Toaster} from "react-hot-toast";
 
 const AdminForgotPass = () => {
     const {setUserId} = useUserIdLogin()
@@ -100,86 +101,89 @@ const AdminForgotPass = () => {
                     })
                     .catch(error => alert(error))
             } else {
-                alert("User doesn't exist")
+                toast.error("User doesn't exist")
             }
         }
     }
 
     return (
-        <div className="w-full flex px-4 mx-auto max-w-8xl h-screen justify-center drop-shadow-2xl "
-             style={{
-                 backgroundImage: `url(${homeBackgroundimg})`,
-                 backgroundSize: '100% 100%',
-                 backgroundRepeat: 'no-repeat',
-             }}
-        >
-            <div className={`w-1/3 min-h-[600px] gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
-                <div className={`w-full p-4 flex justify-center my-auto`}>
-                    <img
-                        className={`object-cover`}
-                        src={"./app-icon.jpg"}
-                        alt={"App logo"}/>
-                </div>
-                <div className={`p-4`}>
-                    {
-                        !isSent
-                            ? <div className={`w-full flex items-center justify-between `}>
-                                <InputFormGoogle label={"Email"} type={"email"} action={setVerificationEmail}/>
-                            </div>
-                            : !isVerified
-                                ? <div className={`w-full flex flex-col gap-y-2 items-center px-3 relative`}>
-                                    <p>Please enter the code sent to {existUser?.email}</p>
-                                    <Input
-                                        style={`w-full border border-2 border-gray-200 ${!validCode && 'custom-shadow-red'}`}
-                                        value={userCode}
-                                        onChange={(e) => setUserCode(e.target.value)}
-                                        type={"text"}/>
-                                    {
-                                        !validCode &&
-                                        <p className={`absolute -bottom-4 text-[16px] font-light text-red-600`}>
-                                            Invalid code
-                                        </p>
-                                    }
-                                    <p className={`mt-1 text-default_red `}>{timer>0 ? `Valid timer: ${timer}` : "Expired"}</p>
+        <>
+            <div className="w-full flex px-4 mx-auto max-w-8xl h-screen justify-center drop-shadow-2xl "
+                 style={{
+                     backgroundImage: `url(${homeBackgroundimg})`,
+                     backgroundSize: '100% 100%',
+                     backgroundRepeat: 'no-repeat',
+                 }}
+            >
+                <div className={`w-1/3 min-h-[600px] gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
+                    <div className={`w-full p-4 flex justify-center my-auto`}>
+                        <img
+                            className={`object-cover`}
+                            src={"./app-icon.jpg"}
+                            alt={"App logo"}/>
+                    </div>
+                    <div className={`p-4`}>
+                        {
+                            !isSent
+                                ? <div className={`w-full flex items-center justify-between `}>
+                                    <InputFormGoogle label={"Email"} type={"email"} action={setVerificationEmail}/>
                                 </div>
-                                : <div className={` gap-x-10 gap-y-7 flex flex-col`}>
-                                    <div className={`w-full flex flex-col gap-y-2`}>
-                                        <p className="font-bold">New password:</p>
+                                : !isVerified
+                                    ? <div className={`w-full flex flex-col gap-y-2 items-center px-3 relative`}>
+                                        <p>Please enter the code sent to {existUser?.email}</p>
                                         <Input
-                                            style={`w-full`}
-                                            type={"password"}
-                                            onChange={e => setPassword(e.target.value)}
-                                            value={password}
-                                        />
-                                    </div>
-                                    <div className={`relative w-full flex flex-col gap-y-2`}>
-                                        <p className="font-bold">Confirm password:</p>
-                                        <Input
-                                            style={`w-full ${!isPasswordMatch && 'custom-shadow-red'}`}
-                                            type={"password"}
-                                            onChange={e => setConfirmPassword(e.target.value)}
-                                            value={confirmPassword}
-                                        />
+                                            style={`w-full border border-2 border-gray-200 ${!validCode && 'custom-shadow-red'}`}
+                                            value={userCode}
+                                            onChange={(e) => setUserCode(e.target.value)}
+                                            type={"text"}/>
                                         {
-                                            !isPasswordMatch &&
-                                            <p className={`absolute -bottom-4 text-[14px] font-light text-red-600`}>Password
-                                                dont match</p>
+                                            !validCode &&
+                                            <p className={`absolute -bottom-4 text-[16px] font-light text-red-600`}>
+                                                Invalid code
+                                            </p>
                                         }
+                                        <p className={`mt-1 text-default_red `}>{timer > 0 ? `Valid timer: ${timer}` : "Expired"}</p>
                                     </div>
-                                </div>
-                    }
-                </div>
-                <div className={`flex justify-center mt-10`}>
-                    <button
-                        onClick={handleButtonClick}
-                        className={`rounded bg-default_blue text-white py-2 px-3 hover:bg-blue_other hover:font-semibold duration-300`}
-                    >
-                        {!isSent ? 'Send code' : !isVerified ? 'Verify' : 'Update'}
-                    </button>
-                </div>
+                                    : <div className={` gap-x-10 gap-y-7 flex flex-col`}>
+                                        <div className={`w-full flex flex-col gap-y-2`}>
+                                            <p className="font-bold">New password:</p>
+                                            <Input
+                                                style={`w-full`}
+                                                type={"password"}
+                                                onChange={e => setPassword(e.target.value)}
+                                                value={password}
+                                            />
+                                        </div>
+                                        <div className={`relative w-full flex flex-col gap-y-2`}>
+                                            <p className="font-bold">Confirm password:</p>
+                                            <Input
+                                                style={`w-full ${!isPasswordMatch && 'custom-shadow-red'}`}
+                                                type={"password"}
+                                                onChange={e => setConfirmPassword(e.target.value)}
+                                                value={confirmPassword}
+                                            />
+                                            {
+                                                !isPasswordMatch &&
+                                                <p className={`absolute -bottom-4 text-[14px] font-light text-red-600`}>Password
+                                                    dont match</p>
+                                            }
+                                        </div>
+                                    </div>
+                        }
+                    </div>
+                    <div className={`flex justify-center mt-10`}>
+                        <button
+                            onClick={handleButtonClick}
+                            className={`rounded bg-default_blue text-white py-2 px-3 hover:bg-blue_other hover:font-semibold duration-300`}
+                        >
+                            {!isSent ? 'Send code' : !isVerified ? 'Verify' : 'Update'}
+                        </button>
+                    </div>
 
+                </div>
             </div>
-        </div>
+            <Toaster toastOptions={{duration:1500}}/>
+        </>
     );
 }
 export default AdminForgotPass;

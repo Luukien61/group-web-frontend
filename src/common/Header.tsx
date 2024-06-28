@@ -55,77 +55,75 @@ const Header = () => {
         debouncedHandleSearching(event.target.value);
     };
     return (
-        <>
-            <header className="sticky top-0 z-40 h-30 w-full  bg-white border-b border-gray-200">
-                <div className=" flex flex-col">
-                    <div className="px-8 mx-0 flex items-center w-full h-16 gap-3">
-                        <div>
-                            <a
-                                href="/"
-                                target="_self"
-                                className="mr-3 flex-none overflow-hidden w-auto flex items-center gap-2"
-                            >
-                                <img
-                                    src="/app-icon.jpg"
-                                    alt="App Home page"
-                                    className="object-cover w-[45%] rounded-[100%] "
-                                />
-                                <p className="text-black font-semibold">{AppInfo.appName}</p>
-                            </a>
-                        </div>
-                        <div className='relative flex flex-1 flex-col'>
-                           <div className={`flex justify-evenly`}>
-                               <Input className={`border rounded-xl w-full`}
-                                      onChange={handleChange}
-                                      placeholder={'Search here...'}/>
-                               <div className={`w-fit flex justify-center`}>
-                                   <img className={`max-h-[64px]`} src={headerImage} alt={'Home Sale'}/>
-                               </div>
-                           </div>
-                            {
-                                products && (
-                                    <div className={`relative w-2/3 ml-10 mt-1 z-[100]`}>
-                                        <div
-                                            className={`absolute inset-0 max-h-96 overflow-y-auto space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
-                                            {
-                                                products.map((item, index) => (
-                                                    <>
-                                                        <ProductSearch product={item}/>
-                                                        {index < products.length - 1 && <hr/>}
-                                                    </>
-                                                ))
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            }
-
-                        </div>
-                        <div className={`flex items-center`}>
-                            {/*account field*/}
-                            <div className="flex flex-row  items-center justify-end">
-                                <nav className="text-sm leading-6">
-                                    <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
-                                        {headerItems.map((item) => (
-                                            <li
-                                                onClick={() => handleHeaderItemClick(item.key)}
-                                                key={item.key}
-                                                className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center`}
-                                            >
-                                                {item.icon}
-                                                {item.label}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </nav>
+        <header className="sticky top-0 z-40 h-30 w-full bg-white border-b border-gray-200">
+            <div className=" flex flex-col">
+                <div className="px-8 mx-0 flex items-center w-full h-16 gap-3">
+                    <div>
+                        <a
+                            href="/"
+                            target="_self"
+                            className="mr-3 flex-none overflow-hidden w-auto flex items-center gap-2"
+                        >
+                            <img
+                                src="/app-icon.jpg"
+                                alt="App Home page"
+                                className="object-cover w-[45%] rounded-[100%] "
+                            />
+                            <p className="text-black font-semibold">{AppInfo.appName}</p>
+                        </a>
+                    </div>
+                    <div className='relative flex flex-1 flex-col'>
+                        <div className={`flex justify-evenly`}>
+                            <Input className={`border rounded-xl w-full`}
+                                   onChange={handleChange}
+                                   placeholder={'Search here...'}/>
+                            <div className={`w-fit flex justify-center`}>
+                                <img className={`max-h-[64px]`} src={headerImage} alt={'Home Sale'}/>
                             </div>
                         </div>
+                        {
+                            products && (
+                                <div className={`relative w-2/3 ml-10 mt-1 z-[100]`}>
+                                    <div
+                                        className={`absolute inset-0 max-h-96 overflow-y-auto space-y-3 rounded bg-default_background h-fit p-2 drop-shadow-2xl ${products.length > 0 ? 'block' : 'hidden'}`}>
+                                        {
+                                            products.map((item, index) => (
+                                                <>
+                                                    <ProductSearch product={item}/>
+                                                    {index < products.length - 1 && <hr/>}
+                                                </>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            )
+                        }
+
                     </div>
-                    <hr className="border-black "/>
-                    <NavMenu/>
+                    <div className={`flex items-center`}>
+                        {/*account field*/}
+                        <div className="flex flex-row  items-center justify-end">
+                            <nav className="text-sm leading-6">
+                                <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
+                                    {headerItems.map((item) => (
+                                        <li
+                                            onClick={() => handleHeaderItemClick(item.key)}
+                                            key={item.key}
+                                            className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center`}
+                                        >
+                                            {item.icon}
+                                            {item.label}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
-            </header>
-        </>
+                <hr className="border-black "/>
+                <NavMenu/>
+            </div>
+        </header>
     );
 };
 

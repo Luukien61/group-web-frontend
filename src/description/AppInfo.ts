@@ -1,3 +1,5 @@
+import {zalo} from "@/url/Urls.ts";
+
 type item = {
     name: string,
     link: string
@@ -34,11 +36,15 @@ export const footerContent: footerProps[] = [
         child: [
             {
                 name: "0386888888",
-                link: "tel:+8453795729"
+                link: "tel:+842345678"
             },
             {
                 name: "knv@gmail.com",
                 link: "mailto:kienluu61@gmail.com"
+            },
+            {
+                name: "Zalo",
+                link: `${zalo}`
             }
         ]
     },

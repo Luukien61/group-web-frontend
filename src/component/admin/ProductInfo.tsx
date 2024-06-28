@@ -300,7 +300,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             } catch (e) {
                 toast.error("An error occurred while deleting product")
             }
-        }else toast.error("Incorrect product name")
+        } else toast.error("Incorrect product name")
     }
     const assembleProduct = async (productId: string, ordering: number, contentId: boolean) => {
         checkFillInput()
@@ -322,7 +322,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         if (!contentId) {
             contentChildren.forEach(value => value.id = undefined)
         }
-        if (colors && imgs && imgs.length > 0 && producer && categoryPick) {
+        if (colors && imgs && imgs.length > 0 && producer && categoryPick && productName) {
 
             const memory: Price = {
                 id: product?.features.memory[0].id,
@@ -365,9 +365,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 rating: product?.rating
             }
             return newProduct
-        } else if (!producer) {
-            toast.error("Please choose a producer.")
-        } else if (!categoryPick) toast.error("Please choose a category")
+        } else {
+            if (!producer) toast.error("Please choose a producer.")
+            if (!categoryPick) toast.error("Please choose a category")
+            if(!productName) toast.error("Please enter a product name")
+        }
     }
     const uploadColorImages = async () => {
         if (rawColors.length == 0) {
@@ -599,6 +601,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             placeholder: "Ex: 11/2021",
             value: rawMadeTime,
             onChange: (e) => setRawMadeTime(e.target.value)
+        },
+        {
+            require: false,
+            label: "OS",
+            placeholder: "Ex: Android, IOS, Windows",
+            value: OS,
+            onChange: (e) => setOS(e.target.value)
         }
     ]
     const productDetailSelect = useRef(defaultDetail)
@@ -657,9 +666,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                                     <div
                                                         onClick={() => handleCategoryClick(value)}
                                                         key={index}
-                                                        className={`cursor-pointer w-[100px] flex items-center justify-center h-[124px] rounded bg-gray-100 p-3 
+                                                        className={`cursor-pointer w-[100px] flex items-center justify-center h-[124px] rounded bg-gray-100 px-1 
                                                     ${categoryPick === value && 'border-[3px] border-inner_blue bg-gradient-to-r from-outer_blue'}`}>
-                                                        <p>{value.toLocaleUpperCase()}</p>
+                                                        <div className={`w-full flex justify-center`}>
+                                                            <p className={`w-fit self-center truncate`}>{value.toLocaleUpperCase()}</p>
+                                                        </div>
                                                     </div>
                                                 ))
                                             }
@@ -710,15 +721,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                 label: "ROM",
                                 selectedOption: "Choose a ROM",
                                 options: [32, 64, 128, 256, 512, 1024]
-                            }}/>
-                            <Selector selector={{
-                                id: "OS",
-                                value: OS,
-                                addNew: false,
-                                onChange: (e) => setOS(e.target.value),
-                                label: "OS",
-                                selectedOption: "Choose an OS",
-                                options: categoryPick === "phone" ? ["Android", "IOS"] : (categoryPick == "laptop" ? ["Windows", "MAC OS", "Ubuntu"] : [])
                             }}/>
 
                         </div>
@@ -1260,7 +1262,7 @@ type AddCategoryProps = {
     category?: string,
     isAdmin: boolean
 }
-export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category,isAdmin}) => {
+export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category, isAdmin}) => {
     const [categoryName, setCategoryName] = useState<string>(category || '')
     const [producer, setProducer] = useState<string>('')
     const [producers, setProducers] = useState<Producer[]>([])

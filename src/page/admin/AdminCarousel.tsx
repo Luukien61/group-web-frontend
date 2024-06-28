@@ -8,7 +8,6 @@ import imageUpload from "@/cloudinary/ImageUpload.ts";
 import {useNavigate} from "react-router-dom";
 
 const AdminCarousel = () => {
-    const maxItem: number = 5;
     const navigate= useNavigate()
     const [loadedItems, setLoadedItems] = useState<number>(0);
     const [itemIndex, setItemIndex] = useState<number>(0);
@@ -31,7 +30,7 @@ const AdminCarousel = () => {
     }
     const handleNextClick = () => {
         const newItemIndex: number = itemIndex + 1;
-        if (newItemIndex < maxItem && newItemIndex < bannerItems.length) {
+        if ( newItemIndex < bannerItems.length) {
             setItemIndex(newItemIndex);
         }
     }
@@ -111,7 +110,7 @@ const AdminCarousel = () => {
                                                  : 'translate-x-full'
                                          }`}>
                                         <img src={item.imageUrl}
-                                             className="absolute block w-full h-64 -translate-x-1/2 -translate-y-1/2 object-fill top-1/2 left-1/2"
+                                             className="absolute block w-full h-64 object-fill "
                                              alt={item.title}/>
                                         <div
                                             onClick={() => handleClearItem(index)}
@@ -161,7 +160,6 @@ const AdminCarousel = () => {
                         text={true}
                         input={
                             <input
-                                disabled={loadedItems >= maxItem}
                                 id="dropzone-file"
                                 type="file"
                                 accept={'image/*'}
@@ -171,14 +169,12 @@ const AdminCarousel = () => {
                 </div>
                 <p className={`italic text-gray-400`}>or</p>
                 <div className={`flex w-full justify-between items-center`}>
-                    <p className={`font-semibold`}>Image url: </p>
                     <input
                         placeholder={"Image link..."}
                         onKeyDown={handleExternalUrlChange}
                         value={externalUrl}
                         onChange={(e) => setExternalUrl(e.target.value)}
-                        disabled={loadedItems == maxItem}
-                        className={`rounded outline-none px-3 py-2 focus:blue-growing-border placeholder:italic`}/>
+                        className={`rounded w-full outline-none px-3 py-2 focus:blue-growing-border placeholder:italic`}/>
                 </div>
                 <DefaultButton
                     loading={loading && <svg aria-hidden="true"

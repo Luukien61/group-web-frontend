@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Card, CardContent} from "@/shadcn/ui/card"
 import {Label} from "@/shadcn/ui/label"
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group"
@@ -24,6 +24,8 @@ import {Feature, Product, Rating} from "@/component/CategoryCard.tsx";
 import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
 import RatingComponent, {RatingCount} from "@/component/RatingComponent.tsx";
+import toast, {Toaster} from "react-hot-toast";
+import {zalo} from "@/url/Urls.ts";
 
 type OrderProp = {
     title: string,
@@ -74,6 +76,10 @@ const ProductPage = () => {
     const [isDone, setIsDone] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('')
     const [outstandingProducts, setOutstandingProducts] = useState<Product[]>([])
+    const [isOpenImageView, setIsOpenImageView] = useState<boolean>(false)
+    const [imageViewIndex, setImageViewIndex] = useState<number>(0)
+    const [productImagesLength, setProductImageLength] = useState<number>(product?.imgs.length || 0)
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     useEffect(() => {
         getOutstandingProducts(4)
@@ -87,12 +93,21 @@ const ProductPage = () => {
         const content = response.content
         setOutstandingProducts(content)
     }
+    const handleOpenImageView = (index: number) => {
+        setIsOpenImageView(true)
+        setImageViewIndex(index)
+    }
     const handleSelectedIndex = (index: number) => {
         setSelectedIndex(index)
     }
+    const handleColorPick = useCallback((index: number) => {
+        const pickIndex = (productImagesLength + index)
+        handleOpenImageView(pickIndex)
+    }, [productImagesLength])
     useEffect(() => {
         if (product) {
             document.title = product.name
+            setProductImageLength(product.imgs.length)
         }
     }, [product]);
     const orderInfor: OrderProp[] = [
@@ -155,6 +170,7 @@ const ProductPage = () => {
         setIsDoneClicked(true)
         if (fullName !== "" && phone !== "" && address !== "" && email !== "") {
             const code = createVerificationCode()
+
             sendEmailCode(email, code, {event: "order"})
                 .then(() => {
                     setIsSent(true)
@@ -163,22 +179,30 @@ const ProductPage = () => {
                     intervalTimer.current = setInterval(() => {
                         setTimer(prev => prev - 1)
                     }, 1000)
-                })
-                .catch(error => alert(error))
+                }).catch(() => {
+                setErrorMessage("An error has occurred when sending email")
+            });
         }
     }
+    useEffect(() => {
+        if(errorMessage){
+            toast.error(errorMessage)
+            setErrorMessage('')
+        }
+    }, [errorMessage]);
     const handleVerifyCode = () => {
         if (userCode.length === 6 && !expired) {
             if (userCode === verificationCode && !expired) {
                 setTimeout(() => setIsDone(true), 1000)
                 order()
             } else {
-                alert("Either verification code or expired")
+                toast.error("Either verification code or expired")
             }
         } else {
-            alert("Either verification code or expired")
+            toast.error("Either verification code or expired")
         }
     };
+
 
     const order = async () => {
         if (product) {
@@ -239,12 +263,12 @@ const ProductPage = () => {
 
     return (
         product && (
-            <>
-                <div
-                    className={`relative `}>
+            <div>
+                <Toaster toastOptions={{duration: 2000}}/>
+                <div className={`relative `}>
                     <div className={`relative overflow-y-visible grid grid-cols-12 w-full mt-4 mb-4`}>
                         {/*main content*/}
-                        <div className={`h-auto bg-white col-span-10 border rounded p-5  mb-4`}>
+                        <div className={`h-auto bg-white col-span-10 border rounded p-5 mb-4`}>
                             <div className={`w-full border-b`}>
                                 <h1 className={`text-black pb-2 font-semibold`}>
                                     {product.name}
@@ -253,7 +277,9 @@ const ProductPage = () => {
                             <div className={`w-full flex flex-col`}>
                                 <div className={`w-full flex`}>
                                     <div className={`block w-1/2`}>
-                                        <CarouselApiDemo links={product.imgs}/>
+                                        <CarouselApiDemo
+                                            action={handleOpenImageView}
+                                            links={product.imgs}/>
                                     </div>
                                     {/*right side*/}
                                     <div className={`w-1/2 flex`}>
@@ -298,7 +324,10 @@ const ProductPage = () => {
                                                 className={`flex flex-wrap gap-x-2 pt-3 `}>
                                                 {
                                                     product.color.map((color, index) => (
-                                                        <div key={index} className={`flex flex-col max-w-[60px]`}>
+                                                        <div
+                                                            onClick={() => handleColorPick(index)}
+                                                            key={index}
+                                                            className={`flex cursor-pointer  flex-col max-w-[60px]`}>
                                                             <img className={`aspect-square w-[50px] rounded border`}
                                                                  src={color.link}
                                                                  alt={index.toString()}/>
@@ -344,7 +373,7 @@ const ProductPage = () => {
                                                     <p className={`font-medium`}>{value.title}</p>
                                                     <div className={`flex flex-col gap-y-4`}>
                                                         <p>{value.content}</p>
-                                                        <img src={value.image} alt={value.image} />
+                                                        <img src={value.image} alt={value.image}/>
                                                     </div>
                                                 </div>
                                             )
@@ -358,11 +387,25 @@ const ProductPage = () => {
                     </div>
                     {/*fixed button*/}
                     <div
-                        onClick={handleOpenModal}
-                        className={`fixed cursor-pointer hover:scale-110 duration-300 rounded bg-default_red w-fit h-fit p-2 right-5 bottom-5`}>
-                        <p className={`text-white  font-medium`}>Order</p>
+                        className={`fixed right-5 bottom-5 flex flex-col items-center gap-y-6`}>
+                        <a href={`${zalo}`}>
+                            <img
+                                className={`hover:scale-110 duration-300`}
+                                src={`https://page.widget.zalo.me/static/images/2.0/Logo.svg`} alt={`Zalo`}/>
+                        </a>
+                        <button
+                            className={`hover:scale-110 text-white font-medium cursor-pointer duration-300 rounded bg-default_red w-fit h-fit p-2 `}
+                            type={'button'}
+                            onClick={handleOpenModal}>Order
+                        </button>
                     </div>
                     {/*model*/}
+                    {
+                        isOpenImageView &&
+                        <ImageView startIndex={imageViewIndex} action={() => setIsOpenImageView(false)}
+                                   images={[...product.imgs, ...product.color.map(value => value.link)]}/>
+                    }
+
                 </div>
                 <div onClick={handleCloseModel}
                      id="default-modal"
@@ -482,7 +525,7 @@ const ProductPage = () => {
                         </div>
                     </div>
                 </div>
-            </>
+            </div>
         )
     )
         ;
@@ -508,10 +551,12 @@ const SideBarADs = ({products}: SidebarADsProps) => {
 }
 
 type CarouselProps = {
-    links: string[]
+    links: string[],
+    // eslint-disable-next-line no-unused-vars
+    action: (index: number) => void
 }
 
-const CarouselApiDemo: React.FC<CarouselProps> = ({links}) => {
+const CarouselApiDemo: React.FC<CarouselProps> = ({links, action}) => {
     const [api, setApi] = React.useState<CarouselApi>()
     const [current, setCurrent] = React.useState(0)
     const [count, setCount] = React.useState(0)
@@ -536,7 +581,9 @@ const CarouselApiDemo: React.FC<CarouselProps> = ({links}) => {
                     {links.map((link, index) => (
                         <CarouselItem key={index}>
                             <Card>
-                                <CardContent className="flex !min-h-[450px] items-center justify-center ">
+                                <CardContent
+                                    onClick={() => action(index)}
+                                    className="flex !min-h-[450px] cursor-pointer  items-center justify-center ">
                                     <img src={link} alt={"image"}/>
                                 </CardContent>
                             </Card>
@@ -628,6 +675,88 @@ const TrendingCard = ({product}: TrendingProps) => {
                 <p className={`text-default_red font-medium`}> {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}</p>
                 <RatingCount rating={product.rating?.average ?? 0} numSize={`text-[18px]`} startSize={`scale-90`}/>
             </a>
+        </div>
+    )
+}
+type ProductImage = {
+    images: string[],
+    action: () => void,
+    startIndex: number
+}
+const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
+    const [itemIndex, setItemIndex] = useState<number>(startIndex);
+    const handlePreviousClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation()
+        const newItemIndex: number = itemIndex - 1;
+        if (newItemIndex >= 0) {
+            setItemIndex(newItemIndex);
+        }
+    }
+    const handleNextClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation()
+        const newItemIndex: number = itemIndex + 1;
+        if (newItemIndex < images.length) {
+            setItemIndex(newItemIndex);
+        }
+    }
+    const handleModalClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation()
+    }
+    return (
+        <div
+            onClick={action}
+            className={`w-screen flex items-center justify-center fixed inset-0 h-screen bg-black backdrop-blur-2xl bg-opacity-60`}>
+            <div
+                className={`relative overflow-hidden flex justify-center items-center w-[900px] h-[400px] rounded-xl bg-white p-4`}>
+                {
+                    images.map((image, index) => (
+                        <div
+                            onClick={e => handleModalClick(e)}
+                            className={`w-[900px] absolute h-auto flex justify-center items-center`} key={index}>
+                            <div key={index}
+                                 className={`w-full flex justify-center transition-transform duration-700 ease-in-out
+                                            ${index === itemIndex
+                                     ? 'translate-x-0'
+                                     : index < itemIndex
+                                         ? '-translate-x-full'
+                                         : 'translate-x-full'
+                                 }`}>
+                                <img src={image}
+                                     className="w-fit block h-[360px] rounded object-fill "
+                                     alt={"Product Image"}/>
+                            </div>
+                        </div>
+                    ))
+                }
+                <button
+                    onClick={e => handlePreviousClick(e)}
+                    type="button"
+                    className="absolute top-1/2 start-0 z-10 flex items-center justify-center h-fit px-4 cursor-pointer group focus:outline-none">
+                    <span
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-600  group-hover:bg-gray-500 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                        <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                  d="M5 1 1 5l4 4"/>
+                        </svg>
+                        <span className="sr-only">Previous</span>
+                    </span>
+                </button>
+                <button
+                    onClick={e => handleNextClick(e)}
+                    type="button"
+                    className="absolute top-1/2 end-0 h-fit z-10 flex items-center justify-center  px-4 cursor-pointer group focus:outline-none">
+                     <span
+                         className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-600  group-hover:bg-gray-500 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                         <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                   d="m1 9 4-4-4-4"/>
+                         </svg>
+                         <span className="sr-only">Next</span>
+                     </span>
+                </button>
+            </div>
         </div>
     )
 }
