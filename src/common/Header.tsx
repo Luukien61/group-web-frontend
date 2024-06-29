@@ -1,6 +1,6 @@
-import {headerImage, homePage} from "../url/Urls.ts";
+import {headerImage, homePage, myOrders} from "../url/Urls.ts";
 import {CgProfile} from "react-icons/cg";
-import React, {ChangeEvent, useCallback, useRef, useState} from "react";
+import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
 import Input from "../component/Input.tsx";
 import {FiShoppingCart} from "react-icons/fi";
 import NavMenu from "./NavMenu.tsx";
@@ -9,11 +9,13 @@ import {Product} from "@/component/CategoryCard.tsx";
 import {debounce} from "lodash";
 import ProductSearch from "@/component/ProductSearch.tsx";
 import {AppInfo} from "@/description/AppInfo.ts";
+import {getMyOrdersLocal} from "@/page/MyOrder.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 export type MenuItem = {
     label: string;
-    url: string;
+    url?: string;
     key: string;
     icon?: React.ReactNode;
     children?: MenuItem[];
@@ -36,16 +38,13 @@ function getItem(
 }
 
 const headerItems: MenuItem[] = [
-    getItem("Cart", homePage, "cart", <FiShoppingCart size={24}/>),
+    getItem("Cart", myOrders, "cart", <FiShoppingCart size={24}/>),
     getItem("Profile", homePage, "profile", <CgProfile size={24}/>)
 ];
 
 const Header = () => {
-    const [, setActiveHeaderItem] = useState<string>("cart");
     const [products, setProducts] = useState<Product[]>([]);
-    const handleHeaderItemClick = useCallback((key: string) => {
-        setActiveHeaderItem(key);
-    }, []);
+    const [order, setOrder] = useState<number>(0);
     const debouncedHandleSearching = useRef(debounce(
         async (value: string) => {
             const response = await searchProductsByName(value)
@@ -54,8 +53,15 @@ const Header = () => {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         debouncedHandleSearching(event.target.value);
     };
+    useEffect(() => {
+        const myOrders = getMyOrdersLocal()
+        if (myOrders.length) {
+            setOrder(myOrders.length)
+        }
+    }, []);
+
     return (
-        <header className="sticky top-0 z-40 h-30 w-full bg-white border-b border-gray-200">
+        <header className="sticky top-0 z-40  w-full bg-white border-b border-gray-200">
             <div className=" flex flex-col">
                 <div className="px-8 mx-0 flex items-center w-full h-16 gap-3">
                     <div>
@@ -107,12 +113,20 @@ const Header = () => {
                                 <ul className="md:flex md:gap-4 hidden space-x-8 text-gray-600">
                                     {headerItems.map((item) => (
                                         <li
-                                            onClick={() => handleHeaderItemClick(item.key)}
                                             key={item.key}
-                                            className={`mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center`}
                                         >
-                                            {item.icon}
-                                            {item.label}
+                                            <a href={item.url}
+                                               className={`relative mx-2 cursor-pointer hover:text-green-600 hover:scale-110 flex flex-col items-center`}>
+                                                {item.icon}
+                                                {item.label}
+                                                {
+                                                    item.key == "cart" && order > 0 &&
+                                                    <div
+                                                        className={`rounded-[100%] group-hover:font-semibold group-hover:bg-default_red flex text-[14px] items-center justify-center text-white bg-red-600 w-[15px] h-[15px] aspect-square absolute -top-1 -right-[6px]`}>
+                                                        <p className={`font-medium`}>{order}</p>
+                                                    </div>
+                                                }
+                                            </a>
                                         </li>
                                     ))}
                                 </ul>

@@ -4,7 +4,6 @@ import {fetchProductsCategory} from "@/axios/Request.ts";
 import {useLocation} from "react-router-dom";
 import {debounce} from "lodash";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
-import {cat} from "@cloudinary/url-gen/qualifiers/focusOn";
 
 export type Producer = {
     id?: number,
@@ -160,6 +159,34 @@ const CategoryCard: React.FC<CategoryProp> = ({
         setProducts(products)
     }
     return (
+        <ProductList
+            products={products}
+            last={last}
+            name={name}
+            url={url}
+            pageable={pageable}
+            heightClass={heightClass}
+            renderWhenEmpty={renderWhenEmpty}
+            handleViewMoreClick={handleViewMoreClick}
+            widthClass={widthClass}
+        />
+    );
+};
+
+export default CategoryCard;
+type ProductListProps = {
+    renderWhenEmpty: boolean;
+    heightClass?: string,
+    widthClass: string
+    name: string,
+    url? : string,
+    products: Product[],
+    pageable: boolean,
+    last: boolean
+    handleViewMoreClick: ()=>void
+}
+export const ProductList: React.FC<ProductListProps> =({products,renderWhenEmpty,name, widthClass,url,heightClass, pageable, last, handleViewMoreClick} )=>{
+    return(
         <>
             {
                 (renderWhenEmpty || products.length > 0) && (
@@ -188,7 +215,7 @@ const CategoryCard: React.FC<CategoryProp> = ({
                             pageable && !last && (
                                 <div className={`w-full flex items-center justify-center pt-6 pb-4`}>
                                     <button
-                                        onClick={() => handleViewMoreClick()}
+                                        onClick={handleViewMoreClick}
                                         className={`hover:text-default_blue hover:scale-105 rounded bg-default_background p-1`}>View
                                         more
                                     </button>
@@ -199,7 +226,5 @@ const CategoryCard: React.FC<CategoryProp> = ({
                 )
             }
         </>
-    );
-};
-
-export default CategoryCard;
+    )
+}

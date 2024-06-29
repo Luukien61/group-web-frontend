@@ -56,7 +56,7 @@ const defaultRating: Rating = {
     fiveStarts: 0,
     average: 0
 }
-
+export const MY_ORDER: string = "my_order"
 const ProductPage = () => {
     const [isRendered, setIsRendered] = useState(false);
     const [isDoneClicked, setIsDoneClicked] = useState<boolean>(false)
@@ -218,7 +218,17 @@ const ProductPage = () => {
             }
             const message: string = await placeOrder(orderDetail)
             setMessage(message)
+            addMyOrder(product.id)
         }
+    }
+    const addMyOrder = (product: string) => {
+        const myOrderRaw : string | null = localStorage.getItem(MY_ORDER)
+        const myOrder : string[]=[]
+        if(myOrderRaw!=null){
+            myOrder.push(JSON.parse(myOrderRaw))
+        }
+        myOrder.push(product)
+        localStorage.setItem(MY_ORDER, JSON.stringify(myOrder))
     }
 
     const makeId = (length: number): string => {
@@ -723,9 +733,9 @@ const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
     return (
         <div
             onClick={action}
-            className={`w-screen flex flex-col items-center justify-center fixed inset-0 h-screen bg-black backdrop-blur-2xl bg-opacity-60`}>
+            className={`w-screen flex items-center justify-center fixed inset-0  h-screen bg-black backdrop-blur-2xl bg-opacity-60`}>
             <div
-                className={`relative overflow-hidden flex justify-center items-end w-[900px] h-[450px] rounded-xl bg-white p-4`}>
+                className={`relative top-8 overflow-hidden flex justify-center items-end w-[900px] h-[450px] rounded-xl bg-white p-4`}>
                 {
                     images.map((image, index) => (
                         <div

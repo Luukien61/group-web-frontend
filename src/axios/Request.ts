@@ -5,7 +5,9 @@ import {
     carouselPath,
     categoryPath,
     findById,
-    loginPath, mailCodePath,
+    findByIds,
+    loginPath,
+    mailCodePath,
     mailPath,
     orderPath,
     producerBasePath,
@@ -122,6 +124,19 @@ export const getProductById = async (id: string) => {
         handleError(error)
     }
 }
+export const getProductByIds = async (ids: string[]) => {
+    try {
+        return await instance.get(`${findByIds}`,{
+            params:{
+                ids: ids.join(",")
+            }
+        })
+            .then(response => response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
+
 type MailVerify = {
     "to": string,
     "subject": string,

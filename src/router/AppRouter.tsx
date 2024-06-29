@@ -22,6 +22,7 @@ import AdminForgotPass from "@/page/admin/AdminForgotPass.tsx";
 import ProductHomePage from "@/page/ProductHomePage.tsx";
 import Test from "@/page/Test.tsx";
 import AuthUrlRedirect from "@/page/AuthUrlRedirect.tsx";
+import MyOrder from "@/page/MyOrder.tsx";
 
 type CleanProps = {
     children: React.ReactElement | null
@@ -58,6 +59,7 @@ const AppRouter = () => {
         <CleanUrlMiddleware>
             <Routes>
                 <Route path={'/mail/auth'} element={<AuthUrlRedirect/>}/>
+
                 <Route path={"/test"} element={<Test/>}/>
                 <Route path={'/not-found'} element={<NotFoundPage/>}/>
                 <Route path={`:category/:productId`} element={<ProductHomePage/>}/>
@@ -65,7 +67,7 @@ const AppRouter = () => {
                 {/*customer*/}
                 <Route path="/" element={<App/>}>
                     <Route index element={<HomePage/>}/>
-
+                    <Route path={'/my-orders'} element={<MyOrder/>}/>
                     <Route path={`*`} element={<NotFoundPage/>}/>
                 </Route>
                 {/*login*/}

@@ -1,4 +1,5 @@
 export const homePage: string = "/"
+export const myOrders : string='/my-orders'
 export const homeBackgroundimg: string = "https://i.pinimg.com/564x/20/be/a7/20bea7a917a43b11f1f5f994e00b833e.jpg"
 export const headerImage:string= "https://images.fpt.shop/unsafe/fit-in/filters:quality(80):fill(transparent)/fptshop.com.vn/Uploads/Originals/2024/6/20/638545024322256412_desk-header%20(11).png"
 
@@ -8,6 +9,7 @@ export const productPath: string = "/product"
 export const quantityPath: string = `${productPath}/quantity`
 export const searchPath: string = `${productPath}/searching`
 export const findById: string = `${productPath}/product-id`
+export const findByIds : string= `${productPath}/list`
 export const producerBasePath : string = "/producer"
 export const mailServerBaseUrl: string = import.meta.env.VITE_MAIL_SERVER_URL
 export const mailPath: string = "/mail"
