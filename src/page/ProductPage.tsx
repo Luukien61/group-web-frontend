@@ -25,7 +25,7 @@ import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
 import RatingComponent, {RatingCount} from "@/component/RatingComponent.tsx";
 import toast, {Toaster} from "react-hot-toast";
-import {zalo} from "@/url/Urls.ts";
+import {myOrders, zalo} from "@/url/Urls.ts";
 
 type OrderProp = {
     title: string,
@@ -186,7 +186,7 @@ const ProductPage = () => {
         }
     }
     useEffect(() => {
-        if(errorMessage){
+        if (errorMessage) {
             toast.error(errorMessage)
             setErrorMessage('')
         }
@@ -222,13 +222,16 @@ const ProductPage = () => {
         }
     }
     const addMyOrder = (product: string) => {
-        const myOrderRaw : string | null = localStorage.getItem(MY_ORDER)
-        let myOrder : string[]=[]
-        if(myOrderRaw!=null){
-            myOrder= JSON.parse(myOrderRaw)
+        const myOrderRaw: string | null = localStorage.getItem(MY_ORDER)
+        let myOrder: string[] = []
+        if (myOrderRaw != null) {
+            myOrder = JSON.parse(myOrderRaw)
         }
-        myOrder.push(product)
-        localStorage.setItem(MY_ORDER, JSON.stringify(myOrder))
+        const exist = myOrder.includes(product)
+        if (!exist) {
+            myOrder.push(product)
+            localStorage.setItem(MY_ORDER, JSON.stringify(myOrder))
+        }
     }
 
     const makeId = (length: number): string => {
@@ -300,7 +303,7 @@ const ProductPage = () => {
                                                     {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ' : 'Contact'}
                                                 </h1>
                                                 {
-                                                    product.price[0].currentPrice>0 &&
+                                                    product.price[0].currentPrice > 0 &&
                                                     <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
                                                         {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
                                                     </h1>
@@ -631,7 +634,7 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                     </TableRow>
                 }
                 {
-                    feature.rearCamera.length>0 &&
+                    feature.rearCamera.length > 0 &&
                     <TableRow>
                         {/*rear camera*/}
                         <TableCell className="font-medium border-r">Rear camera</TableCell>
@@ -642,7 +645,7 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                 }
 
                 {
-                    feature.frontCamera.length>0 &&
+                    feature.frontCamera.length > 0 &&
                     <TableRow>
                         {/*front camera*/}
                         <TableCell className="font-medium border-r">Front camera</TableCell>
@@ -756,7 +759,7 @@ const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
                         </div>
                     ))
                 }
-                <p>{itemIndex+1}/{length}</p>
+                <p>{itemIndex + 1}/{length}</p>
                 <button
                     onClick={e => handlePreviousClick(e)}
                     type="button"
