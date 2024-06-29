@@ -223,9 +223,9 @@ const ProductPage = () => {
     }
     const addMyOrder = (product: string) => {
         const myOrderRaw : string | null = localStorage.getItem(MY_ORDER)
-        const myOrder : string[]=[]
+        let myOrder : string[]=[]
         if(myOrderRaw!=null){
-            myOrder.push(JSON.parse(myOrderRaw))
+            myOrder= JSON.parse(myOrderRaw)
         }
         myOrder.push(product)
         localStorage.setItem(MY_ORDER, JSON.stringify(myOrder))
