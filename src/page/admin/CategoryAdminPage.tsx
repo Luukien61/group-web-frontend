@@ -51,7 +51,7 @@ const CategoryAdminPage = () => {
     const fetchProp = {
         category: category,
         page: 0,
-        size: 10
+        size: 12
     }
 
     useEffect(() => {

@@ -664,6 +664,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                             {
                                                 categories.map((value, index) => (
                                                     <div
+                                                        title={value}
                                                         onClick={() => handleCategoryClick(value)}
                                                         key={index}
                                                         className={`cursor-pointer w-[100px] flex items-center justify-center h-[124px] rounded bg-gray-100 px-1 
@@ -791,7 +792,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                                             <div key={index} className={`px-2 relative max-w-[80%]`}>
                                                 <div
                                                     className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
-                                                    <p className={`cursor-default`}>Para {index}</p>
+                                                    <p className={`cursor-default`}>Para {index+1}</p>
                                                     <IoCloseCircleOutline
                                                         onClick={() => handleRemoveContentChild(_value.id || -1)}
                                                         className={`cursor-pointer absolute -top-2 -right-2 `}/>

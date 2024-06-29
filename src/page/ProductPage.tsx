@@ -80,13 +80,14 @@ const ProductPage = () => {
     const [imageViewIndex, setImageViewIndex] = useState<number>(0)
     const [productImagesLength, setProductImageLength] = useState<number>(product?.imgs.length || 0)
     const [errorMessage, setErrorMessage] = useState<string>('')
+    const category = useLocation().pathname.split('/')[1]
 
     useEffect(() => {
         getOutstandingProducts(4)
     }, [])
     const getOutstandingProducts = async (quantity: number) => {
         const response: ProductPageable = await fetchProductsCategory({
-            category: "phone",
+            category: category,
             size: quantity,
             sort: "rating"
         })
@@ -288,9 +289,12 @@ const ProductPage = () => {
                                                 <h1 className={`text-default_red text-[32px] leading-[40px] font-[500]`}>
                                                     {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + 'đ' : 'Contact'}
                                                 </h1>
-                                                <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
-                                                    {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
-                                                </h1>
+                                                {
+                                                    product.price[0].currentPrice>0 &&
+                                                    <h1 className={`text-default_gray text-[20px] font-[400] leading-7 line-through`}>
+                                                        {product.price[0].previousPrice.toLocaleString('vi-VN') + 'đ'}
+                                                    </h1>
+                                                }
                                             </div>
                                             {/*price options*/}
                                             <div className={`w-full flex flex-wrap`}>
@@ -608,25 +612,35 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
     return (
         <Table>
             <TableBody>
-                <TableRow>
-                    {/*screen*/}
-                    <TableCell className="font-medium border-r">Screen</TableCell>
-                    <TableCell>{feature.screen}</TableCell>
-                </TableRow>
-                <TableRow>
-                    {/*rear camera*/}
-                    <TableCell className="font-medium border-r">Rear camera</TableCell>
-                    <TableCell>{feature.rearCamera.map(value => (
-                        `${value}MP`
-                    )).join('+')}</TableCell>
-                </TableRow>
-                <TableRow>
-                    {/*front camera*/}
-                    <TableCell className="font-medium border-r">Front camera</TableCell>
-                    <TableCell>{feature.frontCamera.map(value => (
-                        `${value}MP`
-                    )).join('+')}</TableCell>
-                </TableRow>
+                {
+                    feature.screen &&
+                    <TableRow>
+                        {/*screen*/}
+                        <TableCell className="font-medium border-r">Screen</TableCell>
+                        <TableCell>{feature.screen}</TableCell>
+                    </TableRow>
+                }
+                {
+                    feature.rearCamera.length>0 &&
+                    <TableRow>
+                        {/*rear camera*/}
+                        <TableCell className="font-medium border-r">Rear camera</TableCell>
+                        <TableCell>{feature.rearCamera.map(value => (
+                            `${value}MP`
+                        )).join('+')}</TableCell>
+                    </TableRow>
+                }
+
+                {
+                    feature.frontCamera.length>0 &&
+                    <TableRow>
+                        {/*front camera*/}
+                        <TableCell className="font-medium border-r">Front camera</TableCell>
+                        <TableCell>{feature.frontCamera.map(value => (
+                            `${value}MP`
+                        )).join('+')}</TableCell>
+                    </TableRow>
+                }
                 <TableRow>
                     {/*ram*/}
                     <TableCell className="font-medium border-r">Ram</TableCell>
@@ -647,11 +661,14 @@ const TableDemo: React.FC<TableProps> = ({feature}) => {
                     <TableCell className="font-medium border-r">Battery</TableCell>
                     <TableCell>{feature.battery} mAh</TableCell>
                 </TableRow>
-                <TableRow>
-                    {/*OS*/}
-                    <TableCell className="font-medium border-r">OS</TableCell>
-                    <TableCell>{feature.os}</TableCell>
-                </TableRow>
+                {
+                    feature.os &&
+                    <TableRow>
+                        {/*OS*/}
+                        <TableCell className="font-medium border-r">OS</TableCell>
+                        <TableCell>{feature.os}</TableCell>
+                    </TableRow>
+                }
                 <TableRow>
                     {/*Time*/}
                     <TableCell className="font-medium border-r">Time</TableCell>
@@ -685,6 +702,7 @@ type ProductImage = {
 }
 const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
     const [itemIndex, setItemIndex] = useState<number>(startIndex);
+    const length = images.length
     const handlePreviousClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation()
         const newItemIndex: number = itemIndex - 1;
@@ -705,22 +723,22 @@ const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
     return (
         <div
             onClick={action}
-            className={`w-screen flex items-center justify-center fixed inset-0 h-screen bg-black backdrop-blur-2xl bg-opacity-60`}>
+            className={`w-screen flex flex-col items-center justify-center fixed inset-0 h-screen bg-black backdrop-blur-2xl bg-opacity-60`}>
             <div
-                className={`relative overflow-hidden flex justify-center items-center w-[900px] h-[400px] rounded-xl bg-white p-4`}>
+                className={`relative overflow-hidden flex justify-center items-end w-[900px] h-[450px] rounded-xl bg-white p-4`}>
                 {
                     images.map((image, index) => (
                         <div
                             onClick={e => handleModalClick(e)}
-                            className={`w-[900px] absolute h-auto flex justify-center items-center`} key={index}>
-                            <div key={index}
-                                 className={`w-full flex justify-center transition-transform duration-700 ease-in-out
+                            className={`w-[900px] top-4 absolute h-auto flex justify-center items-center`} key={index}>
+                            <div
+                                className={`w-full flex justify-center transition-transform duration-700 ease-in-out
                                             ${index === itemIndex
-                                     ? 'translate-x-0'
-                                     : index < itemIndex
-                                         ? '-translate-x-full'
-                                         : 'translate-x-full'
-                                 }`}>
+                                    ? 'translate-x-0'
+                                    : index < itemIndex
+                                        ? '-translate-x-full'
+                                        : 'translate-x-full'
+                                }`}>
                                 <img src={image}
                                      className="w-fit block h-[360px] rounded object-fill "
                                      alt={"Product Image"}/>
@@ -728,6 +746,7 @@ const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
                         </div>
                     ))
                 }
+                <p>{itemIndex+1}/{length}</p>
                 <button
                     onClick={e => handlePreviousClick(e)}
                     type="button"
@@ -757,6 +776,7 @@ const ImageView: React.FC<ProductImage> = ({images, action, startIndex}) => {
                      </span>
                 </button>
             </div>
+
         </div>
     )
 }
