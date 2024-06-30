@@ -6,7 +6,7 @@ import {
     categoryPath,
     findById,
     findByIds,
-    loginPath,
+    loginPath, logout,
     mailCodePath,
     mailPath,
     orderPath,
@@ -330,7 +330,21 @@ export const refreshTokenRequest = async (refreshToken: string) => {
         handleError(error)
     }
 }
-
+type LogoutRequest ={
+    accessToken: string,
+    refreshToken : string
+}
+export const logOutRequest = async (request: LogoutRequest)=>{
+    try{
+        return await adminInstance.post(`${logout}`, {
+            accessToken: request.accessToken,
+            refreshToken: request.refreshToken
+        })
+            .then(response=> response.data)
+    } catch (error) {
+        handleError(error)
+    }
+}
 export const getUserResponseById = async (userId: number) => {
     try {
         const response: UserResponse = await adminInstance.get(`${userResponsePath}/${userId}`)

@@ -7,6 +7,8 @@ import {IoLogOutOutline} from "react-icons/io5";
 import useProductSearch from "@/hooks/useProductSearch.ts";
 import {useLoginState, useOrderPending} from "@/zustand/AppState.ts";
 import {useNavigate} from "react-router-dom";
+import {ACCESS_TOKEN, REFRESH_TOKEN} from "@/page/admin/LoginPage.tsx";
+import {logOutRequest} from "@/axios/Request.ts";
 
 type HeaderItem = {
     title: string,
@@ -24,10 +26,18 @@ const AdminHeader = () => {
         setProductSearch(products)
     }, [products]);
 
-    const handleLogOut=()=>{
+    const handleLogOut=async ()=>{
+        await logOut()
         localStorage.clear()
         setIsLogin(false)
         navigate('/login')
+    }
+    const logOut =async ()=>{
+        const accessToken = localStorage.getItem(ACCESS_TOKEN);
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        if(accessToken && refreshToken){
+            await logOutRequest({accessToken, refreshToken});
+        }
     }
 
     const handleNotificationClick=()=>{

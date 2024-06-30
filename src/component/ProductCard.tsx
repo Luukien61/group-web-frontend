@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
             },
             {
                 icon: <MdScreenshotMonitor/>,
-                text: product.features.screen.substring(0, 8)
+                text: product.features.screen
             }
         ]
         setProductSortInfo(sortInfo)
@@ -76,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
                                 <div key={index}
                                      className={`w-1/2 gap-2 flex items-center ${value.style ? value.style : ""}`}>
                                     {value.icon}
-                                    <p className={`whitespace-nowrap truncate`}>{value.text}</p>
+                                    <p className={`whitespace-nowrap truncate max-w-[70%]`}>{value.text}</p>
                                 </div>
                             )
                         }

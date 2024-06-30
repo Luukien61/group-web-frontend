@@ -3,7 +3,7 @@ import {useEffect} from "react";
 import {authenticateRequest} from "@/axios/Request.ts";
 import useTokenRefresh from "@/hooks/useTokenRefresh.ts";
 
-const useAuthenticate = () => {
+const useAuthenticate =async () => {
     const navigate = useNavigate();
     const isAuthenticated = useTokenRefresh();
     useEffect(() => {
