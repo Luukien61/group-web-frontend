@@ -6,6 +6,7 @@ import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts
 import axios from "axios";
 import useTokenRefresh from "@/hooks/useTokenRefresh.ts";
 import SetToken from "@/hooks/SetToken.tsx";
+import toast, {Toaster} from "react-hot-toast";
 
 export type UserResponse = {
     "staffID": number,
@@ -71,6 +72,7 @@ const LoginPage = () => {
             setTimeout(() => {
                 setIsEmailValid(true)
             }, 2000)
+            toast.error("Invalid email")
         }
     }
     useEffect(() => {
@@ -104,6 +106,9 @@ const LoginPage = () => {
                  backgroundRepeat: 'no-repeat',
              }}
         >
+            <Toaster toastOptions={{
+                duration: 1500
+            }}/>
             <div className={`w-1/3 min-h-[600px] gap-y-2 rounded bg-white drop-shadow-2xl py-5 my-12`}>
                 <div className={`w-full p-4 flex justify-center my-auto`}>
                     <img
@@ -117,7 +122,7 @@ const LoginPage = () => {
                     <InputFormGoogle style={`${!isPasswordValid && 'border-red-600 border-2'}`}
                                      label={`Password`} type={'password'} action={(value) => setPassword(value)}/>
                     <div className={`w-full flex items-center justify-between `}>
-                        <p className={`text-red-600 text-[16px] ${isPasswordValid && 'invisible'}`}>Incorrect password
+                        <p className={`text-red-600 text-[16px] ${isPasswordValid && 'invisible'}`}>Incorrect username or password
                             !!!</p>
                         <p
                             onClick={handleRedirectForgotPass}

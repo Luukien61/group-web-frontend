@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Card, CardContent} from "@/shadcn/ui/card"
 import {Label} from "@/shadcn/ui/label"
 import {RadioGroup, RadioGroupItem} from "@/shadcn/ui/radio-group"
@@ -25,7 +25,8 @@ import {DefaultInput} from "@/component/Input.tsx";
 import {ProductPageable} from "@/page/admin/CategoryAdminPage.tsx";
 import RatingComponent, {RatingCount} from "@/component/RatingComponent.tsx";
 import toast, {Toaster} from "react-hot-toast";
-import {myOrders, zalo} from "@/url/Urls.ts";
+import {zalo} from "@/url/Urls.ts";
+import EmailRegexCheck from "@/hooks/EmailRegexCheck.ts";
 
 type OrderProp = {
     title: string,
@@ -169,20 +170,24 @@ const ProductPage = () => {
     const intervalTimer = useRef<NodeJS.Timeout | null>(null);
     const handlePurchaseDoneClick = () => {
         setIsDoneClicked(true)
-        if (fullName !== "" && phone !== "" && address !== "" && email !== "") {
-            const code = createVerificationCode()
+        if(EmailRegexCheck({email: email})){
+            if (fullName !== "" && phone !== "" && address !== "") {
+                const code = createVerificationCode()
 
-            sendEmailCode(email, code, {event: "order"})
-                .then(() => {
-                    setIsSent(true)
-                    const codeText = code.toString().trim()
-                    setVerificationCode(codeText)
-                    intervalTimer.current = setInterval(() => {
-                        setTimer(prev => prev - 1)
-                    }, 1000)
-                }).catch(() => {
-                setErrorMessage("An error has occurred when sending email")
-            });
+                sendEmailCode(email, code, {event: "order"})
+                    .then(() => {
+                        setIsSent(true)
+                        const codeText = code.toString().trim()
+                        setVerificationCode(codeText)
+                        intervalTimer.current = setInterval(() => {
+                            setTimer(prev => prev - 1)
+                        }, 1000)
+                    }).catch(() => {
+                    setErrorMessage("An error has occurred when sending email")
+                });
+            }
+        }else {
+            toast.error("Invalid email")
         }
     }
     useEffect(() => {

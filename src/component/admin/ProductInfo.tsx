@@ -2,7 +2,6 @@ import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {CiImageOn} from "react-icons/ci";
 import {useCategory} from "@/zustand/AppState.ts";
 import {GrCaretNext, GrCaretPrevious} from "react-icons/gr";
-import {parse, startOfMonth} from 'date-fns';
 import {
     deleteProduct,
     getCategories,
@@ -229,16 +228,19 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 content: content,
                 image: contentImage
             }
-            console.log("children: ", contentChild)
+            setContentChildren(prevState => prevState.filter(value => value.id!=contentChild.id))
             setContentChildren(prevState => [...prevState, contentChild])
             setHeading('')
             setContent('')
             setContentImage('')
-            setContentChildrenIndex(prevState => prevState + 1)
+
         } catch (e) {
-            console.log(e)
+            toast.error("An error when add a new paragraph")
         }
     }
+    useEffect(() => {
+        setContentChildrenIndex(contentChildren.length)
+    }, [contentChildren]);
 
     // eslint-disable-next-line no-unused-vars
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>, action: (value: string) => void) => {
@@ -368,7 +370,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
         } else {
             if (!producer) toast.error("Please choose a producer.")
             if (!categoryPick) toast.error("Please choose a category")
-            if(!productName) toast.error("Please enter a product name")
+            if (!productName) toast.error("Please enter a product name")
         }
     }
     const uploadColorImages = async () => {
@@ -510,7 +512,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 if (Array.isArray(response)) {
                     setProducers(response.sort((a, b) => a.name.localeCompare(b.name)));
                 } else {
-                    console.error('Response is not an array');
+                    toast.error('Response is not an array');
                 }
                 fetchedProducers.current.set(categoryPick, response)
             }
@@ -619,7 +621,12 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
             container.scrollBy({left: scrollAmount, behavior: 'smooth'});
         }
     };
-
+    const handleParaClick = (value: ContentChild) => {
+        setHeading(value.title|| '')
+        setContent(value.content || '')
+        setContentImage(value.image || '')
+        setContentChildrenIndex(value.id || 0)
+    }
     return (
         <div className={`flex relative justify-center items-center`}>
             <div className={`w-1200 h-auto relative flex rounded bg-inherit p-6 overflow-y-visible `}>
@@ -788,13 +795,15 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                             <div className={`h-[90%] overflow-y-auto border-l-2 w-1/3`}>
                                 <div className={`w-full  flex-col flex gap-y-2 pt-2 max-h-[450px]`}>
                                     {
-                                        contentChildren.map((_value, index) => (
-                                            <div key={index} className={`px-2 relative max-w-[80%]`}>
+                                        contentChildren.map((value, index) => (
+                                            <div onClick={() => handleParaClick(value)}
+                                                 key={index}
+                                                 className={`px-2 relative max-w-[80%] cursor-pointer`}>
                                                 <div
                                                     className={`bg-gray-300 flex items-center justify-center rounded py-1 group`}>
-                                                    <p className={`cursor-default`}>Para {index+1}</p>
+                                                    <p className={`cursor-default`}>Para {index + 1}</p>
                                                     <IoCloseCircleOutline
-                                                        onClick={() => handleRemoveContentChild(_value.id || -1)}
+                                                        onClick={() => handleRemoveContentChild(value.id || -1)}
                                                         className={`cursor-pointer absolute -top-2 -right-2 `}/>
                                                 </div>
                                             </div>
@@ -1086,11 +1095,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     </div>
                 </div>
             </div>
-            <Toaster toastOptions={
-                {
-                    duration: 1500
-                }
-            }/>
         </div>
     );
 };
@@ -1340,7 +1344,7 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category, is
                             <DefaultInput
                                 className={'border rounded'}
                                 value={producer}
-                                placeholder={"Category name"}
+                                placeholder={"Producer name"}
                                 onChange={(e) => setProducer(e.target.value)}
                             />
                         </label>
@@ -1400,7 +1404,7 @@ export const AddCategory: React.FC<AddCategoryProps> = ({setAction, category, is
                                             fill="currentFill"/>
                                     </svg>
                                 }
-                                Add category
+                                Done
                             </button>
                         }
                     </div>

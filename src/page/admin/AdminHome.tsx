@@ -3,6 +3,7 @@ import AdminSideBar from "@/component/admin/AdminSideBar.tsx";
 import {Outlet, useNavigate} from "react-router-dom";
 import useTokenRefresh from "@/hooks/useTokenRefresh.ts";
 import {authenticateRequest} from "@/axios/Request.ts";
+import {Toaster} from "react-hot-toast";
 
 const AdminHome = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -23,6 +24,11 @@ const AdminHome = () => {
         <>
             {
                 !isLoading && <div className={`w-full mx-auto`}>
+                    <Toaster toastOptions={
+                        {
+                            duration: 1500
+                        }
+                    }/>
                     <div className={`flex bg-[#F4F6FA] w-full`}>
                         <AdminSideBar/>
                         <div className={`w-full ml-52 flex justify-center`}>

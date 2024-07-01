@@ -20,6 +20,8 @@ type ProductSortInfo = {
 const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
     const category = product.category.name.toLowerCase()
     const [average, setAverage] = useState<number>(0)
+    const [currentPrice, setCurrentPrice] = useState<number>(0)
+    const [previousPrice, setPreviousPrice] = useState<number>(0)
     const [productSortInfo, setProductSortInfo] = useState<ProductSortInfo[]>([])
     useEffect(() => {
         if (product.rating) {
@@ -46,8 +48,11 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
                 text: product.features.screen
             }
         ]
+        setCurrentPrice(product.price[0].currentPrice)
+        setPreviousPrice(product.price[0].previousPrice)
         setProductSortInfo(sortInfo)
     }, [product]);
+
     return (
         <div draggable={false}
              className={`${widthClass} block justify-center items-center  `}>
@@ -65,10 +70,14 @@ const ProductCard: React.FC<ProductCardProps> = ({product, widthClass}) => {
                     <div className={`leading-6 h-[3rem]`}>
                         <h3 className="text-gray-600 max-w-full overflow-hidden font-medium pl-2 pt-1 hover:text-default_blue ">{product.name}</h3>
                     </div>
-                    <div className="rounded border p-1">
+                    <div className="rounded border p-1 flex items-end">
                         <p className="text-default_red font-semibold px-2">
-                            {product.price[0].currentPrice > 0 ? product.price[0].currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}
+                            {currentPrice > 0 ? currentPrice.toLocaleString('vi-VN') + "đ" : "Liên hệ"}
                         </p>
+                        {
+                            previousPrice > currentPrice &&
+                            <p className={`text-gray-600 text-[14px]`}>-{Math.floor(((previousPrice - currentPrice) / previousPrice) * 100)}%</p>
+                        }
                     </div>
                     <div className="bg-outer_green py-1 rounded pl-2 *:text-[0.75rem]  text-gray-800 flex flex-wrap">
                         {

@@ -21,6 +21,7 @@ import {
 import {Category, Producer, Product} from "@/component/CategoryCard.tsx";
 import axios from "axios";
 import {LoginProps, UserResponse} from "@/page/admin/LoginPage.tsx";
+import toast from "react-hot-toast";
 
 type Props = {
     category: string,
@@ -271,7 +272,7 @@ export const postNewProducer = async (producer: Producer[], category: string) =>
 
 export const updateProduct = async (product: Product, productId: string) => {
     try {
-        return await instance.put(`${productPath}/${productId}`, product)
+        return await adminInstance.put(`${productPath}/${productId}`, product)
             .then(response => response.data)
     } catch (error) {
         handleError(error)
@@ -499,6 +500,7 @@ const handleError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response) {
         const customError: Error = error.response.data
         console.error(customError.message)
+        toast.error(customError.message)
         return customError.message
     }
 }

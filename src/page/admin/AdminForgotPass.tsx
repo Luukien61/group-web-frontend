@@ -8,6 +8,7 @@ import {useLoginState, useUserIdLogin, useUserLogin} from "@/zustand/AppState.ts
 import {useNavigate} from "react-router-dom";
 import SetToken from "@/hooks/SetToken.tsx";
 import toast, {Toaster} from "react-hot-toast";
+import EmailRegexCheck from "@/hooks/EmailRegexCheck.ts";
 
 const AdminForgotPass = () => {
     const {setUserId} = useUserIdLogin()
@@ -82,7 +83,7 @@ const AdminForgotPass = () => {
 
 
     const handleSendCode = async () => {
-        if (verificationEmail) {
+        if (verificationEmail && EmailRegexCheck({email: verificationEmail})) {
             const user: UserResponse = await getUserByEmail({
                 email: verificationEmail,
                 password: ''
@@ -100,9 +101,10 @@ const AdminForgotPass = () => {
                         }, 1000)
                     })
                     .catch(error => alert(error))
-            } else {
-                toast.error("User doesn't exist")
             }
+        }
+        else {
+            toast.error("Invalid email")
         }
     }
 

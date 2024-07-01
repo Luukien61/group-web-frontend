@@ -47,8 +47,10 @@ const Header = () => {
     const [order, setOrder] = useState<number>(0);
     const debouncedHandleSearching = useRef(debounce(
         async (value: string) => {
-            const response = await searchProductsByName(value)
-            setProducts(response)
+            if(value!=""){
+                const response = await searchProductsByName(value)
+                setProducts(response)
+            }else setProducts([])
         }, 500)).current;
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         debouncedHandleSearching(event.target.value);

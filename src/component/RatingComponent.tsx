@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Product, Rating} from "@/component/CategoryCard.tsx";
 import {ratingProduct} from "@/axios/Request.ts";
+import EmailRegexCheck from "@/hooks/EmailRegexCheck.ts";
+import toast from "react-hot-toast";
 
 type RatingStarts = {
     value: number,
@@ -64,10 +66,14 @@ const RatingComponent: React.FC<RatingProps> = ({productRating, productId,imgUrl
         setRatingPick(value)
     }
     const handleSendRating = async () => {
-        const newProduct: Product = await ratingProduct(productId, ratingPick)
-        if (newProduct.rating) {
-            setNewProductRating(newProduct.rating)
-            setEmail('')
+        if(EmailRegexCheck({email: email})){
+            const newProduct: Product = await ratingProduct(productId, ratingPick)
+            if (newProduct.rating) {
+                setNewProductRating(newProduct.rating)
+                setEmail('')
+            }
+        }else {
+            toast.error("Invalid email")
         }
     }
 
