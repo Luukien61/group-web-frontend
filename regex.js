@@ -52,3 +52,9 @@ function changeSql(){
     });
 }
 changeSql()
+
+
+const regex2 = /(quick).*(lazy)/;
+const str = "The quick brown fox jumps over the lazy dog.";
+const result = str.replace(regex2, "$2 $1");
+console.log(result); // "The lazy quick dog."
